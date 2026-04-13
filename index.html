@@ -372,6 +372,11 @@
   #fa-pitcher-body tr:not(.avg-row):not(.below-min):hover { background: rgba(200,168,75,0.04); }
   .fa-row-selected { background: rgba(200,168,75,0.10) !important; outline: 1px solid var(--accent); }
   .fa-compare-wrap { padding: 24px 48px 8px; border-top: 1px solid var(--border2); }
+  .fa-compare-vs-select {
+    background: var(--bg2); border: 1px solid var(--border2); border-radius: 4px;
+    color: var(--text); font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+    letter-spacing: 0.08em; padding: 3px 8px; cursor: pointer;
+  }
   .fa-compare-header {
     display: flex; align-items: center; gap: 10px;
     font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600;
@@ -996,7 +1001,7 @@ const TEAMS = {
   { name:'J.T. Realmuto', pos:'C', ppg:2.7, xwoba:54, xba:35, xslg:30, xobp:73, xiso:31, brl:9, ev:75, hh:87, k:35, bb:72, whiff:9, chase:55, sprint:80, batspd:null },
   { name:'Dillon Dingler', pos:'C', ppg:5.0, xwoba:97, xba:90, xslg:97, xobp:88, xiso:96, brl:86, ev:88, hh:93, k:67, bb:18, whiff:55, chase:24, sprint:56, batspd:43 },
 ], pitchers: [
-  { name:'George Kirby', type:'SP', ppg:12.5, xera:72, xwoba:72, xba:65, xslg:65, ev:23, hh:12, k:47, bb:72, whiff:6, chase:77, fbvelo:78, fbspin:36 },
+  { name:'George Kirby', type:'SP', ppg:12.0, xera:72, xwoba:72, xba:65, xslg:65, ev:23, hh:12, k:47, bb:72, whiff:6, chase:77, fbvelo:78, fbspin:36 },
   { name:'Mason Miller', type:'RP', ppg:9.1, xera:100, xwoba:100, xba:100, xslg:100, ev:86, hh:14, k:100, bb:89, whiff:100, chase:100, fbvelo:null, fbspin:null },
   { name:'Nick Pivetta', type:'SP', ppg:8.2, xera:96, xwoba:96, xba:95, xslg:93, ev:79, hh:78, k:94, bb:54, whiff:51, chase:95, fbvelo:45, fbspin:67 },
   { name:'David Bednar', type:'RP', ppg:2.7, xera:63, xwoba:63, xba:32, xslg:73, ev:34, hh:48, k:54, bb:37, whiff:23, chase:92, fbvelo:65, fbspin:66 },
@@ -1046,7 +1051,7 @@ const TEAMS = {
   { name:'Zack Wheeler', type:'SP', ppg:0.0, partial:true, il:'15' },
 ] },
 "Hell or High Wether": { batters: [
-  { name:'Jose Ramirez', pos:'3B', ppg:4.6, xwoba:73, xba:72, xslg:76, xobp:73, xiso:77, brl:78, ev:52, hh:43, k:88, bb:65, whiff:82, chase:33, sprint:42, batspd:20 },
+  { name:'Jose Ramirez', pos:'3B', ppg:4.4, xwoba:73, xba:72, xslg:76, xobp:73, xiso:77, brl:78, ev:52, hh:43, k:88, bb:65, whiff:82, chase:33, sprint:42, batspd:20 },
   { name:'Yordan Alvarez', pos:'OF', ppg:8.1, xwoba:100, xba:99, xslg:100, xobp:100, xiso:100, brl:99, ev:86, hh:74, k:95, bb:97, whiff:74, chase:64, sprint:2, batspd:84 },
   { name:'Trea Turner', pos:'SS', ppg:4.2, xwoba:13, xba:38, xslg:16, xobp:16, xiso:10, brl:9, ev:26, hh:14, k:48, bb:21, whiff:29, chase:10, sprint:100, batspd:41 },
   { name:'Vinnie Pasquantino', pos:'1B', ppg:1.9, xwoba:16, xba:24, xslg:10, xobp:26, xiso:11, brl:9, ev:56, hh:13, k:44, bb:55, whiff:79, chase:48, sprint:16, batspd:15 },
@@ -1096,7 +1101,7 @@ const TEAMS = {
   { name:'Alec Bohm', pos:'3B', ppg:2.8, xwoba:22, xba:29, xslg:18, xobp:30, xiso:15, brl:1, ev:26, hh:28, k:77, bb:40, whiff:76, chase:85, sprint:37, batspd:31 },
   { name:'Chase DeLauter', pos:'OF', ppg:6.8, xwoba:96, xba:90, xslg:97, xobp:85, xiso:95, brl:95, ev:87, hh:85, k:74, bb:69, whiff:77, chase:83, sprint:53, batspd:52 },
   { name:'Josh Bell', pos:'1B', ppg:5.3, xwoba:67, xba:47, xslg:59, xobp:77, xiso:65, brl:49, ev:43, hh:68, k:28, bb:88, whiff:27, chase:72, sprint:14, batspd:31 },
-  { name:'Angel Martinez', pos:'2B/OF', ppg:5.4, xwoba:65, xba:80, xslg:58, xobp:75, xiso:42, brl:28, ev:39, hh:22, k:90, bb:23, whiff:95, chase:15, sprint:52, batspd:39 },
+  { name:'Angel Martinez', pos:'2B/OF', ppg:5.0, xwoba:65, xba:80, xslg:58, xobp:75, xiso:42, brl:28, ev:39, hh:22, k:90, bb:23, whiff:95, chase:15, sprint:52, batspd:39 },
   { name:'Carter Jensen', pos:'C', ppg:3.8, xwoba:55, xba:36, xslg:79, xobp:16, xiso:87, brl:78, ev:62, hh:76, k:7, bb:26, whiff:7, chase:65, sprint:51, batspd:84 },
   { name:'Nick Yorke', pos:'1B/2B', ppg:null, xwoba:86, xba:96, xslg:53, xobp:98, xiso:12, brl:9, ev:56, hh:81, k:75, bb:84, whiff:93, chase:69, sprint:69, batspd:43 },
   // Below PA minimum
@@ -1130,7 +1135,7 @@ const TEAMS = {
   { name:'Brandon Lowe', pos:'2B', ppg:5.9, xwoba:68, xba:45, xslg:60, xobp:76, xiso:68, brl:63, ev:5, hh:55, k:51, bb:90, whiff:2, chase:26, sprint:65, batspd:35 },
   { name:'Ramon Laureano', pos:'OF', ppg:6.5, xwoba:86, xba:81, xslg:90, xobp:72, xiso:86, brl:86, ev:59, hh:78, k:56, bb:37, whiff:41, chase:37, sprint:80, batspd:55 },
   { name:'Andres Gimenez', pos:'2B/SS', ppg:5.3, xwoba:37, xba:59, xslg:41, xobp:37, xiso:35, brl:28, ev:16, hh:10, k:87, bb:29, whiff:82, chase:6, sprint:74, batspd:3 },
-  { name:'Cam Smith', pos:'OF', ppg:5.2, xwoba:81, xba:78, xslg:80, xobp:81, xiso:78, brl:86, ev:53, hh:81, k:35, bb:59, whiff:35, chase:27, sprint:96, batspd:98 },
+  { name:'Cam Smith', pos:'OF', ppg:5.5, xwoba:81, xba:78, xslg:80, xobp:81, xiso:78, brl:86, ev:53, hh:81, k:35, bb:59, whiff:35, chase:27, sprint:96, batspd:98 },
   { name:'Brandon Marsh', pos:'OF', ppg:4.2, xwoba:62, xba:83, xslg:77, xobp:43, xiso:69, brl:49, ev:62, hh:62, k:34, bb:10, whiff:67, chase:10, sprint:78, batspd:31 },
   { name:'Max Muncy', pos:'3B', ppg:5.2, xwoba:61, xba:74, xslg:77, xobp:34, xiso:78, brl:78, ev:97, hh:99, k:5, bb:9, whiff:15, chase:16, sprint:73, batspd:82 },
   { name:'Francisco Alvarez', pos:'C', ppg:4.9, xwoba:99, xba:94, xslg:99, xobp:88, xiso:99, brl:95, ev:70, hh:91, k:67, bb:56, whiff:46, chase:51, sprint:8, batspd:77 },
@@ -1155,13 +1160,13 @@ const TEAMS = {
 "Rich Homie Kwan": { batters: [
   { name:'Fernando Tatis Jr.', pos:'OF', ppg:4.1, xwoba:76, xba:75, xslg:63, xobp:78, xiso:53, brl:91, ev:98, hh:100, k:43, bb:60, whiff:32, chase:66, sprint:85, batspd:81 },
   { name:'William Contreras', pos:'C', ppg:6.0, xwoba:73, xba:74, xslg:66, xobp:86, xiso:57, brl:28, ev:83, hh:69, k:82, bb:86, whiff:83, chase:81, sprint:15, batspd:70 },
-  { name:'Steven Kwan', pos:'OF', ppg:4.5, xwoba:33, xba:42, xslg:21, xobp:51, xiso:13, brl:9, ev:1, hh:1, k:92, bb:58, whiff:100, chase:88, sprint:30, batspd:1 },
+  { name:'Steven Kwan', pos:'OF', ppg:4.2, xwoba:33, xba:42, xslg:21, xobp:51, xiso:13, brl:9, ev:1, hh:1, k:92, bb:58, whiff:100, chase:88, sprint:30, batspd:1 },
   { name:'Cody Bellinger', pos:'OF', ppg:4.3, xwoba:59, xba:39, xslg:61, xobp:56, xiso:71, brl:63, ev:34, hh:62, k:80, bb:80, whiff:54, chase:73, sprint:55, batspd:20 },
   { name:'Maikel Garcia', pos:'3B', ppg:6.1, xwoba:90, xba:96, xslg:79, xobp:88, xiso:59, brl:91, ev:94, hh:89, k:86, bb:62, whiff:90, chase:92, sprint:58, batspd:49 },
   { name:'Josh Naylor', pos:'1B', ppg:2.6, xwoba:27, xba:33, xslg:30, xobp:37, xiso:32, brl:49, ev:20, hh:33, k:77, bb:47, whiff:65, chase:16, sprint:1, batspd:26 },
   { name:'Riley Greene', pos:'OF', ppg:4.7, xwoba:83, xba:62, xslg:87, xobp:71, xiso:89, brl:86, ev:43, hh:79, k:53, bb:74, whiff:29, chase:77, sprint:46, batspd:94 },
   { name:'Brandon Nimmo', pos:'OF', ppg:7.5, xwoba:78, xba:87, xslg:81, xobp:79, xiso:72, brl:78, ev:57, hh:55, k:70, bb:46, whiff:73, chase:65, sprint:77, batspd:52 },
-  { name:'Yainer Diaz', pos:'C', ppg:3.5, xwoba:4, xba:19, xslg:6, xobp:6, xiso:4, brl:9, ev:15, hh:6, k:80, bb:19, whiff:55, chase:8, sprint:19, batspd:55 },
+  { name:'Yainer Diaz', pos:'C', ppg:3.8, xwoba:4, xba:19, xslg:6, xobp:6, xiso:4, brl:9, ev:15, hh:6, k:80, bb:19, whiff:55, chase:8, sprint:19, batspd:55 },
   { name:'Jacob Wilson', pos:'SS', ppg:3.6, xwoba:13, xba:68, xslg:24, xobp:14, xiso:5, brl:1, ev:11, hh:32, k:83, bb:1, whiff:90, chase:1, sprint:50, batspd:1 },
   { name:'Jakob Marsee', pos:'OF', ppg:3.1, xwoba:14, xba:11, xslg:9, xobp:22, xiso:18, brl:9, ev:34, hh:44, k:30, bb:61, whiff:96, chase:85, sprint:71, batspd:27 },
   { name:'Lawrence Butler', pos:'OF', ppg:2.6, xwoba:37, xba:53, xslg:34, xobp:45, xiso:26, brl:9, ev:41, hh:71, k:26, bb:51, whiff:17, chase:54, sprint:48, batspd:65 },
@@ -1197,7 +1202,7 @@ const TEAMS = {
   { name:'Ian Happ', pos:'OF', ppg:4.2, xwoba:62, xba:26, xslg:75, xobp:44, xiso:88, brl:86, ev:70, hh:71, k:9, bb:76, whiff:9, chase:55, sprint:51, batspd:55 },
   { name:'Tyler Soderstrom', pos:'1B/OF', ppg:4.9, xwoba:50, xba:44, xslg:63, xobp:28, xiso:72, brl:63, ev:48, hh:56, k:35, bb:35, whiff:41, chase:29, sprint:41, batspd:79 },
   { name:'Christian Yelich', pos:'DH', ppg:5.5, xwoba:27, xba:38, xslg:42, xobp:32, xiso:49, brl:28, ev:53, hh:53, k:35, bb:44, whiff:38, chase:60, sprint:54, batspd:57 },
-  { name:'Brendan Donovan', pos:'2B/3B', ppg:4.7, xwoba:42, xba:23, xslg:23, xobp:64, xiso:29, brl:28, ev:13, hh:11, k:64, bb:67, whiff:43, chase:68, sprint:18, batspd:10 },
+  { name:'Brendan Donovan', pos:'2B/3B', ppg:5.1, xwoba:42, xba:23, xslg:23, xobp:64, xiso:29, brl:28, ev:13, hh:11, k:64, bb:67, whiff:43, chase:68, sprint:18, batspd:10 },
   { name:'Kevin McGonigle', pos:'SS', ppg:6.2, xwoba:92, xba:84, xslg:91, xobp:85, xiso:88, brl:78, ev:34, hh:40, k:93, bb:75, whiff:96, chase:74, sprint:75, batspd:46 },
   { name:'Isaac Paredes', pos:'3B', ppg:4.2, xwoba:23, xba:19, xslg:7, xobp:46, xiso:7, brl:1, ev:28, hh:16, k:56, bb:26, whiff:64, chase:43, sprint:11, batspd:7 },
   { name:'Daulton Varsho', pos:'OF', ppg:5.1, xwoba:66, xba:84, xslg:63, xobp:77, xiso:45, brl:49, ev:10, hh:25, k:92, bb:56, whiff:87, chase:53, sprint:39, batspd:67 },
@@ -1226,7 +1231,7 @@ const TEAMS = {
 ] },
 "White Sox 2005.": { batters: [
   { name:'Bobby Witt Jr.', pos:'SS', ppg:4.8, xwoba:88, xba:96, xslg:79, xobp:95, xiso:59, brl:86, ev:88, hh:91, k:75, bb:82, whiff:53, chase:41, sprint:97, batspd:67 },
-  { name:'Julio Rodriguez', pos:'OF', ppg:3.0, xwoba:19, xba:21, xslg:22, xobp:27, xiso:27, brl:28, ev:36, hh:48, k:27, bb:54, whiff:10, chase:13, sprint:85, batspd:94 },
+  { name:'Julio Rodriguez', pos:'OF', ppg:3.2, xwoba:19, xba:21, xslg:22, xobp:27, xiso:27, brl:28, ev:36, hh:48, k:27, bb:54, whiff:10, chase:13, sprint:85, batspd:94 },
   { name:'Pete Crow-Armstrong', pos:'OF', ppg:2.9, xwoba:6, xba:14, xslg:24, xobp:3, xiso:41, brl:28, ev:77, hh:69, k:16, bb:15, whiff:44, chase:1, sprint:95, batspd:75 },
   { name:'Gleyber Torres', pos:'2B', ppg:3.7, xwoba:56, xba:54, xslg:28, xobp:79, xiso:16, brl:28, ev:3, hh:3, k:60, bb:91, whiff:68, chase:97, sprint:10, batspd:6 },
   { name:'Eugenio Suarez', pos:'3B', ppg:3.2, xwoba:35, xba:23, xslg:49, xobp:21, xiso:65, brl:63, ev:12, hh:5, k:13, bb:50, whiff:13, chase:41, sprint:15, batspd:31 },
@@ -1275,9 +1280,9 @@ const TEAMS = {
   { name:'Munetaka Murakami', pos:'3B/1B', ppg:3.5, xwoba:63, xba:14, xslg:67, xobp:70, xiso:85, brl:86, ev:78, hh:89, k:8, bb:95, whiff:3, chase:90, sprint:47, batspd:77 },
   { name:'Giancarlo Stanton', pos:'OF', ppg:4.1, xwoba:59, xba:67, xslg:61, xobp:55, xiso:56, brl:63, ev:81, hh:31, k:41, bb:47, whiff:10, chase:45, sprint:3, batspd:100 },
   { name:'Trent Grisham', pos:'OF', ppg:2.7, xwoba:81, xba:45, xslg:63, xobp:91, xiso:73, brl:63, ev:75, hh:98, k:74, bb:99, whiff:86, chase:99, sprint:47, batspd:17 },
-  { name:'Carlos Correa', pos:'3B/SS', ppg:5.9, xwoba:85, xba:95, xslg:84, xobp:85, xiso:75, brl:63, ev:71, hh:54, k:91, bb:57, whiff:52, chase:46, sprint:62, batspd:75 },
+  { name:'Carlos Correa', pos:'3B/SS', ppg:5.8, xwoba:85, xba:95, xslg:84, xobp:85, xiso:75, brl:63, ev:71, hh:54, k:91, bb:57, whiff:52, chase:46, sprint:62, batspd:75 },
   { name:'Geraldo Perdomo', pos:'SS', ppg:3.2, xwoba:45, xba:25, xslg:17, xobp:68, xiso:20, brl:9, ev:33, hh:12, k:98, bb:87, whiff:99, chase:97, sprint:46, batspd:2 },
-  { name:'Luke Raley', pos:'1B/OF', ppg:4.1, xwoba:88, xba:80, xslg:94, xobp:64, xiso:93, brl:78, ev:86, hh:92, k:1, bb:12, whiff:1, chase:20, sprint:75, batspd:89 },
+  { name:'Luke Raley', pos:'1B/OF', ppg:4.4, xwoba:88, xba:80, xslg:94, xobp:64, xiso:93, brl:78, ev:86, hh:92, k:1, bb:12, whiff:1, chase:20, sprint:75, batspd:89 },
 ], pitchers: [
   { name:'Max Fried', type:'SP', ppg:20.2, xera:87, xwoba:87, xba:72, xslg:85, ev:66, hh:76, k:32, bb:85, whiff:16, chase:61, fbvelo:37, fbspin:13 },
   { name:'Jacob deGrom', type:'SP', ppg:16.3, xera:79, xwoba:79, xba:83, xslg:50, ev:6, hh:27, k:94, bb:75, whiff:83, chase:60, fbvelo:86, fbspin:92 },
@@ -1307,7 +1312,7 @@ const FREE_AGENTS = { batters: [
   { name:'Curtis Mead', pos:'1B/3B', ppg:4.8, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:45, batspd:null },
   { name:'Jeimer Candelario', pos:'UTIL', ppg:null, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:34, batspd:null },
   { name:'Lane Thomas', pos:'OF', ppg:1.3, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:71, batspd:null },
-  { name:'Daniel Schneemann', pos:'2B/3B/OF', ppg:3.4, xwoba:58, xba:72, xslg:74, xobp:28, xiso:73, brl:28, ev:74, hh:75, k:32, bb:7, whiff:12, chase:11, sprint:67, batspd:43 },
+  { name:'Daniel Schneemann', pos:'2B/3B/OF', ppg:3.2, xwoba:58, xba:72, xslg:74, xobp:28, xiso:73, brl:28, ev:74, hh:75, k:32, bb:7, whiff:12, chase:11, sprint:67, batspd:43 },
   { name:'Garrett Mitchell', pos:'OF', ppg:4.2, xwoba:86, xba:62, xslg:83, xobp:86, xiso:86, brl:63, ev:99, hh:99, k:1, bb:92, whiff:2, chase:82, sprint:82, batspd:96 },
   { name:'Alex Call', pos:'OF', ppg:5.2, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:35, batspd:null },
   { name:'Yoán Moncada', pos:'3B', ppg:1.9, xwoba:36, xba:1, xslg:6, xobp:63, xiso:37, brl:28, ev:39, hh:12, k:5, bb:97, whiff:29, chase:92, sprint:18, batspd:40 },
@@ -1379,7 +1384,7 @@ const FREE_AGENTS = { batters: [
   { name:'Samuel Basallo', pos:'C', ppg:2.6, xwoba:20, xba:4, xslg:34, xobp:17, xiso:67, brl:49, ev:92, hh:43, k:15, bb:74, whiff:14, chase:22, sprint:1, batspd:90 },
   { name:'Miguel Rojas', pos:'2B/3B/SS', ppg:2.6, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:17, batspd:null },
   { name:'Michael Massey', pos:'UTIL', ppg:null, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:41, batspd:null },
-  { name:'Juan Brito', pos:'2B', ppg:3.8, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:42, batspd:null },
+  { name:'Juan Brito', pos:'2B', ppg:3.2, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:42, batspd:null },
   { name:'Ke\'Bryan Hayes', pos:'3B', ppg:0.8, xwoba:40, xba:45, xslg:55, xobp:30, xiso:60, brl:28, ev:78, hh:39, k:99, bb:31, whiff:84, chase:76, sprint:45, batspd:null },
   { name:'Jorge Mateo', pos:'SS/OF', ppg:5.3, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:98, batspd:null },
   { name:'Victor Scott II', pos:'OF', ppg:2.3, xwoba:10, xba:59, xslg:18, xobp:14, xiso:4, brl:1, ev:17, hh:6, k:46, bb:5, whiff:42, chase:75, sprint:98, batspd:null },
@@ -1472,17 +1477,17 @@ const FREE_AGENTS = { batters: [
   { name:'Matt Shaw', pos:'3B/OF', ppg:3.0, xwoba:58, xba:85, xslg:68, xobp:48, xiso:50, brl:49, ev:43, hh:32, k:61, bb:13, whiff:73, chase:20, sprint:87, batspd:11 },
   { name:'Gavin Sheets', pos:'OF/1B', ppg:4.1, xwoba:55, xba:71, xslg:76, xobp:24, xiso:77, brl:63, ev:50, hh:72, k:27, bb:5, whiff:59, chase:6, sprint:43, batspd:82 },
   { name:'Oswald Peraza', pos:'3B/2B', ppg:3.0, xwoba:25, xba:40, xslg:37, xobp:19, xiso:40, brl:28, ev:17, hh:33, k:31, bb:26, whiff:11, chase:9, sprint:80, batspd:35 },
-  { name:'Rhys Hoskins', pos:'1B', ppg:3.8, xwoba:30, xba:12, xslg:33, xobp:26, xiso:57, brl:63, ev:43, hh:64, k:13, bb:76, whiff:32, chase:88, sprint:8, batspd:60 },
+  { name:'Rhys Hoskins', pos:'1B', ppg:3.5, xwoba:30, xba:12, xslg:33, xobp:26, xiso:57, brl:63, ev:43, hh:64, k:13, bb:76, whiff:32, chase:88, sprint:8, batspd:60 },
   { name:'Myles Straw', pos:'UTIL', ppg:null, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:83, batspd:null },
   { name:'Blake Perkins', pos:'UTIL', ppg:null, xwoba:5, xba:2, xslg:4, xobp:9, xiso:14, brl:9, ev:4, hh:5, k:29, bb:67, whiff:62, chase:15, sprint:63, batspd:null },
   { name:'Danny Jansen', pos:'C', ppg:2.9, xwoba:8, xba:6, xslg:13, xobp:9, xiso:32, brl:9, ev:54, hh:46, k:10, bb:54, whiff:20, chase:82, sprint:33, batspd:38 },
-  { name:'Brayan Rocchio', pos:'2B/SS', ppg:2.8, xwoba:56, xba:47, xslg:26, xobp:80, xiso:17, brl:9, ev:45, hh:18, k:95, bb:80, whiff:73, chase:53, sprint:48, batspd:19 },
+  { name:'Brayan Rocchio', pos:'2B/SS', ppg:2.6, xwoba:56, xba:47, xslg:26, xobp:80, xiso:17, brl:9, ev:45, hh:18, k:95, bb:80, whiff:73, chase:53, sprint:48, batspd:19 },
   { name:'Matt Vierling', pos:'OF', ppg:1.8, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:93, batspd:null },
   { name:'Heliot Ramos', pos:'OF', ppg:2.5, xwoba:6, xba:33, xslg:12, xobp:6, xiso:8, brl:28, ev:64, hh:55, k:4, bb:9, whiff:22, chase:23, sprint:39, batspd:35 },
   { name:'Jake Fraley', pos:'OF', ppg:2.4, xwoba:20, xba:17, xslg:19, xobp:23, xiso:28, brl:9, ev:34, hh:6, k:65, bb:61, whiff:65, chase:94, sprint:52, batspd:null },
   { name:'Brett Baty', pos:'2B/3B', ppg:3.4, xwoba:8, xba:35, xslg:35, xobp:2, xiso:37, brl:49, ev:68, hh:37, k:17, bb:1, whiff:49, chase:14, sprint:52, batspd:86 },
   { name:'Isiah Kiner-Falefa', pos:'3B/SS', ppg:0.8, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:35, batspd:null },
-  { name:'Austin Hedges', pos:'C', ppg:5.6, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:6, batspd:null },
+  { name:'Austin Hedges', pos:'C', ppg:4.7, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:6, batspd:null },
   { name:'Lenyn Sosa', pos:'1B/2B', ppg:2.3, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:46, batspd:61 },
 ], pitchers: [
   { name:'Cade Povich', type:'SP', ppg:15.5, xera:60, xwoba:60, xba:38, xslg:47, ev:34, hh:47, k:12, bb:77, whiff:66, chase:84, fbvelo:12, fbspin:87 },
@@ -1511,7 +1516,7 @@ const FREE_AGENTS = { batters: [
   { name:'Yohan Ramírez', type:'RP', ppg:5.3, xera:76, xwoba:76, xba:73, xslg:74, ev:98, hh:78, k:73, bb:18, whiff:60, chase:63, fbvelo:74, fbspin:40 },
   { name:'Zach Agnos', type:'RP', ppg:null, xera:35, xwoba:35, xba:10, xslg:48, ev:88, hh:79, k:20, bb:34, whiff:73, chase:96, fbvelo:62, fbspin:75 },
   { name:'Cionel Pérez', type:'RP', ppg:null, xera:1, xwoba:1, xba:1, xslg:1, ev:2, hh:2, k:16, bb:27, whiff:26, chase:6, fbvelo:70, fbspin:18 },
-  { name:'Mike Burrows', type:'SP', ppg:1.0, xera:39, xwoba:39, xba:38, xslg:34, ev:58, hh:56, k:40, bb:62, whiff:44, chase:61, fbvelo:52, fbspin:46 },
+  { name:'Mike Burrows', type:'SP', ppg:1.2, xera:39, xwoba:39, xba:38, xslg:34, ev:58, hh:56, k:40, bb:62, whiff:44, chase:61, fbvelo:52, fbspin:46 },
   { name:'Jake Bird', type:'RP', ppg:2.1, xera:84, xwoba:84, xba:84, xslg:76, ev:18, hh:67, k:85, bb:91, whiff:88, chase:3, fbvelo:null, fbspin:null },
   { name:'Jonathan Bowlan', type:'RP', ppg:null, xera:97, xwoba:97, xba:83, xslg:92, ev:77, hh:79, k:74, bb:92, whiff:78, chase:86, fbvelo:89, fbspin:72 },
   { name:'Braydon Fisher', type:'RP', ppg:5.5, xera:59, xwoba:59, xba:33, xslg:53, ev:33, hh:14, k:93, bb:91, whiff:89, chase:34, fbvelo:null, fbspin:null },
@@ -1951,6 +1956,8 @@ Object.keys(TEAMS).sort().forEach(name => {
 });
 faTeamSelect.addEventListener('change', () => {
   faCurrentTeam = faTeamSelect.value;
+  selectedFABatterVsPlayers  = [];
+  selectedFAPitcherVsPlayers = [];
   updateHeading(faCurrentTeam);
   renderFABatterComparison();
   renderFAPitcherComparison();
@@ -2165,14 +2172,20 @@ document.getElementById('fa-pitcher-search').addEventListener('input', renderFAP
 // ── FA COMPARE ────────────────────────────────────────────
 let selectedFABatter  = null;
 let selectedFAPitcher = null;
+let selectedFABatterVsPlayers  = [];
+let selectedFAPitcherVsPlayers = [];
 
-function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId, closeFn) {
+
+function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId, closeFn, vsPlayers, vsSelectId, addVsFn, removeVsFn) {
   const wrap = document.getElementById(wrapperId);
   if (!player) { wrap.style.display = 'none'; return; }
   const qualified = teamPlayers.filter(p => !p.partial);
-  let totalFA = 0, totalTeam = 0, totalDelta = 0;
-  let anyFA = false, anyTeam = false, anyDelta = false;
-  const rows = keys.map((k, i) => {
+  const faLast = player.name.split(' ').slice(-1)[0];
+
+  // ── Left table: FA vs team avg ──
+  let totalFA = 0, totalTeam = 0, totalTeamDelta = 0;
+  let anyFA = false, anyTeam = false, anyTeamDelta = false;
+  const teamRows = keys.map((k, i) => {
     const faVal   = player[k];
     const teamVal = avg(qualified, k);
     const delta   = (faVal != null && teamVal != null) ? Math.round(faVal - teamVal) : null;
@@ -2181,58 +2194,154 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
     const dir = dirs[i];
     const faWins   = faVal != null && teamVal != null && (faVal - teamVal) * dir > 0;
     const teamWins = faVal != null && teamVal != null && (teamVal - faVal) * dir > 0;
-    if (faVal != null)  { totalFA    += faVal;    anyFA    = true; }
-    if (teamVal != null){ totalTeam  += teamVal;  anyTeam  = true; }
-    if (delta != null)  { totalDelta += delta;    anyDelta = true; }
-    return `<tr>
-      <td>${labels[i]}</td>
+    if (faVal != null)  { totalFA        += faVal;   anyFA        = true; }
+    if (teamVal != null){ totalTeam      += teamVal; anyTeam      = true; }
+    if (delta != null)  { totalTeamDelta += delta;   anyTeamDelta = true; }
+    return `<tr><td>${labels[i]}</td>
       <td><span class="win-check">${teamWins ? '✓' : ''}</span>${cell(teamVal)}</td>
       <td><span class="win-check">${faWins   ? '✓' : ''}</span>${cell(faVal)}</td>
-      <td class="${deltaClass}">${deltaStr}</td>
-    </tr>`;
+      <td class="${deltaClass}">${deltaStr}</td></tr>`;
   }).join('');
-  const totDeltaStr   = !anyDelta ? '—' : totalDelta > 0 ? `+${Math.round(totalDelta)}` : `${Math.round(totalDelta)}`;
-  const totDeltaClass = !anyDelta ? 'delta-zero' : totalDelta > 0 ? 'delta-pos' : totalDelta < 0 ? 'delta-neg' : 'delta-zero';
-  const totalRow = `<tr style="border-top: 2px solid var(--border2); font-weight: 700;">
+  const teamTotDeltaStr   = !anyTeamDelta ? '—' : totalTeamDelta > 0 ? `+${Math.round(totalTeamDelta)}` : `${Math.round(totalTeamDelta)}`;
+  const teamTotDeltaClass = !anyTeamDelta ? 'delta-zero' : totalTeamDelta > 0 ? 'delta-pos' : totalTeamDelta < 0 ? 'delta-neg' : 'delta-zero';
+  const teamWinsTotal = anyTeamDelta && totalTeamDelta < 0;
+  const faWinsTotalTeam = anyTeamDelta && totalTeamDelta > 0;
+  const teamTotalRow = `<tr style="border-top:2px solid var(--border2);font-weight:700;">
     <td>Total</td>
-    <td>${anyTeam  ? Math.round(totalTeam) : '—'}</td>
-    <td>${anyFA    ? Math.round(totalFA)   : '—'}</td>
-    <td class="${totDeltaClass}">${totDeltaStr}</td>
+    <td style="color:${teamWinsTotal   ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${teamWinsTotal   ? '✓' : ''}</span>${anyTeam ? Math.round(totalTeam) : '—'}</td>
+    <td style="color:${faWinsTotalTeam ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${faWinsTotalTeam ? '✓' : ''}</span>${anyFA   ? Math.round(totalFA)   : '—'}</td>
+    <td class="${teamTotDeltaClass}">${teamTotDeltaStr}</td>
   </tr>`;
+  const leftTable = `<table class="fa-compare-table">
+    <thead><tr><th>Stat</th><th>${faCurrentTeam} Avg</th><th>${faLast}</th><th>Δ</th></tr></thead>
+    <tbody>${teamRows}${teamTotalRow}</tbody>
+  </table>`;
+
+  // ── Right table: FA vs selected players (grows with each addition) ──
+  let rightTable = '';
+  if (vsPlayers.length > 0) {
+    const vsCols = vsPlayers.map(vsp => ({
+      label: vsp.name.split(' ').slice(-1)[0],
+      getVal: k => vsp[k] != null ? vsp[k] : null,
+      removeName: vsp.name,
+    }));
+    const thVsCols = vsCols.map(c => {
+      const safeName = c.removeName.replace(/'/g, "\\'");
+      return `<th>${c.label} <button class="fa-compare-close" style="padding:0 4px;font-size:10px" onclick="${removeVsFn}('${safeName}')">✕</button></th><th>Δ</th>`;
+    }).join('');
+    const vsTotals = vsCols.map(() => ({ sum: 0, any: false }));
+    let totalFA2 = 0, anyFA2 = false;
+    const vsRows = keys.map((k, i) => {
+      const faVal = player[k];
+      if (faVal != null) { totalFA2 += faVal; anyFA2 = true; }
+      const dir = dirs[i];
+      const dataCols = vsCols.map((c, ci) => {
+        const v = c.getVal(k);
+        const delta = (faVal != null && v != null) ? Math.round(v - faVal) : null;
+        const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
+        const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
+        const wins = faVal != null && v != null && (v - faVal) * dir > 0;
+        if (v != null) { vsTotals[ci].sum += v; vsTotals[ci].any = true; }
+        return `<td><span class="win-check">${wins ? '✓' : ''}</span>${cell(v)}</td><td class="${deltaClass}">${deltaStr}</td>`;
+      }).join('');
+      const faWins = vsCols.some((c) => { const v = c.getVal(k); return faVal != null && v != null && (faVal - v) * dirs[i] > 0; });
+      return `<tr><td>${labels[i]}</td>${dataCols}<td><span class="win-check">${faWins ? '✓' : ''}</span>${cell(faVal)}</td></tr>`;
+    }).join('');
+    const vsTotalDataCols = vsCols.map((c, ci) => {
+      const v = vsTotals[ci].any ? Math.round(vsTotals[ci].sum) : null;
+      const delta = (anyFA2 && vsTotals[ci].any) ? Math.round(vsTotals[ci].sum - totalFA2) : null;
+      const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
+      const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
+      const wins = delta != null && delta > 0;
+      return `<td style="color:${wins ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${wins ? '✓' : ''}</span>${v ?? '—'}</td><td class="${deltaClass}" style="font-weight:700">${deltaStr}</td>`;
+    }).join('');
+    const faWinsVsTotal = vsCols.some((c, ci) => vsTotals[ci].any && anyFA2 && totalFA2 > vsTotals[ci].sum);
+    const vsTotalRow = `<tr style="border-top:2px solid var(--border2);font-weight:700;">
+      <td>Total</td>${vsTotalDataCols}
+      <td style="color:${faWinsVsTotal ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${faWinsVsTotal ? '✓' : ''}</span>${anyFA2 ? Math.round(totalFA2) : '—'}</td>
+    </tr>`;
+    rightTable = `<table class="fa-compare-table" style="margin-left:32px">
+      <thead><tr><th>Stat</th>${thVsCols}<th>${faLast}</th></tr></thead>
+      <tbody>${vsRows}${vsTotalRow}</tbody>
+    </table>`;
+  }
+
+  // Player selector dropdown (hide already-selected players)
+  const selectedNames = new Set(vsPlayers.map(p => p.name));
+  const opts = qualified
+    .filter(p => !selectedNames.has(p.name))
+    .map(p => `<option value="${p.name}">${p.name}</option>`)
+    .join('');
+
   wrap.innerHTML = `
     <div class="fa-compare-header">
       Comparing <strong>${player.name}</strong> to <strong>${faCurrentTeam}</strong> avg
+      <span style="color:var(--border2)">|</span>
+      Add player <select id="${vsSelectId}" class="fa-compare-vs-select">
+        <option value="">— Select —</option>
+        ${opts}
+      </select>
       <button class="fa-compare-close" onclick="${closeFn}">Close Comparison</button>
     </div>
-    <table class="fa-compare-table">
-      <thead><tr><th>Stat</th><th>${faCurrentTeam} Avg</th><th>${player.name.split(' ').slice(-1)[0]}</th><th>Δ</th></tr></thead>
-      <tbody>${rows}${totalRow}</tbody>
-    </table>`;
+    <div style="display:flex;align-items:flex-start;flex-wrap:wrap">
+      ${leftTable}${rightTable}
+    </div>`;
   wrap.style.display = 'block';
+
+  document.getElementById(vsSelectId).addEventListener('change', addVsFn);
 }
 
 function closeFABatterCompare() {
   selectedFABatter = null;
+  selectedFABatterVsPlayers = [];
   renderFABatterComparison();
   document.querySelectorAll('#fa-batter-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
 }
 function closeFAPitcherCompare() {
   selectedFAPitcher = null;
+  selectedFAPitcherVsPlayers = [];
   renderFAPitcherComparison();
   document.querySelectorAll('#fa-pitcher-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+}
+
+function removeVsBatter(name) {
+  selectedFABatterVsPlayers = selectedFABatterVsPlayers.filter(p => p.name !== name);
+  renderFABatterComparison();
+}
+function removeVsPitcher(name) {
+  selectedFAPitcherVsPlayers = selectedFAPitcherVsPlayers.filter(p => p.name !== name);
+  renderFAPitcherComparison();
 }
 
 function renderFABatterComparison() {
   buildFAComparePanel(
     selectedFABatter, BATTER_KEYS, BATTER_STAT_LABELS, BATTER_STAT_DIRS,
-    TEAMS[faCurrentTeam].batters, 'fa-batter-compare', 'closeFABatterCompare()'
+    TEAMS[faCurrentTeam].batters, 'fa-batter-compare', 'closeFABatterCompare()',
+    selectedFABatterVsPlayers, 'fa-batter-vs-select',
+    e => {
+      const p = TEAMS[faCurrentTeam].batters.find(p => p.name === e.target.value);
+      if (p && !selectedFABatterVsPlayers.find(x => x.name === p.name)) {
+        selectedFABatterVsPlayers.push(p);
+      }
+      renderFABatterComparison();
+    },
+    'removeVsBatter'
   );
 }
 
 function renderFAPitcherComparison() {
   buildFAComparePanel(
     selectedFAPitcher, PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
-    TEAMS[faCurrentTeam].pitchers, 'fa-pitcher-compare', 'closeFAPitcherCompare()'
+    TEAMS[faCurrentTeam].pitchers, 'fa-pitcher-compare', 'closeFAPitcherCompare()',
+    selectedFAPitcherVsPlayers, 'fa-pitcher-vs-select',
+    e => {
+      const p = TEAMS[faCurrentTeam].pitchers.find(p => p.name === e.target.value);
+      if (p && !selectedFAPitcherVsPlayers.find(x => x.name === p.name)) {
+        selectedFAPitcherVsPlayers.push(p);
+      }
+      renderFAPitcherComparison();
+    },
+    'removeVsPitcher'
   );
 }
 
