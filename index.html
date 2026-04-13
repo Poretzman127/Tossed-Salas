@@ -382,7 +382,7 @@
     border-radius: 3px; color: var(--muted); font-size: 12px; padding: 2px 8px; cursor: pointer;
   }
   .fa-compare-close:hover { color: var(--text); border-color: var(--accent); }
-  .fa-compare-table { width: 100%; border-collapse: collapse; }
+  .fa-compare-table { width: auto; min-width: 320px; border-collapse: collapse; }
   .fa-compare-table th, .fa-compare-table td {
     padding: 5px 10px; text-align: center;
     font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-bottom: 1px solid var(--border);
@@ -770,6 +770,10 @@
 </div><!-- #league-view -->
 
 <div id="fa-view" style="display:none">
+<div class="team-selector">
+  <span class="team-selector-label">Compare To</span>
+  <select id="fa-team-select"></select>
+</div>
 <!-- ═══════════════════════════════════ FA BATTERS ═══ -->
 <div class="section">
   <div class="section-header">
@@ -1011,10 +1015,10 @@ const TEAMS = {
   { name:'Nathan Eovaldi', type:'SP', ppg:1.7, xera:46, xwoba:46, xba:40, xslg:37, ev:14, hh:19, k:70, bb:70, whiff:92, chase:85, fbvelo:null, fbspin:null },
   { name:'Edward Cabrera', type:'SP', ppg:14.3, xera:55, xwoba:55, xba:63, xslg:68, ev:27, hh:50, k:36, bb:23, whiff:67, chase:72, fbvelo:70, fbspin:31 },
   { name:'Ryan Weathers', type:'SP', ppg:9.7, xera:28, xwoba:28, xba:12, xslg:26, ev:75, hh:45, k:69, bb:67, whiff:48, chase:78, fbvelo:65, fbspin:57 },
-  { name:'Luis Gil', type:'SP', ppg:-3.0, xera:20, xwoba:20, xba:43, xslg:44, ev:31, hh:76, k:3, bb:15, whiff:5, chase:25, fbvelo:59, fbspin:93 },
   { name:'Michael Soroka', type:'SP', ppg:18.7, xera:18, xwoba:18, xba:43, xslg:15, ev:15, hh:13, k:90, bb:55, whiff:64, chase:55, fbvelo:41, fbspin:89 },
   { name:'Aaron Ashby', type:'RP', ppg:5.1, xera:72, xwoba:72, xba:67, xslg:66, ev:20, hh:14, k:94, bb:50, whiff:83, chase:63, fbvelo:81, fbspin:19 },
   { name:'Lucas Erceg', type:'RP', ppg:5.7, xera:54, xwoba:54, xba:41, xslg:50, ev:31, hh:49, k:20, bb:60, whiff:1, chase:12, fbvelo:89, fbspin:5 },
+  { name:'Javier Assad', type:'SP', ppg:22.0, xera:97, xwoba:97, xba:96, xslg:97, ev:88, hh:83, k:17, bb:43, whiff:2, chase:26, fbvelo:null, fbspin:null },
   { name:'Gerrit Cole', type:'SP', ppg:0.0, partial:true, il:'15' },
 ] },
 "Men of W.A.R": { batters: [
@@ -1503,6 +1507,7 @@ const FREE_AGENTS = { batters: [
   { name:'Brennan Bernardino', type:'P', ppg:null, xera:56, xwoba:56, xba:20, xslg:61, ev:99, hh:96, k:24, bb:44, whiff:52, chase:55, fbvelo:4, fbspin:24 },
   { name:'JT Brubaker', type:'P', ppg:null, xera:13, xwoba:13, xba:17, xslg:33, ev:81, hh:65, k:20, bb:5, whiff:57, chase:54, fbvelo:32, fbspin:27 },
   { name:'Jeremiah Estrada', type:'RP', ppg:2.3, xera:13, xwoba:13, xba:26, xslg:19, ev:92, hh:22, k:70, bb:13, whiff:83, chase:62, fbvelo:59, fbspin:20 },
+  { name:'Luis Gil', type:'SP', ppg:-3.0, xera:20, xwoba:20, xba:43, xslg:44, ev:31, hh:76, k:3, bb:15, whiff:5, chase:25, fbvelo:59, fbspin:93 },
   { name:'Caleb Thielbar', type:'RP', ppg:1.0, xera:55, xwoba:55, xba:72, xslg:34, ev:62, hh:35, k:67, bb:25, whiff:25, chase:75, fbvelo:null, fbspin:null },
   { name:'Drew Pomeranz', type:'RP', ppg:0.8, xera:32, xwoba:32, xba:30, xslg:23, ev:46, hh:67, k:5, bb:32, whiff:4, chase:44, fbvelo:29, fbspin:99 },
   { name:'Antonio Senzatela', type:'SP', ppg:10.2, xera:99, xwoba:99, xba:99, xslg:98, ev:88, hh:32, k:96, bb:48, whiff:44, chase:74, fbvelo:85, fbspin:54 },
@@ -1512,7 +1517,6 @@ const FREE_AGENTS = { batters: [
   { name:'Kyle Hart', type:'P', ppg:null, xera:48, xwoba:48, xba:50, xslg:56, ev:75, hh:79, k:8, bb:39, whiff:4, chase:16, fbvelo:null, fbspin:null },
   { name:'Eli Morgan', type:'P', ppg:null, xera:88, xwoba:88, xba:88, xslg:89, ev:51, hh:67, k:81, bb:45, whiff:83, chase:44, fbvelo:null, fbspin:null },
   { name:'Jacob Lopez', type:'SP', ppg:0.0, xera:31, xwoba:31, xba:60, xslg:46, ev:88, hh:81, k:19, bb:7, whiff:23, chase:5, fbvelo:5, fbspin:16 },
-  { name:'Javier Assad', type:'SP', ppg:22.0, xera:97, xwoba:97, xba:96, xslg:97, ev:88, hh:83, k:17, bb:43, whiff:2, chase:26, fbvelo:null, fbspin:null },
   { name:'Chris Murphy', type:'P', ppg:null, xera:46, xwoba:46, xba:50, xslg:66, ev:62, hh:53, k:30, bb:16, whiff:78, chase:16, fbvelo:null, fbspin:null },
   { name:'JoJo Romero', type:'RP', ppg:4.4, xera:34, xwoba:34, xba:16, xslg:37, ev:15, hh:59, k:20, bb:73, whiff:4, chase:41, fbvelo:null, fbspin:null },
   { name:'Anthony Banda', type:'RP', ppg:2.1, xera:31, xwoba:31, xba:42, xslg:36, ev:30, hh:72, k:32, bb:82, whiff:39, chase:9, fbvelo:25, fbspin:11 },
@@ -1861,8 +1865,8 @@ function setupSort(tableId, statKeys, stateKey, renderFn) {
 
 let currentTeam = DEFAULT_TEAM;
 
-function updateHeading() {
-  const parts = currentTeam.split(' ');
+function updateHeading(name) {
+  const parts = (name || currentTeam).split(' ');
   const last  = parts.pop();
   const rest  = parts.join(' ');
   document.getElementById('team-heading').innerHTML =
@@ -1871,6 +1875,23 @@ function updateHeading() {
 
 setupSort('batter-table',  BATTER_KEYS,  'batter',  renderBatters);
 setupSort('pitcher-table', PITCHER_KEYS, 'pitcher', renderPitchers);
+
+// Populate and wire the FA team selector
+let faCurrentTeam = DEFAULT_TEAM;
+const faTeamSelect = document.getElementById('fa-team-select');
+Object.keys(TEAMS).sort().forEach(name => {
+  const opt = document.createElement('option');
+  opt.value = name;
+  opt.textContent = name;
+  if (name === DEFAULT_TEAM) opt.selected = true;
+  faTeamSelect.appendChild(opt);
+});
+faTeamSelect.addEventListener('change', () => {
+  faCurrentTeam = faTeamSelect.value;
+  updateHeading(faCurrentTeam);
+  renderFABatterComparison();
+  renderFAPitcherComparison();
+});
 
 // Populate and wire the team selector
 const teamSelect = document.getElementById('team-select');
@@ -2021,11 +2042,11 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
   </tr>`;
   wrap.innerHTML = `
     <div class="fa-compare-header">
-      Comparing <strong>${player.name}</strong> to <strong>${currentTeam}</strong> avg
+      Comparing <strong>${player.name}</strong> to <strong>${faCurrentTeam}</strong> avg
       <button class="fa-compare-close" onclick="${closeFn}">Close Comparison</button>
     </div>
     <table class="fa-compare-table">
-      <thead><tr><th>Stat</th><th>${player.name.split(' ').slice(-1)[0]}</th><th>${currentTeam} Avg</th><th>Δ</th></tr></thead>
+      <thead><tr><th>Stat</th><th>${player.name.split(' ').slice(-1)[0]}</th><th>${faCurrentTeam} Avg</th><th>Δ</th></tr></thead>
       <tbody>${rows}${totalRow}</tbody>
     </table>`;
   wrap.style.display = 'block';
@@ -2045,14 +2066,14 @@ function closeFAPitcherCompare() {
 function renderFABatterComparison() {
   buildFAComparePanel(
     selectedFABatter, BATTER_KEYS, BATTER_STAT_LABELS, BATTER_STAT_DIRS,
-    TEAMS[currentTeam].batters, 'fa-batter-compare', 'closeFABatterCompare()'
+    TEAMS[faCurrentTeam].batters, 'fa-batter-compare', 'closeFABatterCompare()'
   );
 }
 
 function renderFAPitcherComparison() {
   buildFAComparePanel(
     selectedFAPitcher, PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
-    TEAMS[currentTeam].pitchers, 'fa-pitcher-compare', 'closeFAPitcherCompare()'
+    TEAMS[faCurrentTeam].pitchers, 'fa-pitcher-compare', 'closeFAPitcherCompare()'
   );
 }
 
@@ -2120,6 +2141,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     const isFA = tab.id === 'tab-fa';
     document.getElementById('league-view').style.display = isFA ? 'none' : 'block';
     document.getElementById('fa-view').style.display     = isFA ? 'block' : 'none';
+    updateHeading(isFA ? faCurrentTeam : currentTeam);
   });
 });
 
