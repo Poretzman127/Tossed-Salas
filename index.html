@@ -320,6 +320,22 @@
   }
   .fa-pos-filter-bar select:focus { border-color: var(--accent); }
   .fa-pos-filter-bar select option { background: var(--bg3); color: var(--text); }
+  .fa-search {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 6px 12px;
+    outline: none;
+    width: 180px;
+    transition: border-color 0.15s;
+  }
+  .fa-search::placeholder { color: var(--muted); font-weight: 400; }
+  .fa-search:focus { border-color: var(--accent); }
 
   .fa-expand-bar {
     display: flex;
@@ -765,6 +781,7 @@
     <select id="fa-pos-filter">
       <option value="">All Positions</option>
     </select>
+    <input type="text" id="fa-batter-search" class="fa-search" placeholder="Search player…">
   </div>
   <div class="scroll-hint">← scroll for more stats →</div>
   <div class="table-wrap">
@@ -813,6 +830,7 @@
       <option value="SP">SP</option>
       <option value="RP">RP</option>
     </select>
+    <input type="text" id="fa-pitcher-search" class="fa-search" placeholder="Search player…">
   </div>
   <div class="scroll-hint">← scroll for more stats →</div>
   <div class="table-wrap">
@@ -1887,7 +1905,8 @@ const faLimits = { batters: 20, pitchers: 20 };
 function renderFABatters() {
   const { key, dir } = sortState.faBatter;
   const posFilter = document.getElementById('fa-pos-filter').value;
-  const batters = posFilter
+  const search = document.getElementById('fa-batter-search').value.trim().toLowerCase();
+  let batters = posFilter
     ? FREE_AGENTS.batters.filter(p => {
         if (!p.pos) return false;
         const playerPos = p.pos.split('/');
@@ -1895,6 +1914,7 @@ function renderFABatters() {
         return targets.some(t => playerPos.includes(t));
       })
     : FREE_AGENTS.batters;
+  if (search) batters = batters.filter(p => p.name.toLowerCase().includes(search));
   const sorted = sortedPlayers(batters, key, dir, BATTER_KEYS);
   const displayed = sorted.slice(0, faLimits.batters);
   document.getElementById('fa-batter-count').textContent =
@@ -1910,9 +1930,11 @@ function renderFABatters() {
 function renderFAPitchers() {
   const { key, dir } = sortState.faPitcher;
   const typeFilter = document.getElementById('fa-pitcher-type-filter').value;
-  const pitchers = typeFilter
+  const search = document.getElementById('fa-pitcher-search').value.trim().toLowerCase();
+  let pitchers = typeFilter
     ? FREE_AGENTS.pitchers.filter(p => p.type === typeFilter)
     : FREE_AGENTS.pitchers;
+  if (search) pitchers = pitchers.filter(p => p.name.toLowerCase().includes(search));
   const sorted = sortedPlayers(pitchers, key, dir, PITCHER_KEYS);
   const displayed = sorted.slice(0, faLimits.pitchers);
   document.getElementById('fa-pitcher-count').textContent =
@@ -1957,6 +1979,8 @@ function renderFAPitchers() {
 })();
 
 document.getElementById('fa-pitcher-type-filter').addEventListener('change', renderFAPitchers);
+document.getElementById('fa-batter-search').addEventListener('input', renderFABatters);
+document.getElementById('fa-pitcher-search').addEventListener('input', renderFAPitchers);
 
 // ── FA COMPARE ────────────────────────────────────────────
 let selectedFABatter  = null;
@@ -1998,7 +2022,7 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
   wrap.innerHTML = `
     <div class="fa-compare-header">
       Comparing <strong>${player.name}</strong> to <strong>${currentTeam}</strong> avg
-      <button class="fa-compare-close" onclick="(${closeFn})()">✕</button>
+      <button class="fa-compare-close" onclick="${closeFn}">Close Comparison</button>
     </div>
     <table class="fa-compare-table">
       <thead><tr><th>Stat</th><th>${player.name.split(' ').slice(-1)[0]}</th><th>${currentTeam} Avg</th><th>Δ</th></tr></thead>
@@ -2007,19 +2031,28 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
   wrap.style.display = 'block';
 }
 
+function closeFABatterCompare() {
+  selectedFABatter = null;
+  renderFABatterComparison();
+  document.querySelectorAll('#fa-batter-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+}
+function closeFAPitcherCompare() {
+  selectedFAPitcher = null;
+  renderFAPitcherComparison();
+  document.querySelectorAll('#fa-pitcher-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+}
+
 function renderFABatterComparison() {
   buildFAComparePanel(
     selectedFABatter, BATTER_KEYS, BATTER_STAT_LABELS, BATTER_STAT_DIRS,
-    TEAMS[currentTeam].batters, 'fa-batter-compare',
-    'function(){ selectedFABatter=null; renderFABatterComparison(); document.querySelectorAll("#fa-batter-body .fa-row-selected").forEach(r=>r.classList.remove("fa-row-selected")); }'
+    TEAMS[currentTeam].batters, 'fa-batter-compare', 'closeFABatterCompare()'
   );
 }
 
 function renderFAPitcherComparison() {
   buildFAComparePanel(
     selectedFAPitcher, PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
-    TEAMS[currentTeam].pitchers, 'fa-pitcher-compare',
-    'function(){ selectedFAPitcher=null; renderFAPitcherComparison(); document.querySelectorAll("#fa-pitcher-body .fa-row-selected").forEach(r=>r.classList.remove("fa-row-selected")); }'
+    TEAMS[currentTeam].pitchers, 'fa-pitcher-compare', 'closeFAPitcherCompare()'
   );
 }
 
