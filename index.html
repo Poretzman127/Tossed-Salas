@@ -448,6 +448,33 @@
     vertical-align: middle;
   }
 
+  /* ── TABS ───────────────────────────────────── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 2px solid var(--border2);
+    padding: 0 48px;
+    background: var(--bg);
+  }
+
+  .tab {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 14px 20px;
+    margin-bottom: -2px;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
   /* ── FOOTER ──────────────────────────────────── */
   footer {
     padding: 32px 48px 0;
@@ -521,6 +548,11 @@
   </div>
 </header>
 
+<div class="tab-bar">
+  <button class="tab active" id="tab-league">My League</button>
+  <button class="tab" id="tab-fa">Free Agents</button>
+</div>
+
 <div class="legend">
   <span class="legend-label">Percentile</span>
   <span class="legend-item"><span class="legend-dot" style="background:var(--c-elite)"></span>90–100 Elite</span>
@@ -531,6 +563,7 @@
   <span class="legend-item"><span class="legend-dot" style="background:var(--muted)"></span>— No Data</span>
 </div>
 
+<div id="league-view">
 <div class="team-selector">
   <span class="team-selector-label">Viewing Team</span>
   <select id="team-select"></select>
@@ -616,6 +649,76 @@
   </div>
   <div class="compare-table" id="compare-pitchers"></div>
 </div>
+
+</div><!-- #league-view -->
+
+<div id="fa-view" style="display:none">
+<!-- ═══════════════════════════════════ FA BATTERS ═══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Batters</h2>
+    <span class="section-count" id="fa-batter-count"></span>
+  </div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="fa-batter-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Pos</th>
+          <th data-tip="Expected Weighted On-Base Average. Measures quality of contact + walks, park and defense neutral. Higher = better.">xwOBA</th>
+          <th data-tip="Expected Batting Average based on exit velocity and launch angle, not actual hits. Higher = better.">xBA</th>
+          <th data-tip="Expected Slugging Percentage based on quality of contact. Higher = better.">xSLG</th>
+          <th data-tip="Expected On-Base Percentage based on quality of contact and plate discipline. Higher = better.">xOBP</th>
+          <th data-tip="Expected Isolated Power (xSLG − xBA). Measures raw power independent of singles. Higher = better.">xISO</th>
+          <th data-tip="Barrel Rate. % of batted balls with an optimal exit velocity + launch angle combination. Higher = better.">Brl%</th>
+          <th data-tip="Average Exit Velocity. How hard the ball is hit off the bat in mph. Higher = better.">EV</th>
+          <th data-tip="Hard Hit Rate. % of batted balls hit at 95+ mph. Higher = better.">HH%</th>
+          <th data-tip="Strikeout Rate. Percentile is inverted — a higher score means fewer strikeouts.">K%</th>
+          <th data-tip="Walk Rate. % of plate appearances ending in a walk. Higher = better.">BB%</th>
+          <th data-tip="Whiff Rate. % of swings that miss. Percentile inverted — higher score means fewer whiffs.">Whiff</th>
+          <th data-tip="Chase Rate. % of swings at pitches outside the strike zone. Inverted — higher score means less chasing.">Chase</th>
+          <th data-tip="Sprint Speed in feet per second, measured on competitive runs. Higher = faster.">Sprint</th>
+          <th data-tip="Average bat speed through the hitting zone in mph. Higher = better.">Bat Spd</th>
+        </tr>
+      </thead>
+      <tbody id="fa-batter-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ FA PITCHERS ═══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Pitchers</h2>
+    <span class="section-count" id="fa-pitcher-count"></span>
+  </div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="fa-pitcher-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Type</th>
+          <th data-tip="Expected ERA based on quality of contact allowed, park neutral. Percentile inverted — higher score means lower (better) xERA.">xERA</th>
+          <th data-tip="Expected Weighted On-Base Average allowed. Higher percentile means less damage allowed to opposing hitters.">xwOBA</th>
+          <th data-tip="Expected Batting Average allowed based on contact quality. Higher percentile = fewer expected hits.">xBA</th>
+          <th data-tip="Expected Slugging Percentage allowed. Higher percentile = less power allowed to opposing hitters.">xSLG</th>
+          <th data-tip="Average Exit Velocity allowed. Inverted — higher percentile means softer contact allowed.">EV</th>
+          <th data-tip="Hard Hit Rate allowed (95+ mph). Inverted — higher percentile means fewer hard-hit balls against.">HH%</th>
+          <th data-tip="Strikeout Rate. % of batters faced who strike out. Higher = better for pitchers.">K%</th>
+          <th data-tip="Walk Rate allowed. Inverted — higher percentile means fewer walks issued.">BB%</th>
+          <th data-tip="Whiff Rate. % of swings against that miss. Higher = better for pitchers.">Whiff</th>
+          <th data-tip="Chase Rate. % of swings at pitches outside the zone. Higher = more chasing induced, better for pitchers.">Chase</th>
+          <th data-tip="Fastball average velocity in mph. Higher = better.">FB Velo</th>
+          <th data-tip="Fastball average spin rate in RPM. Higher spin typically generates more movement and rise.">FB Spin</th>
+        </tr>
+      </thead>
+      <tbody id="fa-pitcher-body"></tbody>
+    </table>
+  </div>
+</div>
+</div><!-- #fa-view -->
 
 <footer>
   Data sourced from <a href="https://baseballsavant.mlb.com" target="_blank">Baseball Savant</a> &amp;
@@ -983,6 +1086,11 @@ const TEAMS = {
 ] }
 };
 const DEFAULT_TEAM = "Hell or High Wether";
+const FREE_AGENTS = { batters: [
+
+], pitchers: [
+
+] };
 
 // ── HELPERS ───────────────────────────────────────────
 function tier(v) {
@@ -1053,8 +1161,10 @@ function buildAvgRow(players, keys) {
 
 // ── SORT + RENDER ─────────────────────────────────────
 const sortState = {
-  batter:  { key: null, dir: -1 },
-  pitcher: { key: null, dir: -1 },
+  batter:   { key: null, dir: -1 },
+  pitcher:  { key: null, dir: -1 },
+  faBatter: { key: null, dir: -1 },
+  faPitcher:{ key: null, dir: -1 },
 };
 
 function sortedPlayers(players, key, dir) {
@@ -1153,6 +1263,41 @@ teamSelect.addEventListener('change', () => {
 updateHeading();
 renderBatters();
 renderPitchers();
+
+// ── FREE AGENTS ───────────────────────────────────────
+function renderFABatters() {
+  const { key, dir } = sortState.faBatter;
+  document.getElementById('fa-batter-count').textContent =
+    `${FREE_AGENTS.batters.length} QUALIFIED`;
+  document.getElementById('fa-batter-body').innerHTML =
+    sortedPlayers(FREE_AGENTS.batters, key, dir).map(buildBatterRow).join('') +
+    buildAvgRow(FREE_AGENTS.batters, BATTER_KEYS);
+}
+
+function renderFAPitchers() {
+  const { key, dir } = sortState.faPitcher;
+  document.getElementById('fa-pitcher-count').textContent =
+    `${FREE_AGENTS.pitchers.length} QUALIFIED`;
+  document.getElementById('fa-pitcher-body').innerHTML =
+    sortedPlayers(FREE_AGENTS.pitchers, key, dir).map(buildPitcherRow).join('') +
+    buildAvgRow(FREE_AGENTS.pitchers, PITCHER_KEYS);
+}
+
+setupSort('fa-batter-table',  BATTER_KEYS,  'faBatter',  renderFABatters);
+setupSort('fa-pitcher-table', PITCHER_KEYS, 'faPitcher', renderFAPitchers);
+renderFABatters();
+renderFAPitchers();
+
+// ── TABS ──────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const isFA = tab.id === 'tab-fa';
+    document.getElementById('league-view').style.display = isFA ? 'none' : 'block';
+    document.getElementById('fa-view').style.display     = isFA ? 'block' : 'none';
+  });
+});
 
 // ── COMPARISON ────────────────────────────────────────
 const BATTER_STAT_LABELS  = ['xwOBA','xBA','xSLG','xOBP','xISO','Brl%','EV','HH%','K%','BB%','Whiff','Chase','Sprint','Bat Spd'];
