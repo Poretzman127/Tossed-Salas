@@ -292,6 +292,35 @@
     color: var(--text);
   }
 
+  .fa-pos-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0 4px;
+  }
+  .fa-pos-filter-bar select {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 6px 32px 6px 12px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    min-width: 140px;
+    transition: border-color 0.15s;
+  }
+  .fa-pos-filter-bar select:focus { border-color: var(--accent); }
+  .fa-pos-filter-bar select option { background: var(--bg3); color: var(--text); }
+
   .compare-vs-label {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 20px;
@@ -658,6 +687,12 @@
   <div class="section-header">
     <h2>Batters</h2>
     <span class="section-count" id="fa-batter-count"></span>
+  </div>
+  <div class="fa-pos-filter-bar">
+    <span class="team-selector-label">Position</span>
+    <select id="fa-pos-filter">
+      <option value="">All Positions</option>
+    </select>
   </div>
   <div class="scroll-hint">← scroll for more stats →</div>
   <div class="table-wrap">
@@ -1711,11 +1746,15 @@ renderPitchers();
 // ── FREE AGENTS ───────────────────────────────────────
 function renderFABatters() {
   const { key, dir } = sortState.faBatter;
+  const posFilter = document.getElementById('fa-pos-filter').value;
+  const batters = posFilter
+    ? FREE_AGENTS.batters.filter(p => p.pos && p.pos.split('/').includes(posFilter))
+    : FREE_AGENTS.batters;
   document.getElementById('fa-batter-count').textContent =
-    `${FREE_AGENTS.batters.length} QUALIFIED`;
+    `${batters.length} QUALIFIED`;
   document.getElementById('fa-batter-body').innerHTML =
-    sortedPlayers(FREE_AGENTS.batters, key, dir).map(buildBatterRow).join('') +
-    buildAvgRow(FREE_AGENTS.batters, BATTER_KEYS);
+    sortedPlayers(batters, key, dir).map(buildBatterRow).join('') +
+    buildAvgRow(batters, BATTER_KEYS);
 }
 
 function renderFAPitchers() {
@@ -1726,6 +1765,30 @@ function renderFAPitchers() {
     sortedPlayers(FREE_AGENTS.pitchers, key, dir).map(buildPitcherRow).join('') +
     buildAvgRow(FREE_AGENTS.pitchers, PITCHER_KEYS);
 }
+
+// Populate FA position filter dropdown from actual data
+(function() {
+  const POS_ORDER = ['C','1B','2B','3B','SS','OF','DH'];
+  const posSet = new Set();
+  FREE_AGENTS.batters.forEach(p => {
+    if (p.pos) p.pos.split('/').forEach(pos => posSet.add(pos));
+  });
+  const sorted = [...posSet].sort((a, b) => {
+    const ai = POS_ORDER.indexOf(a), bi = POS_ORDER.indexOf(b);
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+    return a.localeCompare(b);
+  });
+  const sel = document.getElementById('fa-pos-filter');
+  sorted.forEach(pos => {
+    const opt = document.createElement('option');
+    opt.value = pos;
+    opt.textContent = pos;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', renderFABatters);
+})();
 
 setupSort('fa-batter-table',  BATTER_KEYS,  'faBatter',  renderFABatters);
 setupSort('fa-pitcher-table', PITCHER_KEYS, 'faPitcher', renderFAPitchers);
