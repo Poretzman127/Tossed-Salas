@@ -348,6 +348,47 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* ── FA COMPARE ───────────────────────────────── */
+  #fa-batter-body tr:not(.avg-row):not(.below-min),
+  #fa-pitcher-body tr:not(.avg-row):not(.below-min) { cursor: pointer; }
+  #fa-batter-body tr:not(.avg-row):not(.below-min):hover,
+  #fa-pitcher-body tr:not(.avg-row):not(.below-min):hover { background: rgba(200,168,75,0.04); }
+  .fa-row-selected { background: rgba(200,168,75,0.10) !important; outline: 1px solid var(--accent); }
+  .fa-compare-wrap { padding: 24px 48px 8px; border-top: 1px solid var(--border2); }
+  .fa-compare-header {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+  }
+  .fa-compare-header strong { color: var(--text); letter-spacing: 0.04em; }
+  .fa-compare-close {
+    margin-left: auto; background: none; border: 1px solid var(--border2);
+    border-radius: 3px; color: var(--muted); font-size: 12px; padding: 2px 8px; cursor: pointer;
+  }
+  .fa-compare-close:hover { color: var(--text); border-color: var(--accent); }
+  .fa-compare-table { width: 100%; border-collapse: collapse; }
+  .fa-compare-table th, .fa-compare-table td {
+    padding: 5px 10px; text-align: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-bottom: 1px solid var(--border);
+  }
+  .fa-compare-table th {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+  .fa-compare-table td:first-child {
+    text-align: left; color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; width: 80px;
+  }
+  .delta-pos { color: #22dd88; font-weight: 700; }
+  .delta-neg { color: #e84040; font-weight: 700; }
+  .delta-zero { color: var(--muted); }
+  .win-check { color: #22dd88; font-weight: 700; }
+  .il-badge {
+    display: inline-block; margin-left: 5px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; color: #e84040; vertical-align: middle;
+  }
+
   .compare-vs-label {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 20px;
@@ -357,7 +398,7 @@
   }
 
   /* ── COMPARISON SECTION ──────────────────────── */
-  .compare-wrap { padding: 40px 48px 0; }
+  .compare-wrap { padding: 40px 48px 0; max-width: 600px; }
 
   .compare-table {
     border: 1px solid var(--border2);
@@ -369,7 +410,7 @@
 
   .compare-row {
     display: grid;
-    grid-template-columns: 90px 1fr 1fr 90px;
+    grid-template-columns: minmax(40px, max-content) 1fr 1fr 60px minmax(40px, max-content);
     border-bottom: 1px solid var(--border);
     align-items: center;
     transition: background 0.15s ease;
@@ -440,7 +481,7 @@
     font-weight: 600;
     color: var(--text);
     letter-spacing: 0.02em;
-    min-width: 170px;
+    width: 1%;
   }
 
   td:nth-child(2) {
@@ -757,6 +798,7 @@
     <button id="fa-batter-expand" class="fa-expand-btn">Show 50</button>
   </div>
 </div>
+<div id="fa-batter-compare" class="fa-compare-wrap" style="display:none"></div>
 
 <!-- ═══════════════════════════════════ FA PITCHERS ═══ -->
 <div class="section">
@@ -802,6 +844,7 @@
     <button id="fa-pitcher-expand" class="fa-expand-btn">Show 50</button>
   </div>
 </div>
+<div id="fa-pitcher-compare" class="fa-compare-wrap" style="display:none"></div>
 </div><!-- #fa-view -->
 
 <footer>
@@ -939,6 +982,7 @@ const TEAMS = {
   { name:'Mickey Moniak', pos:'OF', ppg:6.5, xwoba:67, xba:47, xslg:96, xobp:9, xiso:98, brl:63, ev:33, hh:29, k:35, bb:7, whiff:69, chase:6, sprint:59, batspd:79 },
   { name:'Jose Fernandez', pos:'SS', ppg:5.8, xwoba:32, xba:62, xslg:59, xobp:12, xiso:56, brl:28, ev:9, hh:38, k:35, bb:1, whiff:34, chase:13, sprint:96, batspd:null },
   { name:'Jesus Sanchez', pos:'OF', ppg:4.5, xwoba:81, xba:91, xslg:84, xobp:73, xiso:79, brl:49, ev:76, hh:72, k:48, bb:12, whiff:59, chase:9, sprint:8, batspd:60 },
+  { name:'Dominic Smith', pos:'1B', ppg:5.8, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:17, batspd:null },
   // Below PA minimum
   { name:'Seiya Suzuki', pos:'DH', ppg:2.3, partial:true },
   { name:'James Tibbs III', pos:'OF', ppg:null, partial:true },
@@ -953,7 +997,6 @@ const TEAMS = {
   { name:'Michael Soroka', type:'SP', ppg:18.7, xera:18, xwoba:18, xba:43, xslg:15, ev:15, hh:13, k:90, bb:55, whiff:64, chase:55, fbvelo:41, fbspin:89 },
   { name:'Aaron Ashby', type:'RP', ppg:5.1, xera:72, xwoba:72, xba:67, xslg:66, ev:20, hh:14, k:94, bb:50, whiff:83, chase:63, fbvelo:81, fbspin:19 },
   { name:'Lucas Erceg', type:'RP', ppg:5.7, xera:54, xwoba:54, xba:41, xslg:50, ev:31, hh:49, k:20, bb:60, whiff:1, chase:12, fbvelo:89, fbspin:5 },
-  { name:'Joe Boyle', type:'SP', ppg:7.7, xera:41, xwoba:41, xba:33, xslg:39, ev:70, hh:35, k:60, bb:54, whiff:55, chase:36, fbvelo:86, fbspin:96 },
   { name:'Gerrit Cole', type:'SP', ppg:0.0, partial:true },
 ] },
 "Men of W.A.R": { batters: [
@@ -1165,8 +1208,8 @@ const TEAMS = {
   { name:'Will Warren', type:'SP', ppg:11.3, xera:61, xwoba:61, xba:42, xslg:53, ev:27, hh:27, k:50, bb:64, whiff:28, chase:7, fbvelo:37, fbspin:93 },
   { name:'Grant Holmes', type:'SP', ppg:12.7, xera:68, xwoba:68, xba:73, xslg:61, ev:74, hh:83, k:36, bb:38, whiff:77, chase:37, fbvelo:52, fbspin:69 },
   { name:'Eduardo Rodriguez', type:'SP', ppg:16.7, xera:65, xwoba:65, xba:49, xslg:53, ev:69, hh:76, k:16, bb:70, whiff:21, chase:69, fbvelo:9, fbspin:44 },
-  { name:'Kyle Freeland', type:'SP', ppg:8.8, xera:49, xwoba:49, xba:41, xslg:61, ev:47, hh:42, k:34, bb:79, whiff:56, chase:86, fbvelo:19, fbspin:73 },
   { name:'Aaron Civale', type:'SP', ppg:16.0, xera:55, xwoba:55, xba:54, xslg:45, ev:16, hh:12, k:34, bb:63, whiff:40, chase:42, fbvelo:8, fbspin:56 },
+  { name:'Jakob Junis', type:'RP', ppg:6.4, xera:70, xwoba:70, xba:31, xslg:76, ev:98, hh:79, k:45, bb:91, whiff:16, chase:67, fbvelo:null, fbspin:null },
   { name:'Pete Fairbanks', type:'RP', ppg:4.2, partial:true },
 ] }
 };
@@ -1324,7 +1367,6 @@ const FREE_AGENTS = { batters: [
   { name:'Leo Jiménez', pos:'OF', ppg:4.0, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:77, batspd:null },
   { name:'Joey Loperfido', pos:'OF', ppg:3.3, xwoba:22, xba:33, xslg:10, xobp:41, xiso:5, brl:9, ev:60, hh:62, k:23, bb:69, whiff:5, chase:32, sprint:85, batspd:57 },
   { name:'Hyeseong Kim', pos:'2B/OF', ppg:3.6, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:78, batspd:null },
-  { name:'Dominic Smith', pos:'1B/OF', ppg:5.8, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:17, batspd:null },
   { name:'Derek Hill', pos:'UTIL', ppg:null, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:97, batspd:null },
   { name:'Noelvi Marte', pos:'3B/OF', ppg:0.6, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:94, batspd:null },
   { name:'Will Benson', pos:'OF', ppg:1.1, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:60, batspd:null },
@@ -1421,6 +1463,7 @@ const FREE_AGENTS = { batters: [
   { name:'Matthew Liberatore', type:'SP', ppg:7.3, xera:21, xwoba:21, xba:13, xslg:16, ev:36, hh:61, k:10, bb:70, whiff:7, chase:53, fbvelo:48, fbspin:8 },
   { name:'Ryan Thompson', type:'RP', ppg:2.7, xera:93, xwoba:93, xba:88, xslg:93, ev:81, hh:89, k:41, bb:27, whiff:32, chase:86, fbvelo:2, fbspin:3 },
   { name:'Brandon Williamson', type:'SP', ppg:5.7, xera:7, xwoba:7, xba:10, xslg:8, ev:41, hh:38, k:13, bb:24, whiff:46, chase:19, fbvelo:22, fbspin:31 },
+  { name:'Joe Boyle', type:'SP', ppg:7.7, xera:41, xwoba:41, xba:33, xslg:39, ev:70, hh:35, k:60, bb:54, whiff:55, chase:36, fbvelo:86, fbspin:96 },
   { name:'Abner Uribe', type:'RP', ppg:2.3, xera:88, xwoba:88, xba:69, xslg:77, ev:75, hh:74, k:67, bb:89, whiff:3, chase:3, fbvelo:88, fbspin:39 },
   { name:'Chris Bassitt', type:'SP', ppg:-6.7, xera:11, xwoba:11, xba:4, xslg:32, ev:62, hh:48, k:1, bb:36, whiff:37, chase:8, fbvelo:12, fbspin:11 },
   { name:'Zack Littell', type:'SP', ppg:5.0, xera:25, xwoba:25, xba:20, xslg:17, ev:8, hh:18, k:14, bb:66, whiff:11, chase:38, fbvelo:8, fbspin:2 },
@@ -1463,6 +1506,7 @@ const FREE_AGENTS = { batters: [
   { name:'Matt Brash', type:'RP', ppg:3.8, xera:17, xwoba:17, xba:6, xslg:12, ev:30, hh:45, k:36, bb:84, whiff:88, chase:96, fbvelo:null, fbspin:null },
   { name:'Kyle Leahy', type:'RP', ppg:1.3, xera:5, xwoba:5, xba:3, xslg:7, ev:9, hh:8, k:3, bb:27, whiff:12, chase:13, fbvelo:33, fbspin:28 },
   { name:'Hoby Milner', type:'RP', ppg:2.0, xera:18, xwoba:18, xba:11, xslg:12, ev:69, hh:65, k:1, bb:97, whiff:1, chase:68, fbvelo:1, fbspin:1 },
+  { name:'Kyle Freeland', type:'SP', ppg:8.8, xera:49, xwoba:49, xba:41, xslg:61, ev:47, hh:42, k:34, bb:79, whiff:56, chase:86, fbvelo:19, fbspin:73 },
   { name:'Luis Medina', type:'P', ppg:0.0, xera:34, xwoba:34, xba:45, xslg:18, ev:18, hh:24, k:82, bb:25, whiff:92, chase:29, fbvelo:94, fbspin:84 },
   { name:'Lake Bachar', type:'P', ppg:null, xera:90, xwoba:90, xba:91, xslg:86, ev:31, hh:35, k:93, bb:41, whiff:99, chase:69, fbvelo:null, fbspin:null },
   { name:'Ben Casparius', type:'RP', ppg:-1.4, xera:13, xwoba:13, xba:22, xslg:24, ev:51, hh:88, k:25, bb:12, whiff:87, chase:74, fbvelo:null, fbspin:null },
@@ -1476,7 +1520,7 @@ const FREE_AGENTS = { batters: [
   { name:'Kolby Allard', type:'P', ppg:null, xera:13, xwoba:13, xba:7, xslg:11, ev:34, hh:32, k:36, bb:73, whiff:9, chase:80, fbvelo:2, fbspin:2 },
   { name:'Anthony Nunez', type:'RP', ppg:4.0, xera:99, xwoba:99, xba:98, xslg:95, ev:99, hh:93, k:91, bb:92, whiff:95, chase:86, fbvelo:null, fbspin:null },
   { name:'Mark Leiter Jr.', type:'RP', ppg:0.0, xera:7, xwoba:7, xba:1, xslg:12, ev:84, hh:61, k:16, bb:94, whiff:41, chase:86, fbvelo:20, fbspin:4 },
-  { name:'Taylor Clarke', type:'P', ppg:6.2, xera:56, xwoba:56, xba:49, xslg:29, ev:99, hh:82, k:20, bb:97, whiff:28, chase:23, fbvelo:null, fbspin:null },
+  { name:'Taylor Clarke', type:'RP', ppg:3.2, xera:56, xwoba:56, xba:49, xslg:29, ev:99, hh:82, k:20, bb:97, whiff:28, chase:23, fbvelo:null, fbspin:null },
   { name:'Michael Kelly', type:'P', ppg:null, xera:15, xwoba:15, xba:10, xslg:39, ev:86, hh:35, k:27, bb:10, whiff:49, chase:4, fbvelo:null, fbspin:null },
   { name:'Jalen Beeks', type:'RP', ppg:3.7, xera:63, xwoba:63, xba:32, xslg:44, ev:79, hh:53, k:15, bb:91, whiff:35, chase:16, fbvelo:null, fbspin:null },
   { name:'Cole Sands', type:'RP', ppg:2.7, xera:8, xwoba:8, xba:3, xslg:6, ev:1, hh:1, k:20, bb:27, whiff:32, chase:25, fbvelo:null, fbspin:null },
@@ -1588,7 +1632,6 @@ const FREE_AGENTS = { batters: [
   { name:'Calvin Faucher', type:'RP', ppg:1.8, xera:27, xwoba:27, xba:67, xslg:37, ev:1, hh:1, k:92, bb:4, whiff:71, chase:12, fbvelo:null, fbspin:null },
   { name:'Max Scherzer', type:'SP', ppg:-0.7, xera:3, xwoba:3, xba:8, xslg:2, ev:21, hh:32, k:35, bb:56, whiff:8, chase:34, fbvelo:25, fbspin:72 },
   { name:'Fernando Cruz', type:'RP', ppg:4.0, xera:96, xwoba:96, xba:99, xslg:99, ev:88, hh:100, k:95, bb:7, whiff:100, chase:18, fbvelo:null, fbspin:null },
-  { name:'Jakob Junis', type:'RP', ppg:6.4, xera:70, xwoba:70, xba:31, xslg:76, ev:98, hh:79, k:45, bb:91, whiff:16, chase:67, fbvelo:null, fbspin:null },
   { name:'AJ Blubaugh', type:'RP', ppg:-0.7, xera:43, xwoba:43, xba:66, xslg:29, ev:8, hh:44, k:17, bb:37, whiff:58, chase:55, fbvelo:69, fbspin:45 },
   { name:'George Soriano', type:'SP', ppg:28.0, xera:66, xwoba:66, xba:76, xslg:70, ev:69, hh:95, k:11, bb:41, whiff:58, chase:69, fbvelo:null, fbspin:null },
   { name:'David Morgan', type:'P', ppg:null, xera:81, xwoba:81, xba:92, xslg:96, ev:97, hh:98, k:58, bb:13, whiff:66, chase:93, fbvelo:80, fbspin:53 },
@@ -1658,11 +1701,13 @@ function ppgCell(v) {
     : `<td class="ppg-cell" style="color:var(--muted)">—</td>`;
 }
 
+function ilTag(p) { return p.il ? ' <span class="il-badge">IL</span>' : ''; }
+
 function buildBatterRow(p) {
   const avgVal = playerStatAvg(p, BATTER_KEYS);
   if (p.partial) {
     return `<tr class="below-min">
-      <td>${p.name}<span class="partial-badge">below min</span></td>
+      <td>${p.name}${ilTag(p)}</td>
       <td>${p.pos}</td>
       ${ppgCell(p.ppg)}
       ${BATTER_KEYS.map(k => `<td>${p[k] !== undefined ? cell(p[k]) : cell(null)}</td>`).join('')}
@@ -1670,7 +1715,7 @@ function buildBatterRow(p) {
     </tr>`;
   }
   return `<tr>
-    <td>${p.name}</td>
+    <td>${p.name}${ilTag(p)}</td>
     <td>${p.pos}</td>
     ${ppgCell(p.ppg)}
     ${BATTER_KEYS.map(k => `<td>${cell(p[k])}</td>`).join('')}
@@ -1682,7 +1727,7 @@ function buildPitcherRow(p) {
   const avgVal = playerStatAvg(p, PITCHER_KEYS);
   if (p.partial) {
     return `<tr class="below-min">
-      <td>${p.name}<span class="partial-badge">below min</span></td>
+      <td>${p.name}${ilTag(p)}</td>
       <td>${p.type}</td>
       ${ppgCell(p.ppg)}
       ${PITCHER_KEYS.map(() => `<td>${cell(null)}</td>`).join('')}
@@ -1690,7 +1735,7 @@ function buildPitcherRow(p) {
     </tr>`;
   }
   return `<tr>
-    <td>${p.name}</td>
+    <td>${p.name}${ilTag(p)}</td>
     <td>${p.type}</td>
     ${ppgCell(p.ppg)}
     ${PITCHER_KEYS.map(k => `<td>${cell(p[k])}</td>`).join('')}
@@ -1859,6 +1904,7 @@ function renderFABatters() {
     buildAvgRow(batters, BATTER_KEYS);
   document.getElementById('fa-batter-expand').textContent =
     faLimits.batters === 20 ? 'Show 50' : 'Show 20';
+  applyFASelection('fa-batter-body', selectedFABatter);
 }
 
 function renderFAPitchers() {
@@ -1876,6 +1922,7 @@ function renderFAPitchers() {
     buildAvgRow(pitchers, PITCHER_KEYS);
   document.getElementById('fa-pitcher-expand').textContent =
     faLimits.pitchers === 20 ? 'Show 50' : 'Show 20';
+  applyFASelection('fa-pitcher-body', selectedFAPitcher);
 }
 
 // Populate FA position filter dropdown from actual data
@@ -1911,6 +1958,113 @@ function renderFAPitchers() {
 
 document.getElementById('fa-pitcher-type-filter').addEventListener('change', renderFAPitchers);
 
+// ── FA COMPARE ────────────────────────────────────────────
+let selectedFABatter  = null;
+let selectedFAPitcher = null;
+
+function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId, closeFn) {
+  const wrap = document.getElementById(wrapperId);
+  if (!player) { wrap.style.display = 'none'; return; }
+  const qualified = teamPlayers.filter(p => !p.partial);
+  let totalFA = 0, totalTeam = 0, totalDelta = 0;
+  let anyFA = false, anyTeam = false, anyDelta = false;
+  const rows = keys.map((k, i) => {
+    const faVal   = player[k];
+    const teamVal = avg(qualified, k);
+    const delta   = (faVal != null && teamVal != null) ? Math.round(faVal - teamVal) : null;
+    const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
+    const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
+    const dir = dirs[i];
+    const faWins   = faVal != null && teamVal != null && (faVal - teamVal) * dir > 0;
+    const teamWins = faVal != null && teamVal != null && (teamVal - faVal) * dir > 0;
+    if (faVal != null)  { totalFA    += faVal;    anyFA    = true; }
+    if (teamVal != null){ totalTeam  += teamVal;  anyTeam  = true; }
+    if (delta != null)  { totalDelta += delta;    anyDelta = true; }
+    return `<tr>
+      <td>${labels[i]}</td>
+      <td>${faWins   ? '<span class="win-check">✓</span> ' : ''}${cell(faVal)}</td>
+      <td>${teamWins ? '<span class="win-check">✓</span> ' : ''}${cell(teamVal)}</td>
+      <td class="${deltaClass}">${deltaStr}</td>
+    </tr>`;
+  }).join('');
+  const totDeltaStr   = !anyDelta ? '—' : totalDelta > 0 ? `+${Math.round(totalDelta)}` : `${Math.round(totalDelta)}`;
+  const totDeltaClass = !anyDelta ? 'delta-zero' : totalDelta > 0 ? 'delta-pos' : totalDelta < 0 ? 'delta-neg' : 'delta-zero';
+  const totalRow = `<tr style="border-top: 2px solid var(--border2); font-weight: 700;">
+    <td>Total</td>
+    <td>${anyFA    ? Math.round(totalFA)   : '—'}</td>
+    <td>${anyTeam  ? Math.round(totalTeam) : '—'}</td>
+    <td class="${totDeltaClass}">${totDeltaStr}</td>
+  </tr>`;
+  wrap.innerHTML = `
+    <div class="fa-compare-header">
+      Comparing <strong>${player.name}</strong> to <strong>${currentTeam}</strong> avg
+      <button class="fa-compare-close" onclick="(${closeFn})()">✕</button>
+    </div>
+    <table class="fa-compare-table">
+      <thead><tr><th>Stat</th><th>${player.name.split(' ').slice(-1)[0]}</th><th>${currentTeam} Avg</th><th>Δ</th></tr></thead>
+      <tbody>${rows}${totalRow}</tbody>
+    </table>`;
+  wrap.style.display = 'block';
+}
+
+function renderFABatterComparison() {
+  buildFAComparePanel(
+    selectedFABatter, BATTER_KEYS, BATTER_STAT_LABELS, BATTER_STAT_DIRS,
+    TEAMS[currentTeam].batters, 'fa-batter-compare',
+    'function(){ selectedFABatter=null; renderFABatterComparison(); document.querySelectorAll("#fa-batter-body .fa-row-selected").forEach(r=>r.classList.remove("fa-row-selected")); }'
+  );
+}
+
+function renderFAPitcherComparison() {
+  buildFAComparePanel(
+    selectedFAPitcher, PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
+    TEAMS[currentTeam].pitchers, 'fa-pitcher-compare',
+    'function(){ selectedFAPitcher=null; renderFAPitcherComparison(); document.querySelectorAll("#fa-pitcher-body .fa-row-selected").forEach(r=>r.classList.remove("fa-row-selected")); }'
+  );
+}
+
+function applyFASelection(bodyId, selectedPlayer) {
+  if (!selectedPlayer) return;
+  [...document.querySelectorAll(`#${bodyId} tr`)].forEach(tr => {
+    if (tr.cells[0]?.firstChild?.textContent?.trim() === selectedPlayer.name)
+      tr.classList.add('fa-row-selected');
+  });
+}
+
+document.getElementById('fa-batter-body').addEventListener('click', e => {
+  const tr = e.target.closest('tr');
+  if (!tr || tr.classList.contains('avg-row') || tr.classList.contains('below-min')) return;
+  const name = tr.cells[0]?.firstChild?.textContent?.trim();
+  const player = FREE_AGENTS.batters.find(p => p.name === name);
+  if (!player) return;
+  if (selectedFABatter?.name === name) {
+    selectedFABatter = null;
+    tr.classList.remove('fa-row-selected');
+  } else {
+    document.querySelectorAll('#fa-batter-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+    tr.classList.add('fa-row-selected');
+    selectedFABatter = player;
+  }
+  renderFABatterComparison();
+});
+
+document.getElementById('fa-pitcher-body').addEventListener('click', e => {
+  const tr = e.target.closest('tr');
+  if (!tr || tr.classList.contains('avg-row') || tr.classList.contains('below-min')) return;
+  const name = tr.cells[0]?.firstChild?.textContent?.trim();
+  const player = FREE_AGENTS.pitchers.find(p => p.name === name);
+  if (!player) return;
+  if (selectedFAPitcher?.name === name) {
+    selectedFAPitcher = null;
+    tr.classList.remove('fa-row-selected');
+  } else {
+    document.querySelectorAll('#fa-pitcher-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+    tr.classList.add('fa-row-selected');
+    selectedFAPitcher = player;
+  }
+  renderFAPitcherComparison();
+});
+
 document.getElementById('fa-batter-expand').addEventListener('click', () => {
   faLimits.batters = faLimits.batters === 20 ? 50 : 20;
   renderFABatters();
@@ -1939,30 +2093,56 @@ document.querySelectorAll('.tab').forEach(tab => {
 // ── COMPARISON ────────────────────────────────────────
 const BATTER_STAT_LABELS  = ['xwOBA','xBA','xSLG','xOBP','xISO','Brl%','EV','HH%','K%','BB%','Whiff','Chase','Sprint','Bat Spd'];
 const PITCHER_STAT_LABELS = ['xERA','xwOBA','xBA','xSLG','EV','HH%','K%','BB%','Whiff','Chase','FB Velo','FB Spin'];
+// 1 = higher is better, -1 = lower is better
+const BATTER_STAT_DIRS  = [1,1,1,1,1,1,1,1,-1,1,-1,-1,1,1];
+const PITCHER_STAT_DIRS = [-1,-1,-1,-1,-1,-1,1,-1,1,1,1,1];
 
 let compareTeam = null;
 
-function buildCompareTable(elId, keys, labels, aPlayers, bPlayers) {
+function buildCompareTable(elId, keys, labels, dirs, aPlayers, bPlayers) {
   const aQual = aPlayers.filter(p => !p.partial);
   const bQual = bPlayers.filter(p => !p.partial);
+  let totalA = 0, totalB = 0, anyA = false, anyB = false;
   const rows = keys.map((k, i) => {
     const aVal = avg(aQual, k);
     const bVal = avg(bQual, k);
     const lbl  = labels[i];
+    const dir  = dirs[i];
+    const delta = (aVal != null && bVal != null) ? Math.round(aVal - bVal) : null;
+    const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
+    const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
+    const aWins = aVal != null && bVal != null && (aVal - bVal) * dir > 0;
+    const bWins = aVal != null && bVal != null && (bVal - aVal) * dir > 0;
+    if (aVal != null) { totalA += aVal; anyA = true; }
+    if (bVal != null) { totalB += bVal; anyB = true; }
     return `<div class="compare-row">
-      <div class="compare-stat-label">${lbl}</div>
+      <div class="compare-stat-label">${aWins ? '<span class="win-check">✓</span> ' : ''}${lbl}</div>
       <div class="compare-val">${cell(aVal)}</div>
       <div class="compare-val">${cell(bVal)}</div>
-      <div class="compare-stat-label right">${lbl}</div>
+      <div class="compare-val ${deltaClass}" style="font-weight:700">${deltaStr}</div>
+      <div class="compare-stat-label right">${lbl}${bWins ? ' <span class="win-check">✓</span>' : ''}</div>
     </div>`;
   }).join('');
+  const tA = anyA ? Math.round(totalA) : '—';
+  const tB = anyB ? Math.round(totalB) : '—';
+  const totDelta = (anyA && anyB) ? Math.round(totalA - totalB) : null;
+  const totDeltaStr   = totDelta == null ? '—' : totDelta > 0 ? `+${totDelta}` : `${totDelta}`;
+  const totDeltaClass = totDelta == null ? 'delta-zero' : totDelta > 0 ? 'delta-pos' : totDelta < 0 ? 'delta-neg' : 'delta-zero';
+  const totalRow = `<div class="compare-row" style="border-top: 2px solid var(--border2); font-weight: 700;">
+    <div class="compare-stat-label">Total</div>
+    <div class="compare-val">${tA}</div>
+    <div class="compare-val">${tB}</div>
+    <div class="compare-val ${totDeltaClass}" style="font-weight:700">${totDeltaStr}</div>
+    <div class="compare-stat-label right"></div>
+  </div>`;
   document.getElementById(elId).innerHTML =
     `<div class="compare-row compare-header">
       <div class="compare-stat-label"></div>
       <div class="compare-team-name">${currentTeam}</div>
       <div class="compare-team-name">${compareTeam}</div>
+      <div class="compare-stat-label" style="text-align:center;color:var(--muted)">Δ</div>
       <div class="compare-stat-label"></div>
-    </div>` + rows;
+    </div>` + rows + totalRow;
 }
 
 function renderComparison() {
@@ -1972,9 +2152,9 @@ function renderComparison() {
     return;
   }
   wrap.style.display = 'block';
-  buildCompareTable('compare-batters',  BATTER_KEYS,  BATTER_STAT_LABELS,
+  buildCompareTable('compare-batters',  BATTER_KEYS,  BATTER_STAT_LABELS,  BATTER_STAT_DIRS,
     TEAMS[currentTeam].batters,  TEAMS[compareTeam].batters);
-  buildCompareTable('compare-pitchers', PITCHER_KEYS, PITCHER_STAT_LABELS,
+  buildCompareTable('compare-pitchers', PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
     TEAMS[currentTeam].pitchers, TEAMS[compareTeam].pitchers);
 }
 
