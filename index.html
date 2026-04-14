@@ -992,8 +992,8 @@
       <thead>
         <tr>
           <th>Team</th>
-          <th data-tip="Total fantasy points scored this season.">PF</th>
-          <th data-tip="Total fantasy points scored against this season.">PA</th>
+          <th data-tip="Total batter fantasy points scored this season.">Bat PF</th>
+          <th data-tip="Total batter fantasy points scored against this season.">Bat PA</th>
           <th data-tip="Average of all Statcast percentile columns.">Avg</th>
           <th data-tip="Expected Weighted On-Base Average. Higher = better.">xwOBA</th>
           <th data-tip="Expected Batting Average. Higher = better.">xBA</th>
@@ -1030,8 +1030,8 @@
       <thead>
         <tr>
           <th>Team</th>
-          <th data-tip="Total fantasy points scored this season.">PF</th>
-          <th data-tip="Total fantasy points scored against this season.">PA</th>
+          <th data-tip="Total pitcher fantasy points scored this season.">Pit PF</th>
+          <th data-tip="Total pitcher fantasy points scored against this season.">Pit PA</th>
           <th data-tip="Average of all Statcast percentile columns.">Avg</th>
           <th data-tip="Expected ERA. Higher percentile = better.">xERA</th>
           <th data-tip="Expected Weighted On-Base Average allowed. Higher = better.">xwOBA</th>
@@ -1065,7 +1065,7 @@
 <script>
 // ── DATA ──────────────────────────────────────────────
 const TEAMS = {
-"Cabbage Kidz": { pf:1354.0, pa:1412.0, batters: [
+"Cabbage Kidz": { pfBat:1059.0, paBat:952.0, pfPit:295.0, paPit:460.0, batters: [
   { name:'Kyle Schwarber', pos:'DH', ppg:6.3, qualified:true, xwoba:95, xba:44, xslg:94, xobp:91, xiso:97, brl:96, ev:94, hh:92, k:7, bb:94, whiff:18, chase:96, sprint:22, batspd:92 },
   { name:'Manny Machado', pos:'3B', ppg:4.6, qualified:true, xwoba:84, xba:61, xslg:60, xobp:96, xiso:56, brl:47, ev:21, hh:30, k:69, bb:99, whiff:36, chase:87, sprint:14, batspd:64 },
   { name:'Nico Hoerner', pos:'2B', ppg:6.8, qualified:true, xwoba:71, xba:88, xslg:49, xobp:91, xiso:16, brl:1, ev:6, hh:6, k:95, bb:73, whiff:98, chase:31, sprint:85, batspd:6 },
@@ -1100,7 +1100,7 @@ const TEAMS = {
   { name:'Michael McGreevy', type:'SP', ppg:13.0, qualified:true, xera:21, xwoba:21, xba:24, xslg:7, ev:66, hh:68, k:18, bb:93, whiff:4, chase:27, fbvelo:5, fbspin:33 },
   { name:'Landen Roupp', type:'SP', ppg:14.0, qualified:true, xera:86, xwoba:86, xba:67, xslg:86, ev:91, hh:90, k:67, bb:69, whiff:42, chase:61, fbvelo:31, fbspin:8 },
 ] },
-"Dave\'s Daring Team": { pf:1347.0, pa:1586.0, batters: [
+"Dave\'s Daring Team": { pfBat:951.0, paBat:1012.0, pfPit:396.0, paPit:574.0, batters: [
   { name:'Kyle Tucker', pos:'OF', ppg:4.5, qualified:true, xwoba:36, xba:26, xslg:17, xobp:59, xiso:17, brl:9, ev:30, hh:46, k:40, bb:87, whiff:46, chase:81, sprint:30, batspd:45 },
   { name:'Ketel Marte', pos:'2B', ppg:4.8, qualified:true, xwoba:83, xba:85, xslg:86, xobp:70, xiso:81, brl:74, ev:82, hh:74, k:65, bb:42, whiff:53, chase:27, sprint:19, batspd:76 },
   { name:'Alex Bregman', pos:'3B', ppg:3.8, qualified:true, xwoba:36, xba:34, xslg:40, xobp:37, xiso:45, brl:60, ev:64, hh:75, k:88, bb:60, whiff:92, chase:99, sprint:18, batspd:20 },
@@ -1135,7 +1135,7 @@ const TEAMS = {
   { name:'Michael Wacha', type:'SP', ppg:24.3, qualified:true, xera:66, xwoba:66, xba:66, xslg:49, ev:44, hh:36, k:54, bb:72, whiff:72, chase:82, fbvelo:25, fbspin:22 },
   { name:'Seth Lugo', type:'SP', ppg:14.0, qualified:true, xera:34, xwoba:34, xba:25, xslg:27, ev:28, hh:36, k:39, bb:56, whiff:20, chase:36, fbvelo:13, fbspin:63 },
 ] },
-"EpSkenes Island": { pf:1426.0, pa:1243.0, batters: [
+"EpSkenes Island": { pfBat:1004.0, paBat:913.0, pfPit:422.0, paPit:330.0, batters: [
   { name:'Corbin Carroll', pos:'OF', ppg:6.7, qualified:true, xwoba:94, xba:97, xslg:94, xobp:92, xiso:89, brl:74, ev:79, hh:69, k:39, bb:76, whiff:18, chase:18, sprint:99, batspd:90 },
   { name:'Nick Kurtz', pos:'1B', ppg:2.9, qualified:true, xwoba:74, xba:29, xslg:56, xobp:86, xiso:69, brl:60, ev:100, hh:95, k:2, bb:99, whiff:1, chase:80, sprint:42, batspd:98 },
   { name:'Jarren Duran', pos:'OF', ppg:4.5, qualified:true, xwoba:48, xba:38, xslg:51, xobp:48, xiso:57, brl:74, ev:53, hh:32, k:30, bb:57, whiff:1, chase:32, sprint:95, batspd:86 },
@@ -1171,7 +1171,7 @@ const TEAMS = {
   { name:'Paul Sewald', type:'RP', ppg:4.4, qualified:true, xera:45, xwoba:45, xba:70, xslg:7, ev:2, hh:5, k:96, bb:97, whiff:37, chase:98, fbvelo:null, fbspin:null },
   { name:'Zack Wheeler', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"Hell or High Wether": { pf:1345.0, pa:1405.0, batters: [
+"Hell or High Wether": { pfBat:1024.0, paBat:940.0, pfPit:321.0, paPit:465.0, batters: [
   { name:'Jose Ramirez', pos:'3B', ppg:5.2, qualified:true, xwoba:81, xba:77, xslg:79, xobp:76, xiso:78, brl:84, ev:58, hh:54, k:91, bb:70, whiff:85, chase:41, sprint:42, batspd:25 },
   { name:'Yordan Alvarez', pos:'OF', ppg:8.1, qualified:true, xwoba:100, xba:99, xslg:100, xobp:100, xiso:100, brl:98, ev:85, hh:66, k:96, bb:98, whiff:77, chase:73, sprint:1, batspd:87 },
   { name:'Trea Turner', pos:'SS', ppg:4.4, qualified:true, xwoba:12, xba:38, xslg:15, xobp:14, xiso:8, brl:9, ev:28, hh:9, k:55, bb:19, whiff:37, chase:13, sprint:100, batspd:40 },
@@ -1207,7 +1207,7 @@ const TEAMS = {
   { name:'Anthony Nunez', type:'RP', ppg:null, qualified:true, xera:99, xwoba:99, xba:98, xslg:95, ev:99, hh:93, k:91, bb:92, whiff:95, chase:87, fbvelo:null, fbspin:null },
   { name:'Gerrit Cole', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"Men of W.A.R": { pf:1540.0, pa:1514.0, batters: [
+"Men of W.A.R": { pfBat:1044.0, paBat:1030.0, pfPit:496.0, paPit:484.0, batters: [
   { name:'Ronald Acuna Jr.', pos:'OF', ppg:4.4, qualified:true, xwoba:92, xba:82, xslg:93, xobp:81, xiso:92, brl:96, ev:30, hh:64, k:65, bb:66, whiff:30, chase:65, sprint:58, batspd:91 },
   { name:'Junior Caminero', pos:'3B', ppg:3.8, qualified:true, xwoba:60, xba:61, xslg:57, xobp:70, xiso:53, brl:60, ev:60, hh:33, k:56, bb:79, whiff:39, chase:37, sprint:9, batspd:100 },
   { name:'Elly De La Cruz', pos:'SS', ppg:7.0, qualified:true, xwoba:81, xba:67, xslg:83, xobp:70, xiso:85, brl:84, ev:95, hh:79, k:23, bb:62, whiff:26, chase:62, sprint:73, batspd:84 },
@@ -1243,7 +1243,7 @@ const TEAMS = {
   { name:'Hunter Greene', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL60' },
   { name:'Noah Schultz', type:'SP', ppg:0.0, partial:true, qualified:false },
 ] },
-"Reba\'s Glue Guys": { pf:1708.0, pa:1537.0, batters: [
+"Reba\'s Glue Guys": { pfBat:1138.0, paBat:1015.0, pfPit:570.0, paPit:522.0, batters: [
   { name:'Pete Alonso', pos:'1B', ppg:4.1, qualified:true, xwoba:51, xba:34, xslg:54, xobp:48, xiso:62, brl:47, ev:97, hh:96, k:26, bb:76, whiff:26, chase:68, sprint:7, batspd:65 },
   { name:'Freddie Freeman', pos:'1B', ppg:6.3, qualified:true, xwoba:96, xba:96, xslg:97, xobp:77, xiso:96, brl:98, ev:88, hh:86, k:94, bb:19, whiff:87, chase:51, sprint:7, batspd:34 },
   { name:'James Wood', pos:'OF', ppg:7.4, qualified:true, xwoba:91, xba:71, xslg:91, xobp:87, xiso:92, brl:98, ev:96, hh:96, k:18, bb:86, whiff:9, chase:73, sprint:62, batspd:96 },
@@ -1278,7 +1278,7 @@ const TEAMS = {
   { name:'Josh Hader', type:'RP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Ryan Pepiot', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"Rich Homie Kwan": { pf:1327.0, pa:1264.0, batters: [
+"Rich Homie Kwan": { pfBat:938.0, paBat:938.0, pfPit:389.0, paPit:326.0, batters: [
   { name:'Fernando Tatis Jr.', pos:'OF', ppg:4.1, qualified:true, xwoba:75, xba:75, xslg:62, xobp:75, xiso:52, brl:90, ev:98, hh:100, k:43, bb:62, whiff:33, chase:66, sprint:86, batspd:80 },
   { name:'William Contreras', pos:'C', ppg:6.0, qualified:true, xwoba:73, xba:74, xslg:65, xobp:83, xiso:55, brl:26, ev:83, hh:69, k:83, bb:86, whiff:83, chase:81, sprint:15, batspd:69 },
   { name:'Steven Kwan', pos:'OF', ppg:4.7, qualified:true, xwoba:43, xba:63, xslg:28, xobp:62, xiso:12, brl:9, ev:1, hh:1, k:94, bb:53, whiff:100, chase:90, sprint:27, batspd:1 },
@@ -1314,7 +1314,7 @@ const TEAMS = {
   { name:'Casey Mize', type:'SP', ppg:9.7, qualified:true, xera:37, xwoba:37, xba:34, xslg:32, ev:58, hh:31, k:65, bb:59, whiff:47, chase:58, fbvelo:25, fbspin:31 },
   { name:'Joe Musgrove', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"The Salty Platoons": { pf:1559.0, pa:1487.0, batters: [
+"The Salty Platoons": { pfBat:1032.0, paBat:1144.0, pfPit:527.0, paPit:343.0, batters: [
   { name:'Aaron Judge', pos:'OF', ppg:6.4, qualified:true, xwoba:97, xba:72, xslg:98, xobp:76, xiso:99, brl:100, ev:68, hh:87, k:21, bb:64, whiff:22, chase:64, sprint:44, batspd:92 },
   { name:'Gunnar Henderson', pos:'SS', ppg:6.9, qualified:true, xwoba:64, xba:45, xslg:68, xobp:53, xiso:79, brl:84, ev:72, hh:79, k:25, bb:59, whiff:36, chase:37, sprint:77, batspd:78 },
   { name:'Brent Rooker', pos:'OF', ppg:3.1, qualified:true, xwoba:40, xba:14, xslg:44, xobp:29, xiso:68, brl:74, ev:45, hh:57, k:6, bb:70, whiff:1, chase:46, sprint:63, batspd:69, il:'IL10' },
@@ -1350,7 +1350,7 @@ const TEAMS = {
   { name:'Nick Lodolo', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Trey Yesavage', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"White Sox 2005.": { pf:1149.0, pa:1471.0, batters: [
+"White Sox 2005.": { pfBat:810.0, paBat:1077.0, pfPit:339.0, paPit:394.0, batters: [
   { name:'Bobby Witt Jr.', pos:'SS', ppg:4.8, qualified:true, xwoba:86, xba:96, xslg:76, xobp:95, xiso:56, brl:84, ev:90, hh:91, k:74, bb:82, whiff:53, chase:44, sprint:97, batspd:67 },
   { name:'Julio Rodriguez', pos:'OF', ppg:3.2, qualified:true, xwoba:19, xba:22, xslg:19, xobp:28, xiso:24, brl:26, ev:35, hh:41, k:31, bb:51, whiff:10, chase:13, sprint:86, batspd:96 },
   { name:'Pete Crow-Armstrong', pos:'OF', ppg:3.1, qualified:true, xwoba:5, xba:13, xslg:21, xobp:3, xiso:36, brl:26, ev:78, hh:67, k:13, bb:13, whiff:38, chase:1, sprint:95, batspd:77 },
@@ -1386,7 +1386,7 @@ const TEAMS = {
   { name:'Spencer Strider', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Javier Sanoja', type:'2B/3B/OF/RP', ppg:4.0, partial:true, qualified:false },
 ] },
-"🆘️Rafi is now ur daddy‼️": { pf:1552.0, pa:1388.0, batters: [
+"🆘️Rafi is now ur daddy‼️": { pfBat:1005.0, paBat:984.0, pfPit:547.0, paPit:404.0, batters: [
   { name:'Cal Raleigh', pos:'C', ppg:2.8, qualified:true, xwoba:34, xba:15, xslg:53, xobp:18, xiso:75, brl:60, ev:5, hh:8, k:11, bb:60, whiff:12, chase:20, sprint:23, batspd:84 },
   { name:'Vladimir Guerrero Jr.', pos:'1B', ppg:5.5, qualified:true, xwoba:93, xba:96, xslg:85, xobp:99, xiso:71, brl:90, ev:85, hh:78, k:97, bb:90, whiff:87, chase:71, sprint:20, batspd:91 },
   { name:'Francisco Lindor', pos:'SS', ppg:3.2, qualified:true, xwoba:55, xba:49, xslg:41, xobp:66, xiso:40, brl:60, ev:42, hh:33, k:76, bb:74, whiff:65, chase:68, sprint:36, batspd:56 },
@@ -2710,7 +2710,13 @@ function buildLeaderboardData(keys) {
     keys.forEach(k => { stats[k] = avg(qualified, k); });
     const colAvgs = keys.map(k => stats[k]).filter(v => v !== null);
     stats.avg = colAvgs.length ? Math.round(colAvgs.reduce((a, b) => a + b, 0) / colAvgs.length) : null;
-    return { name, pf: team.pf ?? null, pa: team.pa ?? null, ...stats };
+    const isBat = keys === BATTER_KEYS;
+    return {
+      name,
+      pf: isBat ? (team.pfBat ?? null) : (team.pfPit ?? null),
+      pa: isBat ? (team.paBat ?? null) : (team.paPit ?? null),
+      ...stats
+    };
   });
 }
 
