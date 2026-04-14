@@ -205,7 +205,7 @@
     font-weight: 700;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--text);
     padding: 8px 1px;
     text-align: center;
     white-space: nowrap;
@@ -220,6 +220,7 @@
 
   thead th.sort-asc  { color: var(--accent); }
   thead th.sort-desc { color: var(--accent); }
+  .col-sorted { background: rgba(200,168,75,0.07); }
 
   thead th.sort-asc::after  { content: ' ▲'; font-size: 9px; }
   thead th.sort-desc::after { content: ' ▼'; font-size: 9px; }
@@ -338,6 +339,33 @@
   .fa-search::placeholder { color: var(--muted); font-weight: 400; }
   .fa-search:focus { border-color: var(--accent); }
 
+  .qual-tooltip-wrap { position: relative; }
+  .qual-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg3);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    transition-delay: 0s;
+    z-index: 100;
+  }
+  .qual-tooltip-wrap:hover .qual-tooltip {
+    opacity: 1;
+    transition-delay: 1s;
+  }
+
   .fa-expand-bar {
     display: flex;
     justify-content: center;
@@ -395,7 +423,7 @@
   }
   .fa-compare-table th {
     font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); font-weight: 600;
   }
   .fa-compare-table td:first-child {
     text-align: left; color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
@@ -678,6 +706,7 @@
   <button class="tab active" id="tab-league">My League</button>
   <button class="tab" id="tab-fa">Free Agents</button>
   <button class="tab" id="tab-waiver">Waiver Wire</button>
+  <button class="tab" id="tab-leaderboard">Leaderboard</button>
 </div>
 
 <div class="legend">
@@ -787,10 +816,6 @@
 <div class="team-selector">
   <span class="team-selector-label">Compare To</span>
   <select id="fa-team-select"></select>
-  <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer;margin-left:16px">
-    <input type="checkbox" id="fa-qualified-only" style="accent-color:var(--accent);cursor:pointer">
-    Qualified Only
-  </label>
 </div>
 <!-- ═══════════════════════════════════ FA BATTERS ═══ -->
 <div class="section">
@@ -804,6 +829,13 @@
       <option value="">All Positions</option>
     </select>
     <input type="text" id="fa-batter-search" class="fa-search" placeholder="Search player…">
+    <div class="qual-tooltip-wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="fa-qualified-only" style="accent-color:var(--accent);cursor:pointer">
+        Qualified Only
+      </label>
+      <div class="qual-tooltip">Only show players who have qualified statcast data.</div>
+    </div>
   </div>
   <div class="scroll-hint">← scroll for more stats →</div>
   <div class="table-wrap">
@@ -938,6 +970,71 @@
 </div>
 </div><!-- #waiver-view -->
 
+<div id="leaderboard-view" style="display:none">
+<!-- ══════════════════════════ LEADERBOARD BATTERS ══ -->
+<div class="section">
+  <div class="section-header"><h2>Batters</h2></div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="leaderboard-batter-table">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th data-tip="Total fantasy points scored this season.">PF</th>
+          <th data-tip="Total fantasy points scored against this season.">PA</th>
+          <th data-tip="Average of all Statcast percentile columns.">Avg</th>
+          <th data-tip="Expected Weighted On-Base Average. Higher = better.">xwOBA</th>
+          <th data-tip="Expected Batting Average. Higher = better.">xBA</th>
+          <th data-tip="Expected Slugging Percentage. Higher = better.">xSLG</th>
+          <th data-tip="Expected On-Base Percentage. Higher = better.">xOBP</th>
+          <th data-tip="Expected Isolated Power. Higher = better.">xISO</th>
+          <th data-tip="Barrel Rate. Higher = better.">Brl%</th>
+          <th data-tip="Average Exit Velocity. Higher = better.">EV</th>
+          <th data-tip="Hard Hit Rate. Higher = better.">HH%</th>
+          <th data-tip="Strikeout Rate percentile. Higher = fewer strikeouts.">K%</th>
+          <th data-tip="Walk Rate. Higher = better.">BB%</th>
+          <th data-tip="Whiff Rate percentile. Higher = fewer whiffs.">Whiff</th>
+          <th data-tip="Chase Rate percentile. Higher = less chasing.">Chase</th>
+          <th data-tip="Sprint Speed. Higher = faster.">Sprint</th>
+          <th data-tip="Bat Speed. Higher = better.">Bat Spd</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-batter-body"></tbody>
+    </table>
+  </div>
+</div>
+<!-- ══════════════════════════ LEADERBOARD PITCHERS ══ -->
+<div class="section">
+  <div class="section-header"><h2>Pitchers</h2></div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="leaderboard-pitcher-table">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th data-tip="Total fantasy points scored this season.">PF</th>
+          <th data-tip="Total fantasy points scored against this season.">PA</th>
+          <th data-tip="Average of all Statcast percentile columns.">Avg</th>
+          <th data-tip="Expected ERA. Higher percentile = better.">xERA</th>
+          <th data-tip="Expected Weighted On-Base Average allowed. Higher = better.">xwOBA</th>
+          <th data-tip="Expected Batting Average allowed. Higher = better.">xBA</th>
+          <th data-tip="Expected Slugging allowed. Higher = better.">xSLG</th>
+          <th data-tip="Exit Velocity allowed percentile. Higher = better.">EV</th>
+          <th data-tip="Hard Hit Rate allowed percentile. Higher = better.">HH%</th>
+          <th data-tip="Strikeout Rate. Higher = better.">K%</th>
+          <th data-tip="Walk Rate percentile. Higher = fewer walks.">BB%</th>
+          <th data-tip="Whiff Rate. Higher = better.">Whiff</th>
+          <th data-tip="Chase Rate. Higher = better.">Chase</th>
+          <th data-tip="Fastball Velocity. Higher = better.">FB Velo</th>
+          <th data-tip="Fastball Spin Rate. Higher = better.">FB Spin</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-pitcher-body"></tbody>
+    </table>
+  </div>
+</div>
+</div><!-- #leaderboard-view -->
+
 <footer>
   Data sourced from <a href="https://baseballsavant.mlb.com" target="_blank">Baseball Savant</a> &amp;
   <a href="https://fantasy.espn.com" target="_blank">ESPN Fantasy</a> &nbsp;·&nbsp;
@@ -950,12 +1047,12 @@
 <script>
 // ── DATA ──────────────────────────────────────────────
 const TEAMS = {
-"Cabbage Kidz": { batters: [
+"Cabbage Kidz": { pf:1274.0, pa:1374.0, batters: [
   { name:'Juan Soto', pos:'OF', ppg:6.0, qualified:true, xwoba:53, xba:64, xslg:65, xobp:53, xiso:63, brl:28, ev:27, hh:10, k:71, bb:43, whiff:63, chase:36, sprint:16, batspd:null, il:'IL10' },
   { name:'Kyle Schwarber', pos:'DH', ppg:6.2, qualified:true, xwoba:89, xba:31, xslg:87, xobp:84, xiso:95, brl:91, ev:93, hh:90, k:4, bb:93, whiff:14, chase:96, sprint:22, batspd:93 },
   { name:'Manny Machado', pos:'3B', ppg:4.6, qualified:true, xwoba:83, xba:60, xslg:60, xobp:96, xiso:59, brl:49, ev:22, hh:31, k:67, bb:99, whiff:36, chase:87, sprint:13, batspd:63 },
   { name:'Nico Hoerner', pos:'2B', ppg:6.8, qualified:true, xwoba:79, xba:95, xslg:56, xobp:94, xiso:19, brl:1, ev:9, hh:6, k:97, bb:74, whiff:98, chase:36, sprint:83, batspd:5 },
-  { name:'Shea Langeliers', pos:'C', ppg:6.0, qualified:true, xwoba:74, xba:77, xslg:89, xobp:45, xiso:87, brl:78, ev:88, hh:62, k:13, bb:15, whiff:44, chase:19, sprint:87, batspd:79 },
+  { name:'Shea Langeliers', pos:'C', ppg:5.9, qualified:true, xwoba:74, xba:77, xslg:89, xobp:45, xiso:87, brl:78, ev:88, hh:62, k:13, bb:15, whiff:44, chase:19, sprint:87, batspd:79 },
   { name:'Corey Seager', pos:'SS', ppg:4.4, qualified:true, xwoba:53, xba:31, xslg:68, xobp:49, xiso:82, brl:86, ev:83, hh:73, k:25, bb:80, whiff:6, chase:43, sprint:5, batspd:53 },
   { name:'Randy Arozarena', pos:'OF', ppg:5.2, qualified:true, xwoba:91, xba:90, xslg:72, xobp:96, xiso:55, brl:63, ev:68, hh:56, k:71, bb:85, whiff:36, chase:48, sprint:38, batspd:13 },
   { name:'Luis Arraez', pos:'1B/2B', ppg:5.2, qualified:true, xwoba:38, xba:78, xslg:37, xobp:49, xiso:13, brl:1, ev:10, hh:2, k:99, bb:23, whiff:99, chase:76, sprint:32, batspd:1 },
@@ -984,8 +1081,8 @@ const TEAMS = {
   { name:'Michael McGreevy', type:'SP', ppg:13.0, qualified:true, xera:19, xwoba:19, xba:24, xslg:6, ev:66, hh:66, k:18, bb:94, whiff:3, chase:27, fbvelo:5, fbspin:33 },
   { name:'Landen Roupp', type:'SP', ppg:14.0, qualified:true, xera:85, xwoba:85, xba:66, xslg:84, ev:90, hh:89, k:67, bb:69, whiff:43, chase:61, fbvelo:31, fbspin:8 },
 ] },
-"Dave\'s Daring Team": { batters: [
-  { name:'Kyle Tucker', pos:'OF', ppg:4.4, qualified:true, xwoba:34, xba:30, xslg:22, xobp:49, xiso:20, brl:9, ev:30, hh:42, k:40, bb:78, whiff:44, chase:79, sprint:30, batspd:41 },
+"Dave\'s Daring Team": { pf:1265.0, pa:1486.0, batters: [
+  { name:'Kyle Tucker', pos:'OF', ppg:4.6, qualified:true, xwoba:34, xba:30, xslg:22, xobp:49, xiso:20, brl:9, ev:30, hh:42, k:40, bb:78, whiff:44, chase:79, sprint:30, batspd:41 },
   { name:'Ketel Marte', pos:'2B', ppg:4.8, qualified:true, xwoba:66, xba:78, xslg:66, xobp:68, xiso:54, brl:49, ev:79, hh:75, k:65, bb:46, whiff:52, chase:27, sprint:20, batspd:75 },
   { name:'Alex Bregman', pos:'3B', ppg:3.8, qualified:true, xwoba:37, xba:38, xslg:45, xobp:37, xiso:50, brl:63, ev:71, hh:80, k:88, bb:55, whiff:94, chase:99, sprint:19, batspd:22 },
   { name:'Matt Olson', pos:'1B', ppg:6.8, qualified:true, xwoba:81, xba:36, xslg:93, xobp:50, xiso:98, brl:97, ev:82, hh:67, k:22, bb:73, whiff:45, chase:58, sprint:12, batspd:82 },
@@ -993,7 +1090,7 @@ const TEAMS = {
   { name:'Ozzie Albies', pos:'2B', ppg:5.0, qualified:true, xwoba:31, xba:50, xslg:47, xobp:21, xiso:46, brl:28, ev:16, hh:24, k:71, bb:20, whiff:57, chase:28, sprint:49, batspd:20 },
   { name:'Bryan Reynolds', pos:'OF', ppg:5.8, qualified:true, xwoba:77, xba:60, xslg:86, xobp:64, xiso:89, brl:78, ev:82, hh:78, k:28, bb:68, whiff:37, chase:78, sprint:65, batspd:67 },
   { name:'Adley Rutschman', pos:'C', ppg:4.5, qualified:true, xwoba:27, xba:18, xslg:27, xobp:35, xiso:42, brl:9, ev:64, hh:60, k:80, bb:73, whiff:97, chase:82, sprint:29, batspd:null, il:'IL10' },
-  { name:'Andy Pages', pos:'OF', ppg:7.7, qualified:true, xwoba:78, xba:92, xslg:83, xobp:70, xiso:76, brl:63, ev:71, hh:88, k:43, bb:28, whiff:59, chase:40, sprint:76, batspd:66 },
+  { name:'Andy Pages', pos:'OF', ppg:8.5, qualified:true, xwoba:78, xba:92, xslg:83, xobp:70, xiso:76, brl:63, ev:71, hh:88, k:43, bb:28, whiff:59, chase:40, sprint:76, batspd:66 },
   { name:'Jeremy Pena', pos:'SS', ppg:4.4, qualified:true, xwoba:73, xba:98, xslg:70, xobp:79, xiso:39, brl:9, ev:15, hh:15, k:88, bb:26, whiff:70, chase:36, sprint:89, batspd:53, il:'IL10' },
   { name:'Sal Frelick', pos:'OF', ppg:3.1, qualified:true, xwoba:38, xba:32, xslg:23, xobp:56, xiso:23, brl:9, ev:25, hh:13, k:73, bb:71, whiff:95, chase:90, sprint:77, batspd:7 },
   { name:'Ernie Clement', pos:'2B/3B/SS', ppg:5.1, qualified:true, xwoba:38, xba:87, xslg:50, xobp:41, xiso:17, brl:1, ev:15, hh:9, k:100, bb:2, whiff:97, chase:5, sprint:49, batspd:2 },
@@ -1019,7 +1116,7 @@ const TEAMS = {
   { name:'Michael Wacha', type:'SP', ppg:24.3, qualified:true, xera:65, xwoba:65, xba:64, xslg:47, ev:44, hh:35, k:55, bb:72, whiff:72, chase:81, fbvelo:25, fbspin:22 },
   { name:'Seth Lugo', type:'SP', ppg:14.0, qualified:true, xera:33, xwoba:33, xba:25, xslg:26, ev:27, hh:35, k:40, bb:56, whiff:20, chase:36, fbvelo:13, fbspin:63 },
 ] },
-"EpSkenes Island": { batters: [
+"EpSkenes Island": { pf:1326.0, pa:1161.0, batters: [
   { name:'Corbin Carroll', pos:'OF', ppg:6.7, qualified:true, xwoba:96, xba:97, xslg:96, xobp:92, xiso:90, brl:78, ev:84, hh:78, k:48, bb:80, whiff:21, chase:21, sprint:99, batspd:91 },
   { name:'Mookie Betts', pos:'SS', ppg:5.5, qualified:true, xwoba:61, xba:56, xslg:56, xobp:64, xiso:55, brl:28, ev:59, hh:25, k:90, bb:50, whiff:99, chase:86, sprint:26, batspd:null, il:'IL10' },
   { name:'Nick Kurtz', pos:'1B', ppg:2.9, qualified:true, xwoba:79, xba:40, xslg:61, xobp:88, xiso:71, brl:63, ev:99, hh:93, k:2, bb:98, whiff:1, chase:81, sprint:42, batspd:98 },
@@ -1027,7 +1124,7 @@ const TEAMS = {
   { name:'Rafael Devers', pos:'1B', ppg:3.3, qualified:true, xwoba:38, xba:50, xslg:61, xobp:23, xiso:66, brl:78, ev:67, hh:81, k:21, bb:21, whiff:39, chase:37, sprint:24, batspd:35 },
   { name:'Austin Riley', pos:'3B', ppg:3.7, qualified:true, xwoba:44, xba:42, xslg:32, xobp:60, xiso:29, brl:49, ev:31, hh:31, k:56, bb:78, whiff:15, chase:71, sprint:59, batspd:91 },
   { name:'Salvador Perez', pos:'C/1B', ppg:2.7, qualified:true, xwoba:29, xba:26, xslg:54, xobp:15, xiso:71, brl:86, ev:67, hh:55, k:74, bb:23, whiff:54, chase:5, sprint:4, batspd:50 },
-  { name:'Teoscar Hernandez', pos:'OF', ppg:5.7, qualified:true, xwoba:53, xba:68, xslg:72, xobp:27, xiso:70, brl:63, ev:59, hh:49, k:20, bb:11, whiff:13, chase:35, sprint:84, batspd:50 },
+  { name:'Teoscar Hernandez', pos:'OF', ppg:5.8, qualified:true, xwoba:53, xba:68, xslg:72, xobp:27, xiso:70, brl:63, ev:59, hh:49, k:20, bb:11, whiff:13, chase:35, sprint:84, batspd:50 },
   { name:'Mike Trout', pos:'OF', ppg:6.4, qualified:true, xwoba:95, xba:50, xslg:92, xobp:95, xiso:96, brl:97, ev:79, hh:48, k:55, bb:98, whiff:77, chase:97, sprint:90, batspd:88 },
   { name:'Willy Adames', pos:'SS', ppg:5.0, qualified:true, xwoba:53, xba:49, xslg:69, xobp:32, xiso:79, brl:78, ev:46, hh:52, k:48, bb:32, whiff:82, chase:86, sprint:59, batspd:61 },
   { name:'Wilyer Abreu', pos:'OF', ppg:6.6, qualified:true, xwoba:74, xba:82, xslg:85, xobp:60, xiso:83, brl:91, ev:73, hh:87, k:59, bb:23, whiff:81, chase:62, sprint:86, batspd:70 },
@@ -1055,7 +1152,7 @@ const TEAMS = {
   { name:'Paul Sewald', type:'RP', ppg:4.4, qualified:true, xera:43, xwoba:43, xba:69, xslg:6, ev:2, hh:5, k:96, bb:97, whiff:37, chase:99, fbvelo:null, fbspin:null },
   { name:'Zack Wheeler', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"Hell or High Wether": { batters: [
+"Hell or High Wether": { pf:1307.0, pa:1327.0, batters: [
   { name:'Jose Ramirez', pos:'3B', ppg:5.2, qualified:true, xwoba:73, xba:72, xslg:76, xobp:73, xiso:77, brl:78, ev:52, hh:43, k:88, bb:65, whiff:82, chase:33, sprint:42, batspd:20 },
   { name:'Yordan Alvarez', pos:'OF', ppg:8.1, qualified:true, xwoba:100, xba:99, xslg:100, xobp:100, xiso:100, brl:99, ev:86, hh:74, k:95, bb:97, whiff:74, chase:64, sprint:2, batspd:84 },
   { name:'Trea Turner', pos:'SS', ppg:4.4, qualified:true, xwoba:13, xba:38, xslg:16, xobp:16, xiso:10, brl:9, ev:26, hh:14, k:48, bb:21, whiff:29, chase:10, sprint:100, batspd:41 },
@@ -1082,7 +1179,7 @@ const TEAMS = {
   { name:'Garrett Crochet', type:'SP', ppg:4.2, qualified:true, xera:56, xwoba:56, xba:38, xslg:58, ev:61, hh:63, k:80, bb:82, whiff:43, chase:82, fbvelo:70, fbspin:78 },
   { name:'Jesus Luzardo', type:'SP', ppg:9.7, qualified:true, xera:76, xwoba:76, xba:66, xslg:61, ev:79, hh:91, k:94, bb:81, whiff:94, chase:94, fbvelo:78, fbspin:41 },
   { name:'Dylan Cease', type:'SP', ppg:13.7, qualified:true, xera:73, xwoba:73, xba:73, xslg:90, ev:93, hh:93, k:96, bb:24, whiff:98, chase:83, fbvelo:91, fbspin:96 },
-  { name:'Nathan Eovaldi', type:'SP', ppg:4.8, qualified:true, xera:46, xwoba:46, xba:40, xslg:37, ev:14, hh:19, k:70, bb:70, whiff:92, chase:85, fbvelo:null, fbspin:null },
+  { name:'Nathan Eovaldi', type:'SP', ppg:6.0, qualified:true, xera:46, xwoba:46, xba:40, xslg:37, ev:14, hh:19, k:70, bb:70, whiff:92, chase:85, fbvelo:null, fbspin:null },
   { name:'Edward Cabrera', type:'SP', ppg:14.3, qualified:true, xera:55, xwoba:55, xba:63, xslg:68, ev:27, hh:50, k:36, bb:23, whiff:67, chase:72, fbvelo:70, fbspin:31 },
   { name:'Ryan Weathers', type:'SP', ppg:9.7, qualified:true, xera:28, xwoba:28, xba:12, xslg:26, ev:75, hh:45, k:69, bb:67, whiff:48, chase:78, fbvelo:65, fbspin:57 },
   { name:'Michael Soroka', type:'SP', ppg:18.7, qualified:true, xera:18, xwoba:18, xba:43, xslg:15, ev:15, hh:13, k:90, bb:55, whiff:64, chase:55, fbvelo:41, fbspin:89 },
@@ -1091,7 +1188,7 @@ const TEAMS = {
   { name:'Javier Assad', type:'SP', ppg:1.0, qualified:true, xera:97, xwoba:97, xba:96, xslg:97, ev:88, hh:83, k:17, bb:43, whiff:2, chase:26, fbvelo:null, fbspin:null },
   { name:'Gerrit Cole', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"Men of W.A.R": { batters: [
+"Men of W.A.R": { pf:1457.0, pa:1446.0, batters: [
   { name:'Ronald Acuna Jr.', pos:'OF', ppg:4.4, qualified:true, xwoba:93, xba:85, xslg:93, xobp:83, xiso:91, brl:95, ev:28, hh:64, k:69, bb:61, whiff:40, chase:60, sprint:62, batspd:90 },
   { name:'Junior Caminero', pos:'3B', ppg:3.8, qualified:true, xwoba:63, xba:60, xslg:57, xobp:70, xiso:54, brl:63, ev:60, hh:36, k:57, bb:78, whiff:37, chase:38, sprint:8, batspd:100 },
   { name:'Elly De La Cruz', pos:'SS', ppg:7.0, qualified:true, xwoba:80, xba:68, xslg:83, xobp:70, xiso:85, brl:86, ev:95, hh:81, k:25, bb:61, whiff:26, chase:60, sprint:72, batspd:84 },
@@ -1127,7 +1224,7 @@ const TEAMS = {
   { name:'Hunter Greene', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL60' },
   { name:'Noah Schultz', type:'SP', ppg:0.0, partial:true, qualified:false },
 ] },
-"Reba\'s Glue Guys": { batters: [
+"Reba\'s Glue Guys": { pf:1611.0, pa:1438.0, batters: [
   { name:'Pete Alonso', pos:'1B', ppg:4.1, qualified:true, xwoba:45, xba:32, xslg:48, xobp:44, xiso:58, brl:49, ev:97, hh:94, k:20, bb:69, whiff:24, chase:61, sprint:6, batspd:66 },
   { name:'Freddie Freeman', pos:'1B', ppg:5.8, qualified:true, xwoba:95, xba:94, xslg:98, xobp:75, xiso:97, brl:99, ev:83, hh:80, k:95, bb:21, whiff:87, chase:59, sprint:6, batspd:35 },
   { name:'James Wood', pos:'OF', ppg:7.4, qualified:true, xwoba:95, xba:77, xslg:94, xobp:87, xiso:94, brl:99, ev:96, hh:96, k:21, bb:85, whiff:12, chase:71, sprint:63, batspd:97 },
@@ -1144,9 +1241,9 @@ const TEAMS = {
   { name:'Brandon Marsh', pos:'OF', ppg:5.3, qualified:true, xwoba:62, xba:83, xslg:77, xobp:43, xiso:69, brl:49, ev:62, hh:62, k:34, bb:10, whiff:67, chase:10, sprint:78, batspd:31 },
   { name:'Max Muncy', pos:'3B', ppg:5.1, qualified:true, xwoba:61, xba:74, xslg:77, xobp:34, xiso:78, brl:78, ev:97, hh:99, k:5, bb:9, whiff:15, chase:16, sprint:73, batspd:82 },
   { name:'Francisco Alvarez', pos:'C', ppg:4.6, qualified:true, xwoba:99, xba:94, xslg:99, xobp:88, xiso:99, brl:95, ev:70, hh:91, k:67, bb:56, whiff:46, chase:51, sprint:8, batspd:77 },
-  { name:'Jeff McNeil', pos:'2B/OF', ppg:3.5, qualified:true, xwoba:60, xba:93, xslg:42, xobp:77, xiso:9, brl:1, ev:23, hh:22, k:58, bb:40, whiff:55, chase:47, sprint:37, batspd:6 },
+  { name:'Jeff McNeil', pos:'2B/OF', ppg:3.7, qualified:true, xwoba:60, xba:93, xslg:42, xobp:77, xiso:9, brl:1, ev:23, hh:22, k:58, bb:40, whiff:55, chase:47, sprint:37, batspd:6 },
 ], pitchers: [
-  { name:'Shohei Ohtani', type:'SP', ppg:8.8, qualified:true, xera:84, xwoba:84, xba:81, xslg:87, ev:87, hh:63, k:24, bb:60, whiff:33, chase:50, fbvelo:88, fbspin:90 },
+  { name:'Shohei Ohtani', type:'SP', ppg:8.7, qualified:true, xera:84, xwoba:84, xba:81, xslg:87, ev:87, hh:63, k:24, bb:60, whiff:33, chase:50, fbvelo:88, fbspin:90 },
   { name:'Yoshinobu Yamamoto', type:'SP', ppg:15.7, qualified:true, xera:58, xwoba:58, xba:45, xslg:38, ev:67, hh:79, k:43, bb:94, whiff:56, chase:54, fbvelo:64, fbspin:43 },
   { name:'Cristopher Sanchez', type:'SP', ppg:15.5, qualified:true, xera:69, xwoba:69, xba:54, xslg:53, ev:14, hh:14, k:87, bb:80, whiff:64, chase:78, fbvelo:51, fbspin:21 },
   { name:'Hunter Brown', type:'SP', ppg:20.5, qualified:true, xera:94, xwoba:94, xba:98, xslg:97, ev:86, hh:79, k:97, bb:22, whiff:51, chase:13, fbvelo:73, fbspin:49, il:'IL15' },
@@ -1159,10 +1256,10 @@ const TEAMS = {
   { name:'Carlos Rodon', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Merrill Kelly', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Josh Hader', type:'RP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
-  { name:'Jordan Romano', type:'RP', ppg:4.6, partial:true, qualified:false },
+  { name:'Jordan Romano', type:'RP', ppg:3.3, partial:true, qualified:false },
   { name:'Ryan Pepiot', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"Rich Homie Kwan": { batters: [
+"Rich Homie Kwan": { pf:1268.0, pa:1176.0, batters: [
   { name:'Fernando Tatis Jr.', pos:'OF', ppg:4.1, qualified:true, xwoba:76, xba:75, xslg:63, xobp:78, xiso:53, brl:91, ev:98, hh:100, k:43, bb:60, whiff:32, chase:66, sprint:85, batspd:81 },
   { name:'William Contreras', pos:'C', ppg:6.0, qualified:true, xwoba:73, xba:74, xslg:66, xobp:86, xiso:57, brl:28, ev:83, hh:69, k:82, bb:86, whiff:83, chase:81, sprint:15, batspd:70 },
   { name:'Steven Kwan', pos:'OF', ppg:4.7, qualified:true, xwoba:33, xba:42, xslg:21, xobp:51, xiso:13, brl:9, ev:1, hh:1, k:92, bb:58, whiff:100, chase:88, sprint:30, batspd:1 },
@@ -1175,7 +1272,7 @@ const TEAMS = {
   { name:'Jacob Wilson', pos:'SS', ppg:3.4, qualified:true, xwoba:13, xba:68, xslg:24, xobp:14, xiso:5, brl:1, ev:11, hh:32, k:83, bb:1, whiff:90, chase:1, sprint:50, batspd:1 },
   { name:'Jakob Marsee', pos:'OF', ppg:3.5, qualified:true, xwoba:14, xba:11, xslg:9, xobp:22, xiso:18, brl:9, ev:34, hh:44, k:30, bb:61, whiff:96, chase:85, sprint:71, batspd:27 },
   { name:'Lawrence Butler', pos:'OF', ppg:2.5, qualified:true, xwoba:37, xba:53, xslg:34, xobp:45, xiso:26, brl:9, ev:41, hh:71, k:26, bb:51, whiff:17, chase:54, sprint:48, batspd:65 },
-  { name:'Marcus Semien', pos:'2B', ppg:2.7, qualified:true, xwoba:16, xba:19, xslg:26, xobp:13, xiso:38, brl:28, ev:26, hh:46, k:60, bb:23, whiff:65, chase:54, sprint:84, batspd:6 },
+  { name:'Marcus Semien', pos:'2B', ppg:2.5, qualified:true, xwoba:16, xba:19, xslg:26, xobp:13, xiso:38, brl:28, ev:26, hh:46, k:60, bb:23, whiff:65, chase:54, sprint:84, batspd:6 },
   { name:'Sal Stewart', pos:'1B/3B', ppg:7.1, qualified:true, xwoba:98, xba:93, xslg:98, xobp:97, xiso:96, brl:97, ev:90, hh:81, k:85, bb:94, whiff:59, chase:55, sprint:32, batspd:31 },
   { name:'Carson Benge', pos:'OF', ppg:2.3, qualified:true, xwoba:15, xba:13, xslg:14, xobp:18, xiso:25, brl:9, ev:64, hh:53, k:28, bb:65, whiff:57, chase:53, sprint:92, batspd:28 },
   { name:'Chase Meidroth', pos:'2B/SS', ppg:3.0, qualified:true, xwoba:30, xba:23, xslg:33, xobp:30, xiso:45, brl:28, ev:38, hh:60, k:42, bb:59, whiff:76, chase:87, sprint:35, batspd:5 },
@@ -1198,7 +1295,7 @@ const TEAMS = {
   { name:'Chad Patrick', type:'SP', ppg:10.0, qualified:true, xera:58, xwoba:58, xba:55, xslg:49, ev:26, hh:24, k:9, bb:47, whiff:30, chase:32, fbvelo:37, fbspin:29 },
   { name:'Joe Musgrove', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"The Salty Platoons": { batters: [
+"The Salty Platoons": { pf:1471.0, pa:1428.0, batters: [
   { name:'Aaron Judge', pos:'OF', ppg:6.4, qualified:true, xwoba:86, xba:53, xslg:91, xobp:69, xiso:95, brl:97, ev:45, hh:72, k:19, bb:71, whiff:27, chase:62, sprint:40, batspd:92 },
   { name:'Gunnar Henderson', pos:'SS', ppg:6.9, qualified:true, xwoba:65, xba:44, xslg:71, xobp:56, xiso:82, brl:86, ev:62, hh:67, k:22, bb:62, whiff:36, chase:31, sprint:75, batspd:79 },
   { name:'Brent Rooker', pos:'OF', ppg:3.1, qualified:true, xwoba:40, xba:14, xslg:43, xobp:27, xiso:68, brl:78, ev:50, hh:58, k:8, bb:70, whiff:1, chase:45, sprint:61, batspd:70, il:'IL10' },
@@ -1234,7 +1331,7 @@ const TEAMS = {
   { name:'Nick Lodolo', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Trey Yesavage', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
 ] },
-"White Sox 2005.": { batters: [
+"White Sox 2005.": { pf:1081.0, pa:1388.0, batters: [
   { name:'Bobby Witt Jr.', pos:'SS', ppg:4.8, qualified:true, xwoba:88, xba:96, xslg:79, xobp:95, xiso:59, brl:86, ev:88, hh:91, k:75, bb:82, whiff:53, chase:41, sprint:97, batspd:67 },
   { name:'Julio Rodriguez', pos:'OF', ppg:3.2, qualified:true, xwoba:19, xba:21, xslg:22, xobp:27, xiso:27, brl:28, ev:36, hh:48, k:27, bb:54, whiff:10, chase:13, sprint:85, batspd:94 },
   { name:'Pete Crow-Armstrong', pos:'OF', ppg:3.1, qualified:true, xwoba:6, xba:14, xslg:24, xobp:3, xiso:41, brl:28, ev:77, hh:69, k:16, bb:15, whiff:44, chase:1, sprint:95, batspd:75 },
@@ -1257,7 +1354,7 @@ const TEAMS = {
 ], pitchers: [
   { name:'Logan Webb', type:'SP', ppg:6.8, qualified:true, xera:45, xwoba:45, xba:27, xslg:48, ev:20, hh:23, k:36, bb:58, whiff:28, chase:52, fbvelo:16, fbspin:1 },
   { name:'Framber Valdez', type:'SP', ppg:6.7, qualified:true, xera:59, xwoba:59, xba:27, xslg:59, ev:57, hh:58, k:15, bb:76, whiff:12, chase:85, fbvelo:41, fbspin:24 },
-  { name:'Cade Smith', type:'RP', ppg:4.5, qualified:true, xera:50, xwoba:50, xba:45, xslg:37, ev:43, hh:67, k:86, bb:48, whiff:72, chase:38, fbvelo:76, fbspin:45 },
+  { name:'Cade Smith', type:'RP', ppg:4.6, qualified:true, xera:50, xwoba:50, xba:45, xslg:37, ev:43, hh:67, k:86, bb:48, whiff:72, chase:38, fbvelo:76, fbspin:45 },
   { name:'Andres Munoz', type:'RP', ppg:4.2, qualified:true, xera:51, xwoba:51, xba:65, xslg:64, ev:78, hh:51, k:91, bb:16, whiff:99, chase:85, fbvelo:null, fbspin:null },
   { name:'Sonny Gray', type:'SP', ppg:14.3, qualified:true, xera:44, xwoba:44, xba:32, xslg:28, ev:66, hh:66, k:14, bb:88, whiff:9, chase:42, fbvelo:18, fbspin:89 },
   { name:'Clay Holmes', type:'SP', ppg:15.0, qualified:true, xera:60, xwoba:60, xba:52, xslg:62, ev:83, hh:58, k:20, bb:39, whiff:44, chase:75, fbvelo:33, fbspin:20 },
@@ -1270,7 +1367,7 @@ const TEAMS = {
   { name:'Spencer Strider', type:'SP', ppg:0.0, partial:true, qualified:false, il:'IL15' },
   { name:'Javier Sanoja', type:'2B/3B/OF/RP', ppg:4.0, partial:true, qualified:false },
 ] },
-"🆘️Rafi is now ur daddy‼️": { batters: [
+"🆘️Rafi is now ur daddy‼️": { pf:1453.0, pa:1289.0, batters: [
   { name:'Cal Raleigh', pos:'C', ppg:2.8, qualified:true, xwoba:24, xba:8, xslg:36, xobp:15, xiso:65, brl:49, ev:6, hh:9, k:7, bb:65, whiff:8, chase:22, sprint:20, batspd:86 },
   { name:'Vladimir Guerrero Jr.', pos:'1B', ppg:5.5, qualified:true, xwoba:94, xba:97, xslg:85, xobp:97, xiso:74, brl:91, ev:85, hh:79, k:97, bb:90, whiff:86, chase:71, sprint:20, batspd:92 },
   { name:'Francisco Lindor', pos:'SS', ppg:3.2, qualified:true, xwoba:60, xba:54, xslg:46, xobp:71, xiso:44, brl:63, ev:48, hh:47, k:73, bb:76, whiff:63, chase:69, sprint:33, batspd:55 },
@@ -1294,7 +1391,7 @@ const TEAMS = {
   { name:'Nolan McLean', type:'SP', ppg:15.3, qualified:true, xera:93, xwoba:93, xba:94, xslg:95, ev:94, hh:92, k:84, bb:51, whiff:52, chase:11, fbvelo:64, fbspin:50 },
   { name:'Brandon Woodruff', type:'SP', ppg:12.3, qualified:true, xera:76, xwoba:76, xba:70, xslg:51, ev:21, hh:65, k:56, bb:89, whiff:36, chase:53, fbvelo:20, fbspin:71 },
   { name:'Matthew Boyd', type:'SP', ppg:10.0, qualified:true, xera:38, xwoba:38, xba:64, xslg:17, ev:3, hh:4, k:99, bb:63, whiff:99, chase:98, fbvelo:22, fbspin:54, il:'IL15' },
-  { name:'Gavin Williams', type:'SP', ppg:14.8, qualified:true, xera:59, xwoba:59, xba:95, xslg:71, ev:49, hh:61, k:95, bb:4, whiff:86, chase:51, fbvelo:77, fbspin:28 },
+  { name:'Gavin Williams', type:'SP', ppg:16.0, qualified:true, xera:59, xwoba:59, xba:95, xslg:71, ev:49, hh:61, k:95, bb:4, whiff:86, chase:51, fbvelo:77, fbspin:28 },
   { name:'Trevor Rogers', type:'SP', ppg:17.7, qualified:true, xera:85, xwoba:85, xba:71, xslg:84, ev:58, hh:88, k:30, bb:75, whiff:51, chase:73, fbvelo:16, fbspin:82 },
   { name:'Daniel Palencia', type:'RP', ppg:5.0, qualified:true, xera:53, xwoba:53, xba:63, xslg:45, ev:90, hh:41, k:68, bb:43, whiff:97, chase:98, fbvelo:98, fbspin:62 },
   { name:'Will Warren', type:'SP', ppg:11.8, qualified:true, xera:61, xwoba:61, xba:42, xslg:53, ev:27, hh:27, k:50, bb:64, whiff:28, chase:7, fbvelo:37, fbspin:93 },
@@ -1330,7 +1427,7 @@ const FREE_AGENTS = { batters: [
   { name:'Josh Jung', pos:'3B', ppg:2.2, qualified:true, xwoba:60, xba:91, xslg:41, xobp:77, xiso:9, brl:1, ev:48, hh:77, k:49, bb:44, whiff:77, chase:8, sprint:32, batspd:31 },
   { name:'Tyler O\'Neill', pos:'OF', ppg:3.6, qualified:true, xwoba:50, xba:28, xslg:39, xobp:54, xiso:52, brl:9, ev:21, hh:30, k:71, bb:43, whiff:20, chase:86, sprint:43, batspd:null },
   { name:'Davis Schneider', pos:'2B/OF', ppg:3.3, partial:true, qualified:false, sprint:44 },
-  { name:'Ryan McMahon', pos:'3B', ppg:0.5, qualified:true, xwoba:18, xba:5, xslg:5, xobp:37, xiso:13, brl:28, ev:87, hh:97, k:6, bb:89, whiff:9, chase:68, sprint:15, batspd:67 },
+  { name:'Ryan McMahon', pos:'3B', ppg:0.6, qualified:true, xwoba:18, xba:5, xslg:5, xobp:37, xiso:13, brl:28, ev:87, hh:97, k:6, bb:89, whiff:9, chase:68, sprint:15, batspd:67 },
   { name:'Nathaniel Lowe', pos:'1B', ppg:2.4, partial:true, qualified:false, sprint:10 },
   { name:'Troy Johnston', pos:'1B/OF', ppg:4.8, qualified:true, xwoba:50, xba:53, xslg:68, xobp:24, xiso:75, brl:28, ev:39, hh:31, k:61, bb:21, whiff:51, chase:9, sprint:34, batspd:31 },
   { name:'Luisangel Acuña', pos:'2B/OF', ppg:2.5, qualified:true, xwoba:5, xba:33, xslg:10, xobp:7, xiso:5, brl:9, ev:33, hh:18, k:93, bb:4, whiff:58, chase:19, sprint:97, batspd:57 },
@@ -1376,7 +1473,7 @@ const FREE_AGENTS = { batters: [
   { name:'Edmundo Sosa', pos:'2B/3B', ppg:2.0, partial:true, qualified:false, sprint:70 },
   { name:'Tyler Freeman', pos:'OF', ppg:3.7, partial:true, qualified:false, sprint:39 },
   { name:'Bryce Johnson', pos:'1B/OF', ppg:4.8, partial:true, qualified:false, sprint:65 },
-  { name:'Tyrone Taylor', pos:'OF', ppg:2.9, partial:true, qualified:false, sprint:88 },
+  { name:'Tyrone Taylor', pos:'OF', ppg:2.6, partial:true, qualified:false, sprint:88 },
   { name:'Spencer Horwitz', pos:'1B', ppg:3.2, qualified:true, xwoba:11, xba:4, xslg:1, xobp:32, xiso:3, brl:1, ev:5, hh:12, k:49, bb:87, whiff:62, chase:51, sprint:2, batspd:3 },
   { name:'Andrew Benintendi', pos:'OF', ppg:1.1, qualified:true, xwoba:13, xba:15, xslg:23, xobp:8, xiso:39, brl:28, ev:57, hh:97, k:1, bb:30, whiff:3, chase:12, sprint:21, batspd:15 },
   { name:'Tristan Gray', pos:'2B/SS', ppg:5.1, partial:true, qualified:false, sprint:23 },
@@ -1384,7 +1481,7 @@ const FREE_AGENTS = { batters: [
   { name:'Dominic Canzone', pos:'OF', ppg:3.8, qualified:true, xwoba:90, xba:79, xslg:92, xobp:74, xiso:92, brl:63, ev:98, hh:86, k:69, bb:35, whiff:24, chase:41, sprint:18, batspd:null },
   { name:'Ramón Urías', pos:'2B/3B', ppg:3.9, qualified:true, xwoba:76, xba:49, xslg:86, xobp:54, xiso:91, brl:63, ev:86, hh:81, k:42, bb:43, whiff:59, chase:76, sprint:35, batspd:null },
   { name:'Samuel Basallo', pos:'C', ppg:2.5, qualified:true, xwoba:20, xba:4, xslg:34, xobp:17, xiso:67, brl:49, ev:92, hh:43, k:15, bb:74, whiff:14, chase:22, sprint:1, batspd:90 },
-  { name:'Miguel Rojas', pos:'2B/3B/SS', ppg:2.6, partial:true, qualified:false, sprint:17 },
+  { name:'Miguel Rojas', pos:'2B/3B/SS', ppg:2.7, partial:true, qualified:false, sprint:17 },
   { name:'Michael Massey', pos:'UTIL', ppg:null, partial:true, qualified:false, sprint:41 },
   { name:'Juan Brito', pos:'2B', ppg:3.7, partial:true, qualified:false, sprint:42 },
   { name:'Ke\'Bryan Hayes', pos:'3B', ppg:0.8, qualified:true, xwoba:40, xba:45, xslg:55, xobp:30, xiso:60, brl:28, ev:78, hh:39, k:99, bb:31, whiff:84, chase:76, sprint:45, batspd:null },
@@ -1423,7 +1520,7 @@ const FREE_AGENTS = { batters: [
   { name:'Moisés Ballesteros', pos:'DH', ppg:4.1, qualified:true, xwoba:72, xba:67, xslg:88, xobp:44, xiso:90, brl:78, ev:93, hh:95, k:41, bb:35, whiff:45, chase:33, sprint:1, batspd:null },
   { name:'Thomas Saggese', pos:'2B/SS', ppg:2.5, qualified:true, xwoba:14, xba:17, xslg:17, xobp:16, xiso:25, brl:9, ev:36, hh:25, k:38, bb:51, whiff:29, chase:28, sprint:44, batspd:47 },
   { name:'Jonny DeLuca', pos:'OF', ppg:3.7, partial:true, qualified:false, sprint:45 },
-  { name:'Denzel Clarke', pos:'OF', ppg:0.9, qualified:true, xwoba:2, xba:10, xslg:2, xobp:5, xiso:1, brl:9, ev:85, hh:81, k:6, bb:30, whiff:28, chase:62, sprint:89, batspd:98 },
+  { name:'Denzel Clarke', pos:'OF', ppg:0.8, qualified:true, xwoba:2, xba:10, xslg:2, xobp:5, xiso:1, brl:9, ev:85, hh:81, k:6, bb:30, whiff:28, chase:62, sprint:89, batspd:98 },
   { name:'Michael Conforto', pos:'OF', ppg:2.5, partial:true, qualified:false, sprint:21 },
   { name:'Jake Bauers', pos:'1B/OF', ppg:5.2, qualified:true, xwoba:78, xba:71, xslg:88, xobp:55, xiso:88, brl:78, ev:94, hh:92, k:61, bb:37, whiff:44, chase:93, sprint:58, batspd:96 },
   { name:'Leody Taveras', pos:'UTIL', ppg:null, partial:true, qualified:false, sprint:92 },
@@ -1515,7 +1612,7 @@ const FREE_AGENTS = { batters: [
   { name:'Zach Agnos', type:'RP', ppg:null, qualified:true, xera:35, xwoba:35, xba:10, xslg:48, ev:88, hh:79, k:20, bb:34, whiff:73, chase:96, fbvelo:62, fbspin:75 },
   { name:'Cionel Pérez', type:'RP', ppg:null, qualified:true, xera:1, xwoba:1, xba:1, xslg:1, ev:2, hh:2, k:16, bb:27, whiff:26, chase:6, fbvelo:70, fbspin:18 },
   { name:'Mike Burrows', type:'SP', ppg:0.5, qualified:true, xera:39, xwoba:39, xba:38, xslg:34, ev:58, hh:56, k:40, bb:62, whiff:44, chase:61, fbvelo:52, fbspin:46 },
-  { name:'Jake Bird', type:'RP', ppg:1.1, qualified:true, xera:84, xwoba:84, xba:84, xslg:76, ev:18, hh:67, k:85, bb:91, whiff:88, chase:3, fbvelo:null, fbspin:null },
+  { name:'Jake Bird', type:'RP', ppg:1.0, qualified:true, xera:84, xwoba:84, xba:84, xslg:76, ev:18, hh:67, k:85, bb:91, whiff:88, chase:3, fbvelo:null, fbspin:null },
   { name:'Jonathan Bowlan', type:'RP', ppg:null, qualified:true, xera:97, xwoba:97, xba:83, xslg:92, ev:77, hh:79, k:74, bb:92, whiff:78, chase:86, fbvelo:89, fbspin:72 },
   { name:'Braydon Fisher', type:'RP', ppg:5.5, qualified:true, xera:59, xwoba:59, xba:33, xslg:53, ev:33, hh:14, k:93, bb:91, whiff:89, chase:34, fbvelo:null, fbspin:null },
   { name:'Greg Weissert', type:'RP', ppg:1.8, qualified:true, xera:28, xwoba:28, xba:52, xslg:14, ev:13, hh:42, k:90, bb:51, whiff:25, chase:60, fbvelo:35, fbspin:34 },
@@ -1547,7 +1644,7 @@ const FREE_AGENTS = { batters: [
   { name:'Steven Okert', type:'RP', ppg:2.0, qualified:true, xera:67, xwoba:67, xba:94, xslg:34, ev:94, hh:97, k:55, bb:36, whiff:64, chase:44, fbvelo:null, fbspin:null },
   { name:'Brandon Sproat', type:'SP', ppg:-4.0, qualified:true, xera:6, xwoba:6, xba:14, xslg:10, ev:18, hh:14, k:36, bb:4, whiff:14, chase:10, fbvelo:83, fbspin:6 },
   { name:'Ryan Helsley', type:'RP', ppg:4.7, qualified:true, xera:34, xwoba:34, xba:18, xslg:44, ev:23, hh:1, k:66, bb:18, whiff:87, chase:20, fbvelo:95, fbspin:99 },
-  { name:'Matthew Liberatore', type:'SP', ppg:5.5, qualified:true, xera:21, xwoba:21, xba:13, xslg:16, ev:36, hh:61, k:10, bb:70, whiff:7, chase:53, fbvelo:48, fbspin:8 },
+  { name:'Matthew Liberatore', type:'SP', ppg:4.2, qualified:true, xera:21, xwoba:21, xba:13, xslg:16, ev:36, hh:61, k:10, bb:70, whiff:7, chase:53, fbvelo:48, fbspin:8 },
   { name:'Ryan Thompson', type:'RP', ppg:2.7, qualified:true, xera:93, xwoba:93, xba:88, xslg:93, ev:81, hh:89, k:41, bb:27, whiff:32, chase:86, fbvelo:2, fbspin:3 },
   { name:'Joe Boyle', type:'SP', ppg:7.7, qualified:true, xera:41, xwoba:41, xba:33, xslg:39, ev:70, hh:35, k:60, bb:54, whiff:55, chase:36, fbvelo:86, fbspin:96 },
   { name:'Abner Uribe', type:'RP', ppg:2.3, qualified:true, xera:88, xwoba:88, xba:69, xslg:77, ev:75, hh:74, k:67, bb:89, whiff:3, chase:3, fbvelo:88, fbspin:39 },
@@ -1573,7 +1670,7 @@ const FREE_AGENTS = { batters: [
   { name:'Jeremiah Estrada', type:'RP', ppg:2.3, qualified:true, xera:13, xwoba:13, xba:26, xslg:19, ev:92, hh:22, k:70, bb:13, whiff:83, chase:62, fbvelo:59, fbspin:20 },
   { name:'Luis Gil', type:'SP', ppg:-3.0, qualified:true, xera:20, xwoba:20, xba:43, xslg:44, ev:31, hh:76, k:3, bb:15, whiff:5, chase:25, fbvelo:59, fbspin:93 },
   { name:'Caleb Thielbar', type:'RP', ppg:1.0, qualified:true, xera:55, xwoba:55, xba:72, xslg:34, ev:62, hh:35, k:67, bb:25, whiff:25, chase:75, fbvelo:null, fbspin:null },
-  { name:'Drew Pomeranz', type:'RP', ppg:1.3, qualified:true, xera:32, xwoba:32, xba:30, xslg:23, ev:46, hh:67, k:5, bb:32, whiff:4, chase:44, fbvelo:29, fbspin:99 },
+  { name:'Drew Pomeranz', type:'RP', ppg:1.6, qualified:true, xera:32, xwoba:32, xba:30, xslg:23, ev:46, hh:67, k:5, bb:32, whiff:4, chase:44, fbvelo:29, fbspin:99 },
   { name:'Antonio Senzatela', type:'SP', ppg:10.2, qualified:true, xera:99, xwoba:99, xba:99, xslg:98, ev:88, hh:32, k:96, bb:48, whiff:44, chase:74, fbvelo:85, fbspin:54 },
   { name:'Jack Dreyer', type:'SP/RP', ppg:3.3, qualified:true, xera:51, xwoba:51, xba:76, xslg:40, ev:7, hh:2, k:76, bb:32, whiff:52, chase:35, fbvelo:29, fbspin:90 },
   { name:'Juan Mejia', type:'RP', ppg:null, qualified:true, xera:17, xwoba:17, xba:13, xslg:12, ev:55, hh:72, k:6, bb:31, whiff:17, chase:75, fbvelo:91, fbspin:83 },
@@ -1695,7 +1792,7 @@ const FREE_AGENTS = { batters: [
   { name:'Garrett Whitlock', type:'RP', ppg:2.7, qualified:true, xera:11, xwoba:11, xba:28, xslg:15, ev:65, hh:76, k:91, bb:16, whiff:62, chase:30, fbvelo:null, fbspin:null },
   { name:'Peyton Pallette', type:'RP', ppg:null, qualified:true, xera:13, xwoba:13, xba:12, xslg:21, ev:3, hh:28, k:69, bb:56, whiff:59, chase:17, fbvelo:63, fbspin:48 },
   { name:'Graham Ashcraft', type:'RP', ppg:3.6, qualified:true, xera:82, xwoba:82, xba:87, xslg:79, ev:87, hh:63, k:93, bb:48, whiff:98, chase:90, fbvelo:null, fbspin:null },
-  { name:'Luis Severino', type:'SP', ppg:3.5, qualified:true, xera:49, xwoba:49, xba:78, xslg:82, ev:31, hh:14, k:78, bb:3, whiff:61, chase:25, fbvelo:81, fbspin:24 },
+  { name:'Luis Severino', type:'SP', ppg:5.0, qualified:true, xera:49, xwoba:49, xba:78, xslg:82, ev:31, hh:14, k:78, bb:3, whiff:61, chase:25, fbvelo:81, fbspin:24 },
   { name:'Tommy Nance', type:'RP', ppg:null, qualified:true, xera:61, xwoba:61, xba:55, xslg:40, ev:80, hh:53, k:77, bb:77, whiff:21, chase:88, fbvelo:null, fbspin:null },
   { name:'Grant Taylor', type:'RP/SP', ppg:3.9, qualified:true, xera:81, xwoba:81, xba:70, xslg:69, ev:16, hh:20, k:82, bb:78, whiff:43, chase:92, fbvelo:99, fbspin:87 },
   { name:'John Schreiber', type:'RP', ppg:-0.6, qualified:true, xera:18, xwoba:18, xba:23, xslg:18, ev:16, hh:53, k:2, bb:5, whiff:2, chase:27, fbvelo:20, fbspin:46 },
@@ -1706,7 +1803,7 @@ const FREE_AGENTS = { batters: [
   { name:'Shaun Anderson', type:'RP', ppg:3.6, qualified:true, xera:61, xwoba:61, xba:62, xslg:73, ev:92, hh:78, k:26, bb:34, whiff:41, chase:50, fbvelo:null, fbspin:null },
   { name:'Taylor Rogers', type:'RP', ppg:1.9, qualified:true, xera:36, xwoba:36, xba:16, xslg:34, ev:44, hh:64, k:45, bb:70, whiff:25, chase:55, fbvelo:null, fbspin:null },
   { name:'Juan Morillo', type:'RP', ppg:3.0, qualified:true, xera:88, xwoba:88, xba:92, xslg:72, ev:95, hh:86, k:66, bb:67, whiff:78, chase:82, fbvelo:96, fbspin:34 },
-  { name:'David Peterson', type:'SP', ppg:0.8, qualified:true, xera:33, xwoba:33, xba:21, xslg:52, ev:51, hh:20, k:34, bb:60, whiff:35, chase:62, fbvelo:7, fbspin:15 },
+  { name:'David Peterson', type:'SP', ppg:1.0, qualified:true, xera:33, xwoba:33, xba:21, xslg:52, ev:51, hh:20, k:34, bb:60, whiff:35, chase:62, fbvelo:7, fbspin:15 },
   { name:'Tyler Rogers', type:'RP', ppg:4.1, qualified:true, xera:79, xwoba:79, xba:38, xslg:75, ev:80, hh:97, k:20, bb:45, whiff:2, chase:44, fbvelo:1, fbspin:2 },
   { name:'Paul Blackburn', type:'RP', ppg:null, qualified:true, xera:63, xwoba:63, xba:19, xslg:59, ev:62, hh:74, k:13, bb:84, whiff:20, chase:27, fbvelo:null, fbspin:null },
   { name:'Tobias Myers', type:'SP/RP', ppg:4.8, qualified:true, xera:94, xwoba:94, xba:58, xslg:81, ev:44, hh:50, k:27, bb:96, whiff:11, chase:30, fbvelo:19, fbspin:39 },
@@ -1733,7 +1830,7 @@ const FREE_AGENTS = { batters: [
   { name:'Lance McCullers Jr.', type:'SP', ppg:9.3, qualified:true, xera:36, xwoba:36, xba:27, xslg:41, ev:14, hh:7, k:75, bb:47, whiff:56, chase:50, fbvelo:13, fbspin:11 },
   { name:'Kyle Finnegan', type:'RP', ppg:2.4, qualified:true, xera:68, xwoba:68, xba:96, xslg:98, ev:74, hh:92, k:4, bb:1, whiff:44, chase:50, fbvelo:74, fbspin:41 },
   { name:'Casey Legumina', type:'RP', ppg:null, qualified:true, xera:64, xwoba:64, xba:79, xslg:46, ev:3, hh:2, k:45, bb:91, whiff:15, chase:20, fbvelo:35, fbspin:81 },
-  { name:'Justin Wrobleski', type:'RP', ppg:8.0, qualified:true, xera:45, xwoba:45, xba:38, xslg:54, ev:78, hh:92, k:3, bb:25, whiff:12, chase:16, fbvelo:50, fbspin:77 },
+  { name:'Justin Wrobleski', type:'RP', ppg:10.3, qualified:true, xera:45, xwoba:45, xba:38, xslg:54, ev:78, hh:92, k:3, bb:25, whiff:12, chase:16, fbvelo:50, fbspin:77 },
   { name:'Tim Mayza', type:'RP', ppg:5.0, qualified:true, xera:97, xwoba:97, xba:93, xslg:91, ev:44, hh:30, k:91, bb:92, whiff:85, chase:69, fbvelo:40, fbspin:13 },
   { name:'Lucas Sims', type:'RP', ppg:null, qualified:true, xera:69, xwoba:69, xba:83, xslg:71, ev:95, hh:83, k:53, bb:54, whiff:22, chase:47, fbvelo:null, fbspin:null },
   { name:'Tanner Banks', type:'RP', ppg:3.6, qualified:true, xera:99, xwoba:99, xba:88, xslg:92, ev:92, hh:98, k:78, bb:97, whiff:44, chase:99, fbvelo:null, fbspin:null },
@@ -1762,6 +1859,10 @@ function tier(v) {
 function cell(v) {
   if (v === null || v === undefined) return `<span class="pct pct-null">—</span>`;
   return `<span class="pct pct-${tier(v)}">${v}</span>`;
+}
+function rawCell(v) {
+  if (v === null || v === undefined) return `<span class="pct pct-null">—</span>`;
+  return `<span style="font-variant-numeric:tabular-nums">${v}</span>`;
 }
 
 function avg(players, key) {
@@ -1846,7 +1947,38 @@ const sortState = {
   pitcher:  { key: null, dir: -1 },
   faBatter: { key: null, dir: -1 },
   faPitcher:{ key: null, dir: -1 },
+  ldrBatter:  { key: 'avg', dir: -1 },
+  ldrPitcher: { key: 'avg', dir: -1 },
 };
+
+function highlightSortedCol(tableId, colIdx) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  table.querySelectorAll('.col-sorted').forEach(el => el.classList.remove('col-sorted'));
+  if (colIdx == null) return;
+  table.querySelectorAll(`thead th:nth-child(${colIdx + 1}), tbody td:nth-child(${colIdx + 1})`).forEach(el => el.classList.add('col-sorted'));
+}
+
+// Returns the column index for a sort key in a setupSort-style table (pos at 1, ppg at 2)
+function sortColIdx(key, statKeys) {
+  if (!key) return null;
+  if (key === 'name') return 0;
+  if (key === 'ppg')  return 2;
+  if (key === 'avg')  return statKeys.length + 3;  // col 0=name,1=pos,2=ppg,3..N-1=stats,N=avg
+  const si = statKeys.indexOf(key);
+  return si === -1 ? null : si + 3;
+}
+
+// Returns column index for leaderboard tables (no pos/ppg cols)
+function ldrColIdx(key, statKeys) {
+  if (!key) return null;
+  if (key === 'name') return 0;
+  if (key === 'pf')   return 1;
+  if (key === 'pa')   return 2;
+  if (key === 'avg')  return 3;
+  const si = statKeys.indexOf(key);
+  return si === -1 ? null : si + 4;
+}
 
 function playerStatAvg(p, keys) {
   if (p.partial) return null;
@@ -1896,6 +2028,7 @@ function renderBatters() {
   const body = document.getElementById('batter-body');
   body.innerHTML = sortedPlayers(batters, key, dir, BATTER_KEYS).map(buildBatterRow).join('') +
                    buildAvgRow(batters, BATTER_KEYS);
+  highlightSortedCol('batter-table', sortColIdx(key, BATTER_KEYS));
 }
 
 function renderPitchers() {
@@ -1908,6 +2041,7 @@ function renderPitchers() {
   const body = document.getElementById('pitcher-body');
   body.innerHTML = sortedPlayers(pitchers, key, dir, PITCHER_KEYS).map(buildPitcherRow).join('') +
                    buildAvgRow(pitchers, PITCHER_KEYS);
+  highlightSortedCol('pitcher-table', sortColIdx(key, PITCHER_KEYS));
 }
 
 // ── SORT HEADERS ──────────────────────────────────────
@@ -2117,6 +2251,7 @@ function renderFABatters() {
   document.getElementById('fa-batter-expand').textContent =
     faLimits.batters === 20 ? 'Show 50' : 'Show 20';
   applyFASelection('fa-batter-body', selectedFABatter);
+  highlightSortedCol('fa-batter-table', sortColIdx(key, BATTER_KEYS));
 }
 
 function renderFAPitchers() {
@@ -2139,6 +2274,7 @@ function renderFAPitchers() {
   document.getElementById('fa-pitcher-expand').textContent =
     faLimits.pitchers === 20 ? 'Show 50' : 'Show 20';
   applyFASelection('fa-pitcher-body', selectedFAPitcher);
+  highlightSortedCol('fa-pitcher-table', sortColIdx(key, PITCHER_KEYS));
 }
 
 // Populate FA position filter dropdown from actual data
@@ -2415,12 +2551,14 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     const id = tab.id;
-    document.getElementById('league-view').style.display = id === 'tab-league' ? 'block' : 'none';
-    document.getElementById('fa-view').style.display     = id === 'tab-fa'     ? 'block' : 'none';
-    document.getElementById('waiver-view').style.display = id === 'tab-waiver' ? 'block' : 'none';
-    if (id === 'tab-fa')     updateHeading(faCurrentTeam);
-    else if (id === 'tab-waiver') updateHeading(waiverCurrentTeam);
-    else                          updateHeading(currentTeam);
+    document.getElementById('league-view').style.display      = id === 'tab-league'      ? 'block' : 'none';
+    document.getElementById('fa-view').style.display          = id === 'tab-fa'          ? 'block' : 'none';
+    document.getElementById('waiver-view').style.display      = id === 'tab-waiver'      ? 'block' : 'none';
+    document.getElementById('leaderboard-view').style.display = id === 'tab-leaderboard' ? 'block' : 'none';
+    if (id === 'tab-fa')               updateHeading(faCurrentTeam);
+    else if (id === 'tab-waiver')      updateHeading(waiverCurrentTeam);
+    else if (id === 'tab-leaderboard') updateHeading('League Leaderboard');
+    else                               updateHeading(currentTeam);
   });
 });
 
@@ -2538,6 +2676,64 @@ document.querySelectorAll('thead th[data-tip]').forEach(th => {
     tooltip.style.display = 'none';
   });
 });
+
+// ── LEADERBOARD ───────────────────────────────────────
+function buildLeaderboardData(keys) {
+  return Object.entries(TEAMS).map(([name, team]) => {
+    const qualified = (keys === BATTER_KEYS ? team.batters : team.pitchers).filter(p => !p.partial);
+    const stats = {};
+    keys.forEach(k => { stats[k] = avg(qualified, k); });
+    const colAvgs = keys.map(k => stats[k]).filter(v => v !== null);
+    stats.avg = colAvgs.length ? Math.round(colAvgs.reduce((a, b) => a + b, 0) / colAvgs.length) : null;
+    return { name, pf: team.pf ?? null, pa: team.pa ?? null, ...stats };
+  });
+}
+
+function renderLeaderboardTable(tableId, bodyId, stateKey, keys, labels) {
+  const { key, dir } = sortState[stateKey];
+  const data = buildLeaderboardData(keys);
+  data.sort((a, b) => {
+    const av = a[key], bv = b[key];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    if (key === 'name') return av.localeCompare(bv) * dir;
+    return (av - bv) * dir;
+  });
+  document.getElementById(bodyId).innerHTML = data.map((row, i) => {
+    const rank = i + 1;
+    return `<tr>
+      <td style="font-size:14px;padding-left:16px">${rank}. ${row.name}</td>
+      <td>${rawCell(row.pf)}</td>
+      <td>${rawCell(row.pa)}</td>
+      <td>${cell(row.avg)}</td>
+      ${keys.map(k => `<td>${cell(row[k])}</td>`).join('')}
+    </tr>`;
+  }).join('');
+
+  // Wire sortable headers
+  const ths = document.querySelectorAll(`#${tableId} thead th`);
+  ths.forEach((th, i) => {
+    th.style.cursor = 'pointer';
+    th.onclick = () => {
+      const k = i === 0 ? 'name' : i === 1 ? 'pf' : i === 2 ? 'pa' : i === 3 ? 'avg' : keys[i - 4];
+      const st = sortState[stateKey];
+      st.dir = st.key === k ? st.dir * -1 : -1;
+      st.key = k;
+      ths.forEach(t => t.classList.remove('sort-asc', 'sort-desc'));
+      th.classList.add(st.dir === 1 ? 'sort-asc' : 'sort-desc');
+      renderLeaderboardTable(tableId, bodyId, stateKey, keys, labels);
+    };
+  });
+  highlightSortedCol(tableId, ldrColIdx(key, keys));
+}
+
+function renderLeaderboard() {
+  renderLeaderboardTable('leaderboard-batter-table',  'leaderboard-batter-body',  'ldrBatter',  BATTER_KEYS,  BATTER_STAT_LABELS);
+  renderLeaderboardTable('leaderboard-pitcher-table', 'leaderboard-pitcher-body', 'ldrPitcher', PITCHER_KEYS, PITCHER_STAT_LABELS);
+}
+
+renderLeaderboard();
 
 // ── TIMESTAMP ─────────────────────────────────────────
 document.getElementById('updated').textContent = new Date().toLocaleDateString('en-US', {
