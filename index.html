@@ -2082,6 +2082,8 @@ const sortState = {
   faPitcher:{ key: null, dir: -1 },
   ldrBatter:  { key: 'avg', dir: -1 },
   ldrPitcher: { key: 'avg', dir: -1 },
+  tradeSell:  { key: 'diff', dir: -1 },
+  tradeBuy:   { key: 'diff', dir:  1 },
 };
 
 function highlightSortedCol(tableId, colIdx) {
@@ -2996,13 +2998,28 @@ function renderTradeTables() {
   const pitchers = enrich(allPitchers, pPct, PITCHER_KEYS);
   const all      = [...batters, ...pitchers];
 
-  const mine  = all.filter(p => p.team === tradeCurrentTeam)
-                   .filter(p => p.diff != null)
-                   .sort((a, b) => b.diff - a.diff);
+  function tradeSort(players, stateKey) {
+    const { key, dir } = sortState[stateKey];
+    if (!key) return players;
+    return [...players].sort((a, b) => {
+      const av = a[key], bv = b[key];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return typeof av === 'string'
+        ? av.localeCompare(bv) * dir
+        : (av - bv) * dir;
+    });
+  }
 
-  const others = all.filter(p => p.team !== tradeCurrentTeam)
-                    .filter(p => p.diff != null)
-                    .sort((a, b) => a.diff - b.diff);
+  const mine  = tradeSort(
+    all.filter(p => p.team === tradeCurrentTeam && p.diff != null),
+    'tradeSell'
+  );
+  const others = tradeSort(
+    all.filter(p => p.team !== tradeCurrentTeam && p.diff != null),
+    'tradeBuy'
+  );
 
   function sellRow(p) {
     const pos = p.pos || p.type || '—';
@@ -3033,6 +3050,14 @@ function renderTradeTables() {
 
   document.getElementById('trade-sell-body').innerHTML = mine.map(sellRow).join('');
   document.getElementById('trade-buy-body').innerHTML  = others.map(buyRow).join('');
+
+  // Highlight sorted columns
+  // Sell cols: 0=name,1=pos,2=ppg,3=ppgPct,4=savantAvg,5=diff
+  const sellKeyIdx = { name:0, ppg:2, ppgPct:3, savantAvg:4, diff:5 };
+  // Buy cols:  0=name,1=team,2=pos,3=ppg,4=ppgPct,5=savantAvg,6=diff
+  const buyKeyIdx  = { name:0, ppg:3, ppgPct:4, savantAvg:5, diff:6 };
+  highlightSortedCol('trade-sell-table', sellKeyIdx[sortState.tradeSell.key] ?? null);
+  highlightSortedCol('trade-buy-table',  buyKeyIdx[sortState.tradeBuy.key]   ?? null);
 }
 
 // Populate trade team selector
@@ -3050,6 +3075,38 @@ tradeTeamSelect.addEventListener('change', () => {
 });
 
 renderTradeTables();
+
+// Sort click handlers for trade tables
+// Sell: name(0), pos(1,skip), ppg(2), ppgPct(3), savantAvg(4), diff(5)
+const sellKeys = ['name', null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
+// Buy:  name(0), team(1,skip), pos(2,skip), ppg(3), ppgPct(4), savantAvg(5), diff(6)
+const buyKeys  = ['name', null, null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
+
+document.querySelectorAll('#trade-sell-table thead th').forEach((th, i) => {
+  const key = sellKeys[i];
+  if (!key) return;
+  th.addEventListener('click', () => {
+    const st = sortState.tradeSell;
+    st.dir = (st.key === key) ? st.dir * -1 : -1;
+    st.key = key;
+    document.querySelectorAll('#trade-sell-table thead th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(st.dir === 1 ? 'sort-asc' : 'sort-desc');
+    renderTradeTables();
+  });
+});
+
+document.querySelectorAll('#trade-buy-table thead th').forEach((th, i) => {
+  const key = buyKeys[i];
+  if (!key) return;
+  th.addEventListener('click', () => {
+    const st = sortState.tradeBuy;
+    st.dir = (st.key === key) ? st.dir * -1 : -1;
+    st.key = key;
+    document.querySelectorAll('#trade-buy-table thead th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(st.dir === 1 ? 'sort-asc' : 'sort-desc');
+    renderTradeTables();
+  });
+});
 </script>
 </body>
 </html>
