@@ -622,6 +622,9 @@
   .tab-bar::-webkit-scrollbar { display: none; }
   .tab { flex-shrink: 0; }
 
+  #savant-open-link         { display: none; }
+  #savant-open-link.active  { display: inline; }
+
   .tab {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 13px;
@@ -690,6 +693,7 @@
     #savant-view .section-header { padding: 24px 16px 12px; }
     #savant-view > .section > div:first-of-type { padding: 0 16px 12px; flex-wrap: wrap; }
     #savant-search        { width: 100% !important; flex: 1 0 100%; }
+    #savant-open-link     { display: block; width: 100%; margin-top: 4px; }
     #savant-iframe-wrap   { border-radius: 0; border-left: none; border-right: none; }
     #savant-iframe        { height: calc(100vh - 160px); }
   }
@@ -1097,7 +1101,7 @@
       style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:4px;padding:8px 12px;width:320px;outline:none;">
     <datalist id="savant-player-list"></datalist>
     <a id="savant-open-link" href="#" target="_blank"
-      style="display:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;">
+      style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;">
       Open in Baseball Savant ↗
     </a>
   </div>
@@ -2872,7 +2876,7 @@ document.getElementById('updated').textContent = new Date().toLocaleDateString('
     const slug = savantSlug(p.name);
     const url  = `https://baseballsavant.mlb.com/savant-player/${slug}-${p.id}`;
     openLink.href = url;
-    openLink.style.display = 'inline';
+    openLink.classList.add('active');
     iframeWrap.style.display = 'block';
     iframe.src = url;
   }
