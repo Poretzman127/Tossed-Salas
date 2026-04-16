@@ -188,7 +188,8 @@
   }
 
   table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
     min-width: 600px;
     font-size: 11px;
@@ -197,7 +198,6 @@
   /* ── THEAD ───────────────────────────────────── */
   thead tr {
     background: var(--bg3);
-    border-bottom: 2px solid var(--border2);
   }
 
   thead th {
@@ -212,6 +212,7 @@
     white-space: nowrap;
     width: 1px;
     border-right: 1px solid var(--border);
+    border-bottom: 2px solid var(--border2);
     cursor: pointer;
     user-select: none;
     transition: color 0.15s, background 0.15s;
@@ -525,21 +526,21 @@
 
   /* ── TBODY ───────────────────────────────────── */
   tbody tr {
-    border-bottom: 1px solid var(--border);
     transition: background 0.15s ease;
   }
 
   tbody tr:hover { background: rgba(255,255,255,0.025); }
 
-  tbody tr:last-child { border-bottom: none; }
-
   td {
     padding: 8px 1px;
     text-align: center;
     border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
     width: 1px;
   }
+
+  tbody tr:last-child td { border-bottom: none; }
 
   td:first-child {
     text-align: left;
