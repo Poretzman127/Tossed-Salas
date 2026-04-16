@@ -2827,15 +2827,35 @@ function showTip(th) {
   tooltip.style.top  = top  + 'px';
 }
 
+const isTouch = () => window.matchMedia('(hover: none)').matches;
+
 document.querySelectorAll('thead th[data-tip]').forEach(th => {
+  let lpTimer = null;
+
+  // Desktop: show after 2s hover, hide on leave
   th.addEventListener('mouseenter', () => {
+    if (isTouch()) return;
     tipTimer = setTimeout(() => showTip(th), 2000);
   });
   th.addEventListener('mouseleave', () => {
+    if (isTouch()) return;
     clearTimeout(tipTimer);
     tooltip.style.display = 'none';
   });
+
+  // Mobile: show after 2s hold; cancel on lift or scroll
+  th.addEventListener('touchstart', () => {
+    lpTimer = setTimeout(() => showTip(th), 2000);
+  }, { passive: true });
+  th.addEventListener('touchend',    () => clearTimeout(lpTimer));
+  th.addEventListener('touchcancel', () => clearTimeout(lpTimer));
+  th.addEventListener('touchmove',   () => clearTimeout(lpTimer), { passive: true });
 });
+
+// Mobile: dismiss tooltip on tap anywhere outside a header cell
+document.addEventListener('touchstart', e => {
+  if (!e.target.closest('thead th')) tooltip.style.display = 'none';
+}, { passive: true });
 
 // ── LEADERBOARD ───────────────────────────────────────
 function buildLeaderboardData(keys) {
