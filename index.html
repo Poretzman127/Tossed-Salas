@@ -804,6 +804,9 @@
     </table>
   </div>
 </div>
+<div class="compare-wrap" id="compare-wrap-batters" style="display:none">
+  <div class="compare-table" id="compare-batters"></div>
+</div>
 
 <!-- ═══════════════════════════════════════ PITCHERS ═══ -->
 <div class="section">
@@ -838,15 +841,7 @@
     </table>
   </div>
 </div>
-
-<div class="compare-wrap" id="compare-wrap" style="display:none">
-  <div class="section-header" style="padding: 0 0 20px">
-    <h2>Batters</h2>
-  </div>
-  <div class="compare-table" id="compare-batters"></div>
-  <div class="section-header" style="padding: 0 0 20px">
-    <h2>Pitchers</h2>
-  </div>
+<div class="compare-wrap" id="compare-wrap-pitchers" style="display:none">
   <div class="compare-table" id="compare-pitchers"></div>
 </div>
 
@@ -2702,12 +2697,15 @@ function buildCompareTable(elId, keys, labels, dirs, aPlayers, bPlayers) {
 }
 
 function renderComparison() {
-  const wrap = document.getElementById('compare-wrap');
+  const wrapB = document.getElementById('compare-wrap-batters');
+  const wrapP = document.getElementById('compare-wrap-pitchers');
   if (!compareTeam || !TEAMS[compareTeam]) {
-    wrap.style.display = 'none';
+    wrapB.style.display = 'none';
+    wrapP.style.display = 'none';
     return;
   }
-  wrap.style.display = 'block';
+  wrapB.style.display = 'block';
+  wrapP.style.display = 'block';
   buildCompareTable('compare-batters',  BATTER_KEYS,  BATTER_STAT_LABELS,  BATTER_STAT_DIRS,
     TEAMS[currentTeam].batters,  TEAMS[compareTeam].batters);
   buildCompareTable('compare-pitchers', PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
