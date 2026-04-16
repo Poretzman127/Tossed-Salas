@@ -214,6 +214,10 @@
     cursor: pointer;
     user-select: none;
     transition: color 0.15s, background 0.15s;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--bg3);
   }
 
   thead th:hover { color: var(--text); background: rgba(255,255,255,0.03); }
@@ -514,7 +518,7 @@
     padding: 10px;
   }
 
-  thead th:first-child { text-align: left; padding-left: 16px; }
+  thead th:first-child { text-align: left; padding-left: 16px; position: sticky; left: 0; z-index: 3; }
   thead th:nth-child(2) { border-right: 2px solid var(--border2); }
   thead th:last-child { border-right: none; }
 
@@ -545,7 +549,15 @@
     color: var(--text);
     letter-spacing: 0.02em;
     width: 1%;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #0d1018;
   }
+
+  tbody tr:hover td:first-child { background: #13161e; }
+  #fa-batter-body tr:hover td:first-child,
+  #fa-pitcher-body tr:hover td:first-child { background: #13161e; }
 
   td:nth-child(2) {
     font-family: 'Barlow Condensed', sans-serif;
@@ -588,6 +600,8 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 15px;
     letter-spacing: 0.1em;
+    background-color: #0d1018;
+    background-image: linear-gradient(90deg, rgba(200,168,75,0.08) 0%, transparent 40%);
   }
 
   /* ── BELOW-MIN ROW ───────────────────────────── */
