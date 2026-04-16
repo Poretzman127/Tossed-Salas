@@ -622,8 +622,6 @@
   .tab-bar::-webkit-scrollbar { display: none; }
   .tab { flex-shrink: 0; }
 
-  #savant-open-link         { display: none; }
-  #savant-open-link.active  { display: inline; }
 
   .tab {
     font-family: 'Barlow Condensed', sans-serif;
@@ -692,8 +690,7 @@
     #savant-view .section { padding: 0 !important; }
     #savant-view .section-header { padding: 24px 16px 12px; }
     #savant-view > .section > div:first-of-type { padding: 0 16px 12px; flex-wrap: wrap; }
-    #savant-search        { width: 100% !important; flex: 1 0 100%; }
-    #savant-open-link     { display: block; width: 100%; margin-top: 4px; }
+    #savant-search        { width: 100% !important; }
     #savant-iframe-wrap   { border-radius: 0; border-left: none; border-right: none; }
     #savant-iframe        { height: calc(100vh - 160px); }
   }
@@ -1095,21 +1092,21 @@
   <div class="section-header">
     <h2>Player Savant Page</h2>
   </div>
-  <div style="display:flex;align-items:center;gap:12px;padding:0 0 16px">
+  <div style="padding:0 0 16px">
     <input id="savant-search" type="text" placeholder="Search player…"
       autocomplete="off" list="savant-player-list"
       style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:4px;padding:8px 12px;width:320px;outline:none;">
     <datalist id="savant-player-list"></datalist>
-    <a id="savant-open-link" href="#" target="_blank"
-      style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;">
-      Open in Baseball Savant ↗
-    </a>
   </div>
   <div id="savant-iframe-wrap" style="display:none;border:1px solid var(--border2);border-radius:4px;overflow:hidden;">
     <iframe id="savant-iframe" src="" width="100%" height="900"
       style="display:block;border:none;background:#fff;">
     </iframe>
   </div>
+  <a id="savant-open-link" href="#" target="_blank"
+    style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none;white-space:nowrap;padding:12px 0;display:none;">
+    Open in Baseball Savant ↗
+  </a>
 </div>
 </div><!-- #savant-view -->
 
@@ -2876,7 +2873,7 @@ document.getElementById('updated').textContent = new Date().toLocaleDateString('
     const slug = savantSlug(p.name);
     const url  = `https://baseballsavant.mlb.com/savant-player/${slug}-${p.id}`;
     openLink.href = url;
-    openLink.classList.add('active');
+    openLink.style.display = 'inline';
     iframeWrap.style.display = 'block';
     iframe.src = url;
   }
