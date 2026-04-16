@@ -668,6 +668,26 @@
 
   @media (max-width: 900px) { .scroll-hint { display: block; } }
 
+  @media (max-width: 768px) {
+    #savant-view .section {
+      padding: 0 !important;
+    }
+    #savant-view .section-header {
+      padding: 24px 16px 12px;
+    }
+    #savant-view > .section > div:first-of-type {
+      padding: 0 16px 12px;
+    }
+    #savant-iframe-wrap {
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+    #savant-iframe {
+      height: calc(100vh - 160px);
+    }
+  }
+
   /* ── ANIMATIONS ──────────────────────────────── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
