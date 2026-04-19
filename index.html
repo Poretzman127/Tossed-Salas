@@ -187,7 +187,8 @@
   }
 
   table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
     min-width: 600px;
     font-size: 11px;
@@ -196,7 +197,6 @@
   /* ── THEAD ───────────────────────────────────── */
   thead tr {
     background: var(--bg3);
-    border-bottom: 2px solid var(--border2);
   }
 
   thead th {
@@ -211,9 +211,14 @@
     white-space: nowrap;
     width: 1px;
     border-right: 1px solid var(--border);
+    border-bottom: 2px solid var(--border2);
     cursor: pointer;
     user-select: none;
     transition: color 0.15s, background 0.15s;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--bg3);
   }
 
   thead th:hover { color: var(--text); background: rgba(255,255,255,0.03); }
@@ -454,7 +459,10 @@
   }
 
   /* ── COMPARISON SECTION ──────────────────────── */
-  .compare-wrap { padding: 40px 48px 0; max-width: 420px; }
+  .compare-wrap { padding: 40px 48px 0; display: flex; flex-direction: column; gap: 24px; }
+  .compare-inline-selector { display: flex; align-items: center; gap: 12px; }
+  .compare-sides { display: flex; gap: 32px; align-items: flex-start; }
+  .compare-side { flex: 1; min-width: 300px; }
 
   .compare-table {
     border: 1px solid var(--border2);
@@ -514,7 +522,7 @@
     padding: 10px;
   }
 
-  thead th:first-child { text-align: left; padding-left: 16px; }
+  thead th:first-child { text-align: left; padding-left: 16px; position: sticky; left: 0; z-index: 3; }
   thead th:nth-child(2) { border-right: 2px solid var(--border2); }
   thead th:last-child { border-right: none; }
 
@@ -545,7 +553,15 @@
     color: var(--text);
     letter-spacing: 0.02em;
     width: 1%;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #0d1018;
   }
+
+  tbody tr:hover td:first-child { background: #13161e; }
+  #fa-batter-body tr:hover td:first-child,
+  #fa-pitcher-body tr:hover td:first-child { background: #13161e; }
 
   td:nth-child(2) {
     font-family: 'Barlow Condensed', sans-serif;
@@ -614,7 +630,11 @@
     border-bottom: 2px solid var(--border2);
     padding: 0 48px;
     background: var(--bg);
+    overflow-x: auto;
+    touch-action: pan-x;
   }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; }
 
   .tab {
     font-family: 'Barlow Condensed', sans-serif;
@@ -691,6 +711,10 @@
   }
   @media (max-width: 768px) { .split-selector { padding: 8px 16px; } }
   @media (max-width: 768px) {
+    .compare-sides { flex-direction: column; }
+    .compare-side { min-width: 0; width: 100%; }
+  }
+  @media (max-width: 768px) {
     #league-view .team-selector {
       flex-direction: column;
       align-items: stretch;
@@ -713,6 +737,7 @@
   }
 
   @media (max-width: 900px) { .scroll-hint { display: block; } }
+  @media (max-width: 768px) { #trade-view .section-count { display: none; } }
 
   /* ── ANIMATIONS ──────────────────────────────── */
   @keyframes fadeUp {
@@ -766,6 +791,7 @@
   <button class="tab" id="tab-waiver">Waiver Wire</button>
   <button class="tab" id="tab-leaderboard">Leaderboard</button>
   <button class="tab" id="tab-savant">Savant</button>
+  <button class="tab" id="tab-trade">Trade</button>
 </div>
 
 <div class="legend">
@@ -868,14 +894,26 @@
 </div>
 
 <div class="compare-wrap" id="compare-wrap" style="display:none">
-  <div class="section-header" style="padding: 0 0 20px">
-    <h2>Batters</h2>
+  <div class="compare-inline-selector">
+    <span class="team-selector-label">VS</span>
+    <select id="compare-select-inline">
+      <option value="">— Compare —</option>
+    </select>
   </div>
-  <div class="compare-table" id="compare-batters"></div>
-  <div class="section-header" style="padding: 0 0 20px">
-    <h2>Pitchers</h2>
+  <div class="compare-sides">
+    <div class="compare-side">
+      <div class="section-header" style="padding: 0 0 20px">
+        <h2>Batters</h2>
+      </div>
+      <div class="compare-table" id="compare-batters"></div>
+    </div>
+    <div class="compare-side">
+      <div class="section-header" style="padding: 0 0 20px">
+        <h2>Pitchers</h2>
+      </div>
+      <div class="compare-table" id="compare-pitchers"></div>
+    </div>
   </div>
-  <div class="compare-table" id="compare-pitchers"></div>
 </div>
 
 </div><!-- #league-view -->
@@ -913,6 +951,7 @@
           <th>Player</th>
           <th>Pos</th>
           <th data-tip="ESPN Fantasy Points Per Game in your league.">PPG</th>
+          <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
           <th data-tip="Expected Weighted On-Base Average. Measures quality of contact + walks, park and defense neutral. Higher = better.">xwOBA</th>
           <th data-tip="Expected Batting Average based on exit velocity and launch angle, not actual hits. Higher = better.">xBA</th>
           <th data-tip="Expected Slugging Percentage based on quality of contact. Higher = better.">xSLG</th>
@@ -927,7 +966,6 @@
           <th data-tip="Chase Rate. % of swings at pitches outside the strike zone. Inverted — higher score means less chasing.">Chase</th>
           <th data-tip="Sprint Speed in feet per second, measured on competitive runs. Higher = faster.">Sprint</th>
           <th data-tip="Average bat speed through the hitting zone in mph. Higher = better.">Bat Spd</th>
-          <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
         </tr>
       </thead>
       <tbody id="fa-batter-body"></tbody>
@@ -962,6 +1000,7 @@
           <th>Player</th>
           <th>Type</th>
           <th data-tip="ESPN Fantasy Points Per Game in your league.">PPG</th>
+          <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
           <th data-tip="Expected ERA based on quality of contact allowed, park neutral. Percentile inverted — higher score means lower (better) xERA.">xERA</th>
           <th data-tip="Expected Weighted On-Base Average allowed. Higher percentile means less damage allowed to opposing hitters.">xwOBA</th>
           <th data-tip="Expected Batting Average allowed based on contact quality. Higher percentile = fewer expected hits.">xBA</th>
@@ -974,7 +1013,6 @@
           <th data-tip="Chase Rate. % of swings at pitches outside the zone. Higher = more chasing induced, better for pitchers.">Chase</th>
           <th data-tip="Fastball average velocity in mph. Higher = better.">FB Velo</th>
           <th data-tip="Fastball average spin rate in RPM. Higher spin typically generates more movement and rise.">FB Spin</th>
-          <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
         </tr>
       </thead>
       <tbody id="fa-pitcher-body"></tbody>
@@ -1138,6 +1176,58 @@
 
 </div>
 </div><!-- #savant-view -->
+
+<div id="trade-view" style="display:none">
+<div class="team-selector">
+  <span class="team-selector-label">My Team</span>
+  <select id="trade-team-select"></select>
+</div>
+
+<!-- ═══════════════════════════════════ SELL HIGH ═══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Sell High</h2>
+    <span class="section-count" style="font-size:12px;color:var(--muted)">PPG outperforming Savant metrics — trade from strength</span>
+  </div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="trade-sell-table">
+      <thead><tr>
+        <th>Player</th>
+        <th>Pos</th>
+        <th data-tip="ESPN Fantasy Points Per Game.">PPG</th>
+        <th data-tip="PPG percentile rank among all rostered players at the same position type.">PPG%</th>
+        <th data-tip="Average of all Statcast percentile columns.">Savant Avg</th>
+        <th data-tip="PPG percentile minus Savant average. Positive = PPG outpacing underlying metrics (sell high candidate).">Diff</th>
+      </tr></thead>
+      <tbody id="trade-sell-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ BUY LOW ═══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Buy Low</h2>
+    <span class="section-count" style="font-size:12px;color:var(--muted)">PPG underperforming Savant metrics — targets to acquire</span>
+  </div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="trade-buy-table">
+      <thead><tr>
+        <th>Player</th>
+        <th>Team</th>
+        <th>Pos</th>
+        <th data-tip="ESPN Fantasy Points Per Game.">PPG</th>
+        <th data-tip="PPG percentile rank among all rostered players at the same position type.">PPG%</th>
+        <th data-tip="Average of all Statcast percentile columns.">Savant Avg</th>
+        <th data-tip="PPG percentile minus Savant average. Negative = metrics outpacing PPG (buy low candidate).">Diff</th>
+      </tr></thead>
+      <tbody id="trade-buy-body"></tbody>
+    </table>
+  </div>
+</div>
+</div><!-- #trade-view -->
 
 <footer>
   Data sourced from <a href="https://baseballsavant.mlb.com" target="_blank">Baseball Savant</a> &amp;
@@ -2099,10 +2189,12 @@ function buildAvgRow(players, keys) {
 const sortState = {
   batter:   { key: null, dir: -1 },
   pitcher:  { key: null, dir: -1 },
-  faBatter: { key: null, dir: -1 },
-  faPitcher:{ key: null, dir: -1 },
+  faBatter: { key: 'avg', dir: -1 },
+  faPitcher:{ key: 'avg', dir: -1 },
   ldrBatter:  { key: 'avg', dir: -1 },
   ldrPitcher: { key: 'avg', dir: -1 },
+  tradeSell:  { key: 'diff', dir: -1 },
+  tradeBuy:   { key: 'diff', dir:  1 },
 };
 
 function highlightSortedCol(tableId, colIdx) {
@@ -2711,10 +2803,12 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById('waiver-view').style.display      = id === 'tab-waiver'      ? 'block' : 'none';
     document.getElementById('leaderboard-view').style.display = id === 'tab-leaderboard' ? 'block' : 'none';
     document.getElementById('savant-view').style.display      = id === 'tab-savant'      ? 'block' : 'none';
+    document.getElementById('trade-view').style.display       = id === 'tab-trade'       ? 'block' : 'none';
     if (id === 'tab-fa')               updateHeading(faCurrentTeam);
     else if (id === 'tab-waiver')      updateHeading(waiverCurrentTeam);
     else if (id === 'tab-leaderboard') updateHeading('League Leaderboard');
     else if (id === 'tab-savant')      updateHeading('Player Lookup');
+    else if (id === 'tab-trade')       updateHeading(tradeCurrentTeam);
     else                               updateHeading(currentTeam);
   });
 });
@@ -2783,7 +2877,7 @@ function renderComparison() {
     wrap.style.display = 'none';
     return;
   }
-  wrap.style.display = 'block';
+  wrap.style.display = 'flex';
   buildCompareTable('compare-batters',  BATTER_KEYS,  BATTER_STAT_LABELS,  BATTER_STAT_DIRS,
     TEAMS[currentTeam].batters,  TEAMS[compareTeam].batters);
   buildCompareTable('compare-pitchers', PITCHER_KEYS, PITCHER_STAT_LABELS, PITCHER_STAT_DIRS,
@@ -2791,17 +2885,28 @@ function renderComparison() {
 }
 
 const compareSelect = document.getElementById('compare-select');
+const compareSelectInline = document.getElementById('compare-select-inline');
 Object.keys(TEAMS).sort().forEach(name => {
-  const opt = document.createElement('option');
-  opt.value = name;
-  opt.textContent = name;
-  compareSelect.appendChild(opt);
+  [compareSelect, compareSelectInline].forEach(sel => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
 });
 
-compareSelect.addEventListener('change', () => {
-  compareTeam = compareSelect.value || null;
+function setCompareTeam(value, skipScroll) {
+  compareTeam = value || null;
+  compareSelect.value = value || '';
+  compareSelectInline.value = value || '';
   renderComparison();
-});
+  if (compareTeam && !skipScroll) {
+    document.getElementById('compare-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+compareSelect.addEventListener('change', () => setCompareTeam(compareSelect.value));
+compareSelectInline.addEventListener('change', () => setCompareTeam(compareSelectInline.value, true));
 
 // ── TOOLTIPS ──────────────────────────────────────────
 const tooltip = document.createElement('div');
@@ -2960,6 +3065,156 @@ document.getElementById('updated').textContent = new Date().toLocaleDateString('
   searchEl.addEventListener('change', () => loadPlayer(searchEl.value));
   searchEl.addEventListener('keydown', e => { if (e.key === 'Enter') loadPlayer(searchEl.value); });
 })();
+
+// ── TRADE TAB ─────────────────────────────────────────
+let tradeCurrentTeam = DEFAULT_TEAM;
+
+function ppgPercentiles(players) {
+  const withPPG = players.filter(p => p.ppg != null);
+  const n = withPPG.length;
+  if (n === 0) return {};
+  const pct = {};
+  for (const p of withPPG) {
+    const below = withPPG.filter(x => x.ppg < p.ppg).length;
+    pct[p.name] = Math.round((below / (n - 1)) * 100);
+  }
+  return pct;
+}
+
+function diffCell(diff) {
+  if (diff == null) return '<td>—</td>';
+  const sign = diff > 0 ? '+' : '';
+  let color;
+  if      (diff >  25) color = 'var(--c-elite)';
+  else if (diff >  10) color = 'var(--c-great)';
+  else if (diff > -10) color = 'var(--c-avg)';
+  else if (diff > -25) color = 'var(--c-below)';
+  else                 color = 'var(--c-poor)';
+  return `<td><span style="font-weight:700;color:${color}">${sign}${diff}</span></td>`;
+}
+
+function renderTradeTables() {
+  const allBatters  = [];
+  const allPitchers = [];
+  for (const [teamName, team] of Object.entries(TEAMS)) {
+    for (const p of team.batters)  { if (!p.partial && p.ppg != null) allBatters.push({...p,  team: teamName}); }
+    for (const p of team.pitchers) { if (!p.partial && p.ppg != null) allPitchers.push({...p, team: teamName}); }
+  }
+
+  const bPct = ppgPercentiles(allBatters);
+  const pPct = ppgPercentiles(allPitchers);
+
+  function enrich(players, pctMap, keys) {
+    return players.map(p => ({
+      ...p,
+      ppgPct:    pctMap[p.name] ?? null,
+      savantAvg: playerStatAvg(p, keys),
+      diff:      (pctMap[p.name] != null && playerStatAvg(p, keys) != null)
+                   ? Math.round(pctMap[p.name] - playerStatAvg(p, keys))
+                   : null,
+    }));
+  }
+
+  const batters  = enrich(allBatters,  bPct, BATTER_KEYS);
+  const pitchers = enrich(allPitchers, pPct, PITCHER_KEYS);
+  const all      = [...batters, ...pitchers];
+
+  function tradeSort(players, stateKey) {
+    const { key, dir } = sortState[stateKey];
+    if (!key) return players;
+    return [...players].sort((a, b) => {
+      const av = a[key], bv = b[key];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return typeof av === 'string' ? av.localeCompare(bv) * dir : (av - bv) * dir;
+    });
+  }
+
+  const mine   = tradeSort(all.filter(p => p.team === tradeCurrentTeam && p.diff != null), 'tradeSell');
+  const others = tradeSort(all.filter(p => p.team !== tradeCurrentTeam && p.diff != null), 'tradeBuy');
+
+  function sellRow(p) {
+    const pos = p.pos || p.type || '—';
+    const avg = p.savantAvg != null ? Math.round(p.savantAvg) : '—';
+    return `<tr>
+      <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}</td>
+      <td>${pos}</td>
+      <td class="ppg-cell">${p.ppg}</td>
+      <td>${cell(p.ppgPct)}</td>
+      <td>${cell(avg === '—' ? null : avg)}</td>
+      ${diffCell(p.diff)}
+    </tr>`;
+  }
+
+  function buyRow(p) {
+    const pos = p.pos || p.type || '—';
+    const avg = p.savantAvg != null ? Math.round(p.savantAvg) : '—';
+    return `<tr>
+      <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}</td>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.team}">${p.team}</td>
+      <td style="max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${pos}">${pos}</td>
+      <td class="ppg-cell">${p.ppg}</td>
+      <td>${cell(p.ppgPct)}</td>
+      <td>${cell(avg === '—' ? null : avg)}</td>
+      ${diffCell(p.diff)}
+    </tr>`;
+  }
+
+  document.getElementById('trade-sell-body').innerHTML = mine.map(sellRow).join('');
+  document.getElementById('trade-buy-body').innerHTML  = others.map(buyRow).join('');
+
+  const sellKeyIdx = { name:0, ppg:2, ppgPct:3, savantAvg:4, diff:5 };
+  const buyKeyIdx  = { name:0, ppg:3, ppgPct:4, savantAvg:5, diff:6 };
+  highlightSortedCol('trade-sell-table', sellKeyIdx[sortState.tradeSell.key] ?? null);
+  highlightSortedCol('trade-buy-table',  buyKeyIdx[sortState.tradeBuy.key]   ?? null);
+}
+
+// Populate trade team selector
+const tradeTeamSelect = document.getElementById('trade-team-select');
+Object.keys(TEAMS).sort().forEach(name => {
+  const opt = document.createElement('option');
+  opt.value = name; opt.textContent = name;
+  if (name === DEFAULT_TEAM) opt.selected = true;
+  tradeTeamSelect.appendChild(opt);
+});
+tradeTeamSelect.addEventListener('change', () => {
+  tradeCurrentTeam = tradeTeamSelect.value;
+  updateHeading(tradeCurrentTeam);
+  renderTradeTables();
+});
+
+renderTradeTables();
+
+// Sort click handlers for trade tables
+const sellKeys = ['name', null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
+const buyKeys  = ['name', null, null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
+
+document.querySelectorAll('#trade-sell-table thead th').forEach((th, i) => {
+  const key = sellKeys[i];
+  if (!key) return;
+  th.addEventListener('click', () => {
+    const st = sortState.tradeSell;
+    st.dir = (st.key === key) ? st.dir * -1 : -1;
+    st.key = key;
+    document.querySelectorAll('#trade-sell-table thead th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(st.dir === 1 ? 'sort-asc' : 'sort-desc');
+    renderTradeTables();
+  });
+});
+
+document.querySelectorAll('#trade-buy-table thead th').forEach((th, i) => {
+  const key = buyKeys[i];
+  if (!key) return;
+  th.addEventListener('click', () => {
+    const st = sortState.tradeBuy;
+    st.dir = (st.key === key) ? st.dir * -1 : -1;
+    st.key = key;
+    document.querySelectorAll('#trade-buy-table thead th').forEach(t => t.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(st.dir === 1 ? 'sort-asc' : 'sort-desc');
+    renderTradeTables();
+  });
+});
 </script>
 </body>
 </html>
