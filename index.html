@@ -3273,13 +3273,9 @@ function initMobileStickyHeaders() {
     });
 
     new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.style.display = 'none');
-      } else if (entry.boundingClientRect.top < 0) {
-        document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.style.display = 'none');
-        syncAndShow();
-      }
-    }, { threshold: 0 }).observe(thead);
+      document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.style.display = 'none');
+      if (entry.boundingClientRect.top < 0) syncAndShow();
+    }, { threshold: [0, 1] }).observe(thead);
   });
 }
 
