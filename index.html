@@ -2923,7 +2923,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById('leaderboard-view').style.display = id === 'tab-leaderboard' ? 'block' : 'none';
     document.getElementById('savant-view').style.display      = id === 'tab-savant'      ? 'block' : 'none';
     document.getElementById('trade-view').style.display       = id === 'tab-trade'       ? 'block' : 'none';
-    if (id === 'tab-fa')               updateHeading(faCurrentTeam);
+    if (id === 'tab-fa')             { updateHeading(faCurrentTeam); setTimeout(initMobileStickyHeaders, 50); }
     else if (id === 'tab-waiver')      updateHeading(waiverCurrentTeam);
     else if (id === 'tab-leaderboard') updateHeading('League Leaderboard');
     else if (id === 'tab-savant')      updateHeading('Player Lookup');
@@ -3325,9 +3325,15 @@ renderTradeTables();
 setTimeout(initMobileStickyHeaders, 0);
 
 // ── MOBILE STICKY HEADERS ─────────────────────────────
+let _stickyScrollHandler = null;
+
 function initMobileStickyHeaders() {
   if (window.innerWidth > 768) return;
   document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.remove());
+  if (_stickyScrollHandler) {
+    window.removeEventListener('scroll', _stickyScrollHandler);
+    _stickyScrollHandler = null;
+  }
 
   const headers = [];
 
@@ -3335,7 +3341,7 @@ function initMobileStickyHeaders() {
     const table = wrap.querySelector('table');
     if (!table) return;
     const thead = table.querySelector('thead');
-    if (!thead) return;
+    if (!thead || !thead.offsetParent) return; // skip tables in hidden tabs
 
     const clone = document.createElement('div');
     clone.className = 'mobile-sticky-hdr';
@@ -3377,23 +3383,23 @@ function initMobileStickyHeaders() {
 
   // Single scroll handler: show the clone whose thead most recently crossed top=0
   let raf = null;
-  window.addEventListener('scroll', () => {
+  _stickyScrollHandler = () => {
     if (raf) return;
     raf = requestAnimationFrame(() => {
       raf = null;
       let active = null;
       for (const h of headers) {
-        if (!h.thead.offsetParent) continue; // hidden tab
         const top = h.thead.getBoundingClientRect().top;
-        if (top > 0) continue; // thead hasn't reached screen top yet
+        if (top > 0) continue;
         const lastRow = h.table.querySelector('tbody tr:last-child');
-        if (lastRow && lastRow.getBoundingClientRect().bottom <= 0) continue; // table fully past
+        if (lastRow && lastRow.getBoundingClientRect().bottom <= 0) continue;
         if (!active || top > active.top) active = { ...h, top };
       }
       headers.forEach(h => h.clone.style.display = 'none');
       if (active) active.syncAndShow();
     });
-  }, { passive: true });
+  };
+  window.addEventListener('scroll', _stickyScrollHandler, { passive: true });
 }
 
 // Sort click handlers for trade tables
