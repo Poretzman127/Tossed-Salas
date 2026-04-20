@@ -179,7 +179,9 @@
   /* ── TABLE WRAPPER ───────────────────────────── */
   .table-wrap {
     overflow-x: auto;
-    overflow-y: clip;
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+    max-height: calc(100dvh - 220px);
     border: 1px solid var(--border2);
     border-radius: 6px;
     background: var(--bg2);
@@ -710,6 +712,7 @@
     letter-spacing: 0.05em;
     margin-left: 8px;
   }
+  @media (max-width: 768px) { .table-wrap { max-height: calc(100dvh - 160px); } }
   @media (max-width: 768px) { .split-selector { padding: 8px 16px; } }
   @media (max-width: 768px) {
     .compare-sides { flex-direction: column; }
@@ -2930,6 +2933,7 @@ tooltip.id = 'stat-tooltip';
 document.body.appendChild(tooltip);
 
 let tipTimer = null;
+let isTouching = false;
 
 function showTip(th) {
   tooltip.textContent = th.dataset.tip;
@@ -2938,20 +2942,37 @@ function showTip(th) {
   const tw = tooltip.offsetWidth;
   let left = rect.left + rect.width / 2 - tw / 2;
   let top  = rect.top - tooltip.offsetHeight - 10;
-  // keep inside viewport
   left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
   if (top < 8) top = rect.bottom + 10;
   tooltip.style.left = left + 'px';
   tooltip.style.top  = top  + 'px';
 }
 
+function hideTip() {
+  clearTimeout(tipTimer);
+  tooltip.style.display = 'none';
+}
+
 document.querySelectorAll('thead th[data-tip]').forEach(th => {
+  // Desktop: hover with delay
   th.addEventListener('mouseenter', () => {
+    if (isTouching) return;
     tipTimer = setTimeout(() => showTip(th), 2000);
   });
-  th.addEventListener('mouseleave', () => {
-    clearTimeout(tipTimer);
-    tooltip.style.display = 'none';
+  th.addEventListener('mouseleave', hideTip);
+
+  // Mobile: hold to show, release to hide
+  th.addEventListener('touchstart', () => {
+    isTouching = true;
+    tipTimer = setTimeout(() => showTip(th), 400);
+  }, { passive: true });
+  th.addEventListener('touchend', () => {
+    hideTip();
+    setTimeout(() => { isTouching = false; }, 400);
+  });
+  th.addEventListener('touchcancel', () => {
+    hideTip();
+    setTimeout(() => { isTouching = false; }, 400);
   });
 });
 
@@ -3201,6 +3222,60 @@ tradeTeamSelect.addEventListener('change', () => {
 });
 
 renderTradeTables();
+setTimeout(initMobileStickyHeaders, 0);
+
+// ── MOBILE STICKY HEADERS ─────────────────────────────
+function initMobileStickyHeaders() {
+  if (window.innerWidth > 768) return;
+  document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.remove());
+
+  document.querySelectorAll('.table-wrap').forEach(wrap => {
+    const table = wrap.querySelector('table');
+    if (!table) return;
+    const thead = table.querySelector('thead');
+    if (!thead || !table.querySelector('tbody tr')) return;
+
+    const clone = document.createElement('div');
+    clone.className = 'mobile-sticky-hdr';
+    Object.assign(clone.style, {
+      position:'fixed', top:'0', left:'0', right:'0',
+      overflow:'hidden', zIndex:'40', display:'none',
+      background:'var(--bg3)', borderBottom:'2px solid var(--border2)'
+    });
+
+    const cloneTable = document.createElement('table');
+    Object.assign(cloneTable.style, {
+      borderCollapse:'separate', borderSpacing:'0',
+      fontSize:'11px', minWidth:'600px'
+    });
+    const cloneThead = document.createElement('thead');
+    cloneTable.appendChild(cloneThead);
+    clone.appendChild(cloneTable);
+    document.body.appendChild(clone);
+
+    function syncAndShow() {
+      cloneThead.innerHTML = thead.innerHTML;
+      const origThs = thead.querySelectorAll('th');
+      cloneThead.querySelectorAll('th').forEach((cloneTh, i) => {
+        if (origThs[i]) cloneTh.addEventListener('click', () => origThs[i].click());
+        const w = origThs[i] ? origThs[i].getBoundingClientRect().width : 0;
+        if (w > 0) { cloneTh.style.width = w + 'px'; cloneTh.style.minWidth = w + 'px'; }
+      });
+      cloneTable.style.marginLeft = (-wrap.scrollLeft) + 'px';
+      clone.style.display = 'block';
+    }
+
+    wrap.addEventListener('scroll', () => {
+      if (clone.style.display !== 'none')
+        cloneTable.style.marginLeft = (-wrap.scrollLeft) + 'px';
+    });
+
+    new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting && entry.boundingClientRect.top < 0) syncAndShow();
+      else clone.style.display = 'none';
+    }, { threshold: 0 }).observe(thead);
+  });
+}
 
 // Sort click handlers for trade tables
 const sellKeys = ['name', null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
