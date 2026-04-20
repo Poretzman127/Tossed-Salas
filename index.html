@@ -3231,6 +3231,8 @@ function initMobileStickyHeaders() {
   if (window.innerWidth > 768) return;
   document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.remove());
 
+  const headers = [];
+
   document.querySelectorAll('.table-wrap').forEach(wrap => {
     const table = wrap.querySelector('table');
     if (!table) return;
@@ -3272,11 +3274,24 @@ function initMobileStickyHeaders() {
         cloneTable.style.marginLeft = (-wrap.scrollLeft) + 'px';
     });
 
-    new IntersectionObserver(([entry]) => {
-      document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.style.display = 'none');
-      if (entry.boundingClientRect.top <= 0) syncAndShow();
-    }, { threshold: [0, 1] }).observe(thead);
+    headers.push({ thead, clone, syncAndShow });
   });
+
+  // Single scroll handler: show the clone whose thead most recently crossed top=0
+  let raf = null;
+  window.addEventListener('scroll', () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = null;
+      let active = null;
+      for (const h of headers) {
+        const top = h.thead.getBoundingClientRect().top;
+        if (top <= 0 && (!active || top > active.top)) active = { ...h, top };
+      }
+      headers.forEach(h => h.clone.style.display = 'none');
+      if (active) active.syncAndShow();
+    });
+  }, { passive: true });
 }
 
 // Sort click handlers for trade tables
