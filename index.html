@@ -453,6 +453,16 @@
     letter-spacing: 0.08em; color: #e84040; vertical-align: middle;
   }
 
+  .news-btn {
+    display: inline-block; margin-left: 5px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.05em; color: var(--muted); vertical-align: middle;
+    text-decoration: none; border: 1px solid var(--border);
+    border-radius: 2px; padding: 0 3px; line-height: 1.4;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .news-btn:hover { color: var(--accent); border-color: var(--accent); }
+
   .compare-vs-label {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 20px;
@@ -2147,13 +2157,14 @@ function ppgCell(v) {
 }
 
 function ilTag(p) { return p.il != null ? ` <span class="il-badge">${p.il}</span>` : ''; }
+function newsBtn(p) { return p.espn_id != null ? ` <a class="news-btn" href="https://www.espn.com/mlb/player/news/_/id/${p.espn_id}" target="_blank" rel="noopener" title="ESPN news">N</a>` : ''; }
 
 function buildBatterRow(p) {
   const avgVal = playerStatAvg(p, BATTER_KEYS);
   const lpClass = p.lowPa ? ' low-pa' : '';
   if (p.partial) {
     return `<tr class="below-min${lpClass}">
-      <td>${p.name}${ilTag(p)}</td>
+      <td>${p.name}${ilTag(p)}${newsBtn(p)}</td>
       <td>${p.pos}</td>
       ${ppgCell(p.ppg)}
       <td>${cell(avgVal)}</td>
@@ -2161,7 +2172,7 @@ function buildBatterRow(p) {
     </tr>`;
   }
   return `<tr class="${lpClass.trim()}">
-    <td>${p.name}${ilTag(p)}</td>
+    <td>${p.name}${ilTag(p)}${newsBtn(p)}</td>
     <td>${p.pos}</td>
     ${ppgCell(p.ppg)}
     <td>${cell(avgVal)}</td>
@@ -2174,7 +2185,7 @@ function buildPitcherRow(p) {
   const lpClass = p.lowPa ? ' low-pa' : '';
   if (p.partial) {
     return `<tr class="below-min${lpClass}">
-      <td>${p.name}${ilTag(p)}</td>
+      <td>${p.name}${ilTag(p)}${newsBtn(p)}</td>
       <td>${p.type}</td>
       ${ppgCell(p.ppg)}
       <td>${cell(null)}</td>
@@ -2434,7 +2445,7 @@ function renderWaiverSuggestions() {
     const deltaStr = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
     const deltaClass = delta == null ? '' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
     return `<tr>
-      <td>${p.name}${ilTag(p)}</td>
+      <td>${p.name}${ilTag(p)}${newsBtn(p)}</td>
       <td style="text-align:center">${p.pos || '—'}</td>
       ${waiverCell(p.faAvg)}
       ${waiverCell(teamBatterAvg)}
@@ -2451,7 +2462,7 @@ function renderWaiverSuggestions() {
     const deltaStr = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
     const deltaClass = delta == null ? '' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
     return `<tr>
-      <td>${p.name}${ilTag(p)}</td>
+      <td>${p.name}${ilTag(p)}${newsBtn(p)}</td>
       <td style="text-align:center">${p.type || p.pos || '—'}</td>
       ${waiverCell(p.faAvg)}
       ${waiverCell(teamPitcherAvg)}
@@ -3177,7 +3188,7 @@ function renderTradeTables() {
     const pos = p.pos || p.type || '—';
     const avg = p.savantAvg != null ? Math.round(p.savantAvg) : '—';
     return `<tr>
-      <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}</td>
+      <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}${newsBtn(p)}</td>
       <td>${pos}</td>
       <td class="ppg-cell">${p.ppg}</td>
       <td>${cell(p.ppgPct)}</td>
@@ -3190,7 +3201,7 @@ function renderTradeTables() {
     const pos = p.pos || p.type || '—';
     const avg = p.savantAvg != null ? Math.round(p.savantAvg) : '—';
     return `<tr>
-      <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}</td>
+      <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}${newsBtn(p)}</td>
       <td style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.team}">${p.team}</td>
       <td style="max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${pos}">${pos}</td>
       <td class="ppg-cell">${p.ppg}</td>
