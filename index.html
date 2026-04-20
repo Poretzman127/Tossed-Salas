@@ -3274,7 +3274,7 @@ function initMobileStickyHeaders() {
 
     new IntersectionObserver(([entry]) => {
       document.querySelectorAll('.mobile-sticky-hdr').forEach(el => el.style.display = 'none');
-      if (entry.boundingClientRect.top < 0) syncAndShow();
+      if (entry.boundingClientRect.top <= 0) syncAndShow();
     }, { threshold: [0, 1] }).observe(thead);
   });
 }
