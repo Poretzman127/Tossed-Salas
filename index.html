@@ -2923,12 +2923,14 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById('leaderboard-view').style.display = id === 'tab-leaderboard' ? 'block' : 'none';
     document.getElementById('savant-view').style.display      = id === 'tab-savant'      ? 'block' : 'none';
     document.getElementById('trade-view').style.display       = id === 'tab-trade'       ? 'block' : 'none';
-    if (id === 'tab-fa')             { updateHeading(faCurrentTeam); setTimeout(initMobileStickyHeaders, 50); }
+    if (id === 'tab-fa')               updateHeading(faCurrentTeam);
     else if (id === 'tab-waiver')      updateHeading(waiverCurrentTeam);
     else if (id === 'tab-leaderboard') updateHeading('League Leaderboard');
     else if (id === 'tab-savant')      updateHeading('Player Lookup');
     else if (id === 'tab-trade')       updateHeading(tradeCurrentTeam);
     else                               updateHeading(currentTeam);
+    window.scrollTo(0, 0);
+    setTimeout(initMobileStickyHeaders, 50);
   });
 });
 
