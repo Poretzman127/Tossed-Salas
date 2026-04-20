@@ -3335,7 +3335,7 @@ function initMobileStickyHeaders() {
     const table = wrap.querySelector('table');
     if (!table) return;
     const thead = table.querySelector('thead');
-    if (!thead || !table.querySelector('tbody tr')) return;
+    if (!thead) return;
 
     const clone = document.createElement('div');
     clone.className = 'mobile-sticky-hdr';
