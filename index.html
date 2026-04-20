@@ -2208,7 +2208,9 @@ function ppgCell(v) {
 }
 
 function ilTag(p) { return p.il != null ? ` <span class="il-badge">${p.il}</span>` : ''; }
-function newsBtn(p) { return p.espn_id != null ? ` <button class="news-btn" onclick="event.stopPropagation();showNews(${p.espn_id},${JSON.stringify(p.name)})" title="ESPN news">N</button>` : ''; }
+// [NEWS_DISABLED] newsBtn() stubbed out — re-enable by restoring the line below
+function newsBtn(p) { return ''; }
+// [NEWS_DISABLED] function newsBtn(p) { return p.espn_id != null ? ` <button class="news-btn" onclick="event.stopPropagation();showNews(${p.espn_id},${JSON.stringify(p.name)})" title="ESPN news">N</button>` : ''; }
 
 function buildBatterRow(p) {
   const avgVal = playerStatAvg(p, BATTER_KEYS);
