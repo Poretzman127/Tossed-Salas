@@ -3274,7 +3274,7 @@ function initMobileStickyHeaders() {
         cloneTable.style.marginLeft = (-wrap.scrollLeft) + 'px';
     });
 
-    headers.push({ thead, clone, syncAndShow });
+    headers.push({ thead, clone, syncAndShow, table });
   });
 
   // Single scroll handler: show the clone whose thead most recently crossed top=0
@@ -3285,8 +3285,12 @@ function initMobileStickyHeaders() {
       raf = null;
       let active = null;
       for (const h of headers) {
+        if (!h.thead.offsetParent) continue; // hidden tab
         const top = h.thead.getBoundingClientRect().top;
-        if (top <= 0 && (!active || top > active.top)) active = { ...h, top };
+        if (top > 0) continue; // thead hasn't reached screen top yet
+        const lastRow = h.table.querySelector('tbody tr:last-child');
+        if (lastRow && lastRow.getBoundingClientRect().bottom <= 0) continue; // table fully past
+        if (!active || top > active.top) active = { ...h, top };
       }
       headers.forEach(h => h.clone.style.display = 'none');
       if (active) active.syncAndShow();
