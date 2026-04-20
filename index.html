@@ -727,7 +727,13 @@
   @media (max-width: 768px) { .section-header, .scroll-hint { padding-left: 16px; padding-right: 16px; } }
   @media (max-width: 768px) { header { padding-left: 16px; padding-right: 16px; } }
   @media (max-width: 768px) { .tab-bar { padding-left: 0; padding-right: 0; } }
-  @media (max-width: 768px) { .legend { padding-left: 16px; padding-right: 16px; } }
+  @media (max-width: 768px) {
+    .legend { padding-left: 0; padding-right: 0; gap: 2px; flex-wrap: nowrap; justify-content: space-around; }
+    .legend-label { display: none; }
+    .legend-range { display: none; }
+    .legend-item { font-size: 10px; padding: 3px 6px; gap: 4px; }
+    .legend-dot { width: 6px; height: 6px; }
+  }
   @media (max-width: 768px) { .team-selector { padding-left: 16px; padding-right: 16px; } }
   @media (max-width: 768px) { .split-selector { padding: 8px 16px; } }
   @media (max-width: 768px) {
@@ -864,11 +870,11 @@
 
 <div class="legend">
   <span class="legend-label">Percentile</span>
-  <span class="legend-item"><span class="legend-dot" style="background:var(--c-elite)"></span>90–100 Elite</span>
-  <span class="legend-item"><span class="legend-dot" style="background:var(--c-great)"></span>70–89 Above Avg</span>
-  <span class="legend-item"><span class="legend-dot" style="background:var(--c-avg)"></span>50–69 Average</span>
-  <span class="legend-item"><span class="legend-dot" style="background:var(--c-below)"></span>30–49 Below Avg</span>
-  <span class="legend-item"><span class="legend-dot" style="background:var(--c-poor)"></span>0–29 Poor</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--c-elite)"></span><span class="legend-range">90–100 </span>Elite</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--c-great)"></span><span class="legend-range">70–89 </span>Above Avg</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--c-avg)"></span><span class="legend-range">50–69 </span>Average</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--c-below)"></span><span class="legend-range">30–49 </span>Below Avg</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--c-poor)"></span><span class="legend-range">0–29 </span>Poor</span>
 </div>
 
 <div class="split-selector">
