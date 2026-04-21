@@ -783,6 +783,37 @@
 
   @media (max-width: 900px) { .scroll-hint { display: block; } }
   @media (max-width: 768px) { #trade-view .section-count { display: none; } }
+  @media (max-width: 768px) {
+    #trade-sell-table, #trade-buy-table {
+      min-width: 0;
+      width: 100%;
+      table-layout: fixed;
+    }
+    #trade-sell-table thead th, #trade-buy-table thead th {
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+    #trade-sell-table td:first-child, #trade-buy-table td:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 0;
+    }
+    /* Sell: Player | Pos | PPG | PPG% | Savant Avg | Diff */
+    #trade-sell-table th:nth-child(1) { width: 34%; }
+    #trade-sell-table th:nth-child(2) { width: 10%; }
+    #trade-sell-table th:nth-child(3) { width: 13%; }
+    #trade-sell-table th:nth-child(4) { width: 13%; }
+    #trade-sell-table th:nth-child(5) { width: 18%; }
+    #trade-sell-table th:nth-child(6) { width: 12%; }
+    /* Buy: Player | Pos | PPG | PPG% | Savant Avg | Diff */
+    #trade-buy-table th:nth-child(1) { width: 34%; }
+    #trade-buy-table th:nth-child(2) { width: 10%; }
+    #trade-buy-table th:nth-child(3) { width: 13%; }
+    #trade-buy-table th:nth-child(4) { width: 13%; }
+    #trade-buy-table th:nth-child(5) { width: 18%; }
+    #trade-buy-table th:nth-child(6) { width: 12%; }
+  }
 
   /* ── NEWS MODAL ──────────────────────────────── */
   #news-overlay {
@@ -1315,7 +1346,6 @@
     <table id="trade-buy-table">
       <thead><tr>
         <th>Player</th>
-        <th>Team</th>
         <th>Pos</th>
         <th data-tip="ESPN Fantasy Points Per Game.">PPG</th>
         <th data-tip="PPG percentile rank among all rostered players at the same position type.">PPG%</th>
@@ -3251,8 +3281,10 @@ function renderTradeTables() {
     for (const p of team.pitchers) { if (!p.partial && p.ppg != null) allPitchers.push({...p, team: teamName}); }
   }
 
-  const bPct = ppgPercentiles(allBatters);
-  const pPct = ppgPercentiles(allPitchers);
+  const bPct  = ppgPercentiles(allBatters);
+  const spPct = ppgPercentiles(allPitchers.filter(p => p.type === 'SP'));
+  const rpPct = ppgPercentiles(allPitchers.filter(p => p.type === 'RP'));
+  const pPct  = {...spPct, ...rpPct};
 
   function enrich(players, pctMap, keys) {
     return players.map(p => ({
@@ -3302,8 +3334,7 @@ function renderTradeTables() {
     const avg = p.savantAvg != null ? Math.round(p.savantAvg) : '—';
     return `<tr>
       <td style="text-align:left;padding-left:16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600">${p.name}${p.il ? `<span class="il-badge">${p.il}</span>` : ''}${newsBtn(p)}</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.team}">${p.team}</td>
-      <td style="max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${pos}">${pos}</td>
+      <td>${pos}</td>
       <td class="ppg-cell">${p.ppg}</td>
       <td>${cell(p.ppgPct)}</td>
       <td>${cell(avg === '—' ? null : avg)}</td>
@@ -3315,7 +3346,7 @@ function renderTradeTables() {
   document.getElementById('trade-buy-body').innerHTML  = others.map(buyRow).join('');
 
   const sellKeyIdx = { name:0, ppg:2, ppgPct:3, savantAvg:4, diff:5 };
-  const buyKeyIdx  = { name:0, ppg:3, ppgPct:4, savantAvg:5, diff:6 };
+  const buyKeyIdx  = { name:0, ppg:2, ppgPct:3, savantAvg:4, diff:5 };
   highlightSortedCol('trade-sell-table', sellKeyIdx[sortState.tradeSell.key] ?? null);
   highlightSortedCol('trade-buy-table',  buyKeyIdx[sortState.tradeBuy.key]   ?? null);
 }
@@ -3419,7 +3450,7 @@ function initMobileStickyHeaders() {
 
 // Sort click handlers for trade tables
 const sellKeys = ['name', null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
-const buyKeys  = ['name', null, null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
+const buyKeys  = ['name', null, 'ppg', 'ppgPct', 'savantAvg', 'diff'];
 
 document.querySelectorAll('#trade-sell-table thead th').forEach((th, i) => {
   const key = sellKeys[i];
