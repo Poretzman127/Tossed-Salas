@@ -2787,54 +2787,60 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
       getVal: k => vsp[k] != null ? vsp[k] : null,
       removeName: vsp.name,
     }));
-    const thVsCols = vsCols.map(c => {
+    // vsCols[0] is the reference/baseline — no delta shown. All others delta vs vsCols[0].
+    const ref = vsCols[0];
+    const thVsCols = vsCols.map((c, i) => {
       const safeName = c.removeName.replace(/'/g, "\\'");
-      return `<th>${c.label} <button class="fa-compare-close" style="padding:0 4px;font-size:10px" onclick="${removeVsFn}('${safeName}')">✕</button></th>`;
+      const btn = `<button class="fa-compare-close" style="padding:0 4px;font-size:10px" onclick="${removeVsFn}('${safeName}')">✕</button>`;
+      return i === 0
+        ? `<th>${c.label} ${btn}</th>`
+        : `<th>${c.label} ${btn}</th><th>Δ</th>`;
     }).join('');
-    const thDeltaCols = vsCols.map(() => `<th>Δ</th>`).join('');
     const vsTotals = vsCols.map(() => ({ sum: 0, any: false }));
     let totalFA2 = 0, anyFA2 = false;
     const vsRows = keys.map((k, i) => {
-      const faVal = player[k];
+      const faVal  = player[k];
+      const refVal = ref.getVal(k);
       if (faVal != null) { totalFA2 += faVal; anyFA2 = true; }
       const dir = dirs[i];
-      const vsData = vsCols.map((c, ci) => {
-        const v = c.getVal(k);
-        const wins = faVal != null && v != null && (v - faVal) * dir > 0;
+      const delta = (v, base) => base != null && v != null ? Math.round(v - base) : null;
+      const deltaCell = (d) => {
+        const str   = d == null ? '—' : d > 0 ? `+${d}` : `${d}`;
+        const cls   = d == null ? 'delta-zero' : d > 0 ? 'delta-pos' : d < 0 ? 'delta-neg' : 'delta-zero';
+        return `<td class="${cls}">${str}</td>`;
+      };
+      const vsStatCells = vsCols.map((c, ci) => {
+        const v    = c.getVal(k);
         if (v != null) { vsTotals[ci].sum += v; vsTotals[ci].any = true; }
-        return { v, wins };
-      });
-      const vsStatCells = vsData.map(({ v, wins }) =>
-        `<td><span class="win-check">${wins ? '✓' : ''}</span>${cell(v)}</td>`
-      ).join('');
-      const vsDeltaCells = vsData.map(({ v }) => {
-        const delta = (faVal != null && v != null) ? Math.round(v - faVal) : null;
-        const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
-        const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
-        return `<td class="${deltaClass}">${deltaStr}</td>`;
+        const wins = refVal != null && v != null && (v - refVal) * dir > 0;
+        if (ci === 0) return `<td><span class="win-check">${wins ? '✓' : ''}</span>${cell(v)}</td>`;
+        const d = delta(v, refVal);
+        return `<td><span class="win-check">${wins ? '✓' : ''}</span>${cell(v)}</td>${deltaCell(d)}`;
       }).join('');
-      const faWins = vsData.some(({ v }) => faVal != null && v != null && (faVal - v) * dir > 0);
-      return `<tr><td>${labels[i]}</td>${vsStatCells}<td><span class="win-check">${faWins ? '✓' : ''}</span>${cell(faVal)}</td>${vsDeltaCells}</tr>`;
+      const faWins = faVal != null && refVal != null && (faVal - refVal) * dir > 0;
+      const faD = delta(faVal, refVal);
+      return `<tr><td>${labels[i]}</td>${vsStatCells}<td><span class="win-check">${faWins ? '✓' : ''}</span>${cell(faVal)}</td>${deltaCell(faD)}</tr>`;
     }).join('');
+    const refTotal = vsTotals[0].any ? vsTotals[0].sum : null;
     const vsTotalStatCols = vsCols.map((c, ci) => {
       const v = vsTotals[ci].any ? Math.round(vsTotals[ci].sum) : null;
-      const wins = anyFA2 && vsTotals[ci].any && vsTotals[ci].sum > totalFA2;
-      return `<td style="color:${wins ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${wins ? '✓' : ''}</span>${v ?? '—'}</td>`;
+      if (ci === 0) return `<td style="color:var(--text)">${v ?? '—'}</td>`;
+      const d = (refTotal != null && vsTotals[ci].any) ? Math.round(vsTotals[ci].sum - refTotal) : null;
+      const dStr = d == null ? '—' : d > 0 ? `+${d}` : `${d}`;
+      const dCls = d == null ? 'delta-zero' : d > 0 ? 'delta-pos' : d < 0 ? 'delta-neg' : 'delta-zero';
+      return `<td style="color:${d != null && d > 0 ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${d != null && d > 0 ? '✓' : ''}</span>${v ?? '—'}</td><td class="${dCls}" style="font-weight:700">${dStr}</td>`;
     }).join('');
-    const vsTotalDeltaCols = vsCols.map((c, ci) => {
-      const delta = (anyFA2 && vsTotals[ci].any) ? Math.round(vsTotals[ci].sum - totalFA2) : null;
-      const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
-      const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
-      return `<td class="${deltaClass}" style="font-weight:700">${deltaStr}</td>`;
-    }).join('');
-    const faWinsVsTotal = vsCols.some((c, ci) => vsTotals[ci].any && anyFA2 && totalFA2 > vsTotals[ci].sum);
+    const faTotD = (anyFA2 && refTotal != null) ? Math.round(totalFA2 - refTotal) : null;
+    const faTotDStr = faTotD == null ? '—' : faTotD > 0 ? `+${faTotD}` : `${faTotD}`;
+    const faTotDCls = faTotD == null ? 'delta-zero' : faTotD > 0 ? 'delta-pos' : faTotD < 0 ? 'delta-neg' : 'delta-zero';
+    const faWinsTotal = anyFA2 && refTotal != null && totalFA2 > refTotal;
     const vsTotalRow = `<tr style="border-top:2px solid var(--border2);font-weight:700;">
       <td>Total</td>${vsTotalStatCols}
-      <td style="color:${faWinsVsTotal ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${faWinsVsTotal ? '✓' : ''}</span>${anyFA2 ? Math.round(totalFA2) : '—'}</td>
-      ${vsTotalDeltaCols}
+      <td style="color:${faWinsTotal ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${faWinsTotal ? '✓' : ''}</span>${anyFA2 ? Math.round(totalFA2) : '—'}</td>
+      <td class="${faTotDCls}" style="font-weight:700">${faTotDStr}</td>
     </tr>`;
     rightTable = `<table class="fa-compare-table" style="margin-left:32px">
-      <thead><tr><th>Stat</th>${thVsCols}<th>${faLast}</th>${thDeltaCols}</tr></thead>
+      <thead><tr><th>Stat</th>${thVsCols}<th>${faLast}</th><th>Δ</th></tr></thead>
       <tbody>${vsRows}${vsTotalRow}</tbody>
     </table>`;
   }
