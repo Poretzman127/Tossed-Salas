@@ -440,7 +440,7 @@
   }
   .fa-compare-table td:first-child {
     text-align: left; color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; width: 80px;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; width: 52px;
   }
   .delta-pos { color: #22dd88; font-weight: 700; }
   .delta-neg { color: #e84040; font-weight: 700; }
@@ -740,6 +740,15 @@
   }
   @media (max-width: 768px) { .team-selector { padding-left: 16px; padding-right: 16px; } }
   @media (max-width: 768px) { footer { padding-left: 16px; padding-right: 16px; } }
+  @media (max-width: 768px) {
+    .fa-pos-filter-bar { flex-wrap: wrap; padding-left: 16px; padding-right: 16px; gap: 8px; }
+    .fa-search { width: 100%; }
+    .fa-compare-wrap { padding-left: 0; padding-right: 0; }
+    .fa-compare-header { flex-wrap: wrap; padding: 0 16px; gap: 6px; margin-bottom: 10px; }
+    .fa-compare-table { width: 100%; min-width: 0; margin-left: 0 !important; }
+    .fa-compare-table th, .fa-compare-table td { padding: 4px 6px; font-size: 11px; }
+    .fa-compare-table td:first-child { font-size: 11px; width: 42px; }
+  }
   #trade-view .section:last-child .table-wrap { margin-bottom: 0; }
   @media (max-width: 768px) { .split-selector { padding: 8px 16px; } }
   @media (max-width: 768px) {
@@ -2766,7 +2775,7 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
     <td class="${teamTotDeltaClass}">${teamTotDeltaStr}</td>
   </tr>`;
   const leftTable = `<table class="fa-compare-table">
-    <thead><tr><th>Stat</th><th>${faCurrentTeam} Avg</th><th>${faLast}</th><th>Δ</th></tr></thead>
+    <thead><tr><th>Stat</th><th>Team Avg</th><th>${faLast}</th><th>Δ</th></tr></thead>
     <tbody>${teamRows}${teamTotalRow}</tbody>
   </table>`;
 
@@ -2780,41 +2789,52 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
     }));
     const thVsCols = vsCols.map(c => {
       const safeName = c.removeName.replace(/'/g, "\\'");
-      return `<th>${c.label} <button class="fa-compare-close" style="padding:0 4px;font-size:10px" onclick="${removeVsFn}('${safeName}')">✕</button></th><th>Δ</th>`;
+      return `<th>${c.label} <button class="fa-compare-close" style="padding:0 4px;font-size:10px" onclick="${removeVsFn}('${safeName}')">✕</button></th>`;
     }).join('');
+    const thDeltaCols = vsCols.map(() => `<th>Δ</th>`).join('');
     const vsTotals = vsCols.map(() => ({ sum: 0, any: false }));
     let totalFA2 = 0, anyFA2 = false;
     const vsRows = keys.map((k, i) => {
       const faVal = player[k];
       if (faVal != null) { totalFA2 += faVal; anyFA2 = true; }
       const dir = dirs[i];
-      const dataCols = vsCols.map((c, ci) => {
+      const vsData = vsCols.map((c, ci) => {
         const v = c.getVal(k);
+        const wins = faVal != null && v != null && (v - faVal) * dir > 0;
+        if (v != null) { vsTotals[ci].sum += v; vsTotals[ci].any = true; }
+        return { v, wins };
+      });
+      const vsStatCells = vsData.map(({ v, wins }) =>
+        `<td><span class="win-check">${wins ? '✓' : ''}</span>${cell(v)}</td>`
+      ).join('');
+      const vsDeltaCells = vsData.map(({ v }) => {
         const delta = (faVal != null && v != null) ? Math.round(v - faVal) : null;
         const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
         const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
-        const wins = faVal != null && v != null && (v - faVal) * dir > 0;
-        if (v != null) { vsTotals[ci].sum += v; vsTotals[ci].any = true; }
-        return `<td><span class="win-check">${wins ? '✓' : ''}</span>${cell(v)}</td><td class="${deltaClass}">${deltaStr}</td>`;
+        return `<td class="${deltaClass}">${deltaStr}</td>`;
       }).join('');
-      const faWins = vsCols.some((c) => { const v = c.getVal(k); return faVal != null && v != null && (faVal - v) * dirs[i] > 0; });
-      return `<tr><td>${labels[i]}</td>${dataCols}<td><span class="win-check">${faWins ? '✓' : ''}</span>${cell(faVal)}</td></tr>`;
+      const faWins = vsData.some(({ v }) => faVal != null && v != null && (faVal - v) * dir > 0);
+      return `<tr><td>${labels[i]}</td>${vsStatCells}<td><span class="win-check">${faWins ? '✓' : ''}</span>${cell(faVal)}</td>${vsDeltaCells}</tr>`;
     }).join('');
-    const vsTotalDataCols = vsCols.map((c, ci) => {
+    const vsTotalStatCols = vsCols.map((c, ci) => {
       const v = vsTotals[ci].any ? Math.round(vsTotals[ci].sum) : null;
+      const wins = anyFA2 && vsTotals[ci].any && vsTotals[ci].sum > totalFA2;
+      return `<td style="color:${wins ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${wins ? '✓' : ''}</span>${v ?? '—'}</td>`;
+    }).join('');
+    const vsTotalDeltaCols = vsCols.map((c, ci) => {
       const delta = (anyFA2 && vsTotals[ci].any) ? Math.round(vsTotals[ci].sum - totalFA2) : null;
       const deltaStr   = delta == null ? '—' : delta > 0 ? `+${delta}` : `${delta}`;
       const deltaClass = delta == null ? 'delta-zero' : delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-zero';
-      const wins = delta != null && delta > 0;
-      return `<td style="color:${wins ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${wins ? '✓' : ''}</span>${v ?? '—'}</td><td class="${deltaClass}" style="font-weight:700">${deltaStr}</td>`;
+      return `<td class="${deltaClass}" style="font-weight:700">${deltaStr}</td>`;
     }).join('');
     const faWinsVsTotal = vsCols.some((c, ci) => vsTotals[ci].any && anyFA2 && totalFA2 > vsTotals[ci].sum);
     const vsTotalRow = `<tr style="border-top:2px solid var(--border2);font-weight:700;">
-      <td>Total</td>${vsTotalDataCols}
+      <td>Total</td>${vsTotalStatCols}
       <td style="color:${faWinsVsTotal ? 'var(--text)' : 'var(--muted)'}"><span class="win-check">${faWinsVsTotal ? '✓' : ''}</span>${anyFA2 ? Math.round(totalFA2) : '—'}</td>
+      ${vsTotalDeltaCols}
     </tr>`;
     rightTable = `<table class="fa-compare-table" style="margin-left:32px">
-      <thead><tr><th>Stat</th>${thVsCols}<th>${faLast}</th></tr></thead>
+      <thead><tr><th>Stat</th>${thVsCols}<th>${faLast}</th>${thDeltaCols}</tr></thead>
       <tbody>${vsRows}${vsTotalRow}</tbody>
     </table>`;
   }
@@ -2840,6 +2860,7 @@ function buildFAComparePanel(player, keys, labels, dirs, teamPlayers, wrapperId,
       ${leftTable}${rightTable}
     </div>`;
   wrap.style.display = 'block';
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   document.getElementById(vsSelectId).addEventListener('change', addVsFn);
 }
