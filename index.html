@@ -767,7 +767,11 @@
     .legend-dot { width: 7px; height: 7px; }
   }
   @media (max-width: 768px) { .team-selector { padding-left: 16px; padding-right: 16px; } }
-  @media (max-width: 768px) { footer { padding-left: 16px; padding-right: 16px; } }
+  @media (max-width: 768px) {
+    footer { padding-left: 16px; padding-right: 16px; }
+    .user-chip { display: flex; margin: 8px 0 0; justify-content: center; }
+    .login-card { padding: 24px 20px; }
+  }
   @media (max-width: 768px) {
     .fa-pos-filter-bar { flex-wrap: wrap; padding-left: 16px; padding-right: 16px; gap: 8px; }
     .fa-search { width: 100%; }
@@ -935,9 +939,74 @@
   tbody tr:nth-child(14) { animation-delay: 0.44s; }
   tbody tr:nth-child(15) { animation-delay: 0.47s; }
   tbody tr:nth-child(16) { animation-delay: 0.50s; }
+
+  /* ── Login overlay ──────────────────────────── */
+  body.locked { overflow: hidden; }
+  body.locked > .page { display: none; }
+  .login-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: radial-gradient(ellipse at top, #1a1f2e 0%, #0b0d13 70%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .login-card {
+    background: #13161e; border: 1px solid #2a2f3c; border-radius: 12px;
+    padding: 32px 28px; width: 100%; max-width: 360px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .login-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 26px;
+    font-weight: 600; letter-spacing: 0.5px; color: var(--accent);
+    margin: 0 0 4px; text-align: center;
+  }
+  .login-sub {
+    color: var(--muted); font-size: 12px; text-transform: uppercase;
+    letter-spacing: 1.5px; text-align: center; margin-bottom: 24px;
+  }
+  .login-input {
+    width: 100%; box-sizing: border-box;
+    background: #0b0d13; border: 1px solid #2a2f3c; border-radius: 6px;
+    color: #e7e9ef; font-size: 14px; padding: 10px 12px;
+    margin-bottom: 12px; outline: none;
+    font-family: inherit;
+  }
+  .login-input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; background: var(--accent); color: #0b0d13;
+    border: none; border-radius: 6px; padding: 12px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 16px;
+    font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; margin-top: 8px;
+  }
+  .login-btn:hover { filter: brightness(1.1); }
+  .login-err {
+    color: #e84040; font-size: 12px; text-align: center;
+    min-height: 16px; margin-top: 8px;
+  }
+  .user-chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; color: var(--muted); letter-spacing: 1px;
+    text-transform: uppercase; margin-left: 12px;
+  }
+  .user-chip b { color: #e7e9ef; font-weight: 600; }
+  .logout-link {
+    color: var(--muted); cursor: pointer; text-decoration: underline;
+    text-decoration-color: #2a2f3c;
+  }
+  .logout-link:hover { color: var(--accent); }
 </style>
 </head>
-<body>
+<body class="locked">
+<div id="login-overlay" class="login-overlay">
+  <form class="login-card" onsubmit="event.preventDefault(); doLogin();">
+    <div class="login-title">Tossed Salas</div>
+    <div class="login-sub">Sign in to view</div>
+    <input id="login-user" class="login-input" type="text" placeholder="Username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <input id="login-pass" class="login-input" type="password" placeholder="Password" autocomplete="current-password">
+    <button type="submit" class="login-btn">Enter</button>
+    <div id="login-err" class="login-err"></div>
+  </form>
+</div>
 <div class="page">
 
 <header>
@@ -1447,11 +1516,49 @@
   <a href="https://fantasy.espn.com" target="_blank">ESPN Fantasy</a> &nbsp;·&nbsp;
   Updated: <span id="updated"></span> &nbsp;·&nbsp;
   All stats are MLB percentile rankings among qualified players
+  <span class="user-chip">Signed in as <b id="user-chip-name"></b> · <span class="logout-link" onclick="doLogout()">Logout</span></span>
 </footer>
 
 </div><!-- .page -->
 
 <script>
+// ── AUTH ──────────────────────────────────────────────
+const USERS = {
+  'MPoretz': { password: 'Baloo123',   team: 'Hell or High Wether' },
+  'CBainey': { password: 'CBainey123', team: '\u{1F198}️Rafi is now ur daddy‼️' },
+  'CBell':   { password: 'Bellboy123', team: 'Men of W.A.R' },
+};
+const CURRENT_USER_KEY = 'currentUser';
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  const rec = USERS[u];
+  if (!rec || rec.password !== p) {
+    err.textContent = 'Invalid username or password';
+    return;
+  }
+  localStorage.setItem(CURRENT_USER_KEY, u);
+  location.reload();
+}
+function doLogout() {
+  localStorage.removeItem(CURRENT_USER_KEY);
+  location.reload();
+}
+const CURRENT_USER = localStorage.getItem(CURRENT_USER_KEY);
+if (!CURRENT_USER || !USERS[CURRENT_USER]) {
+  // Not authed — leave body.locked, overlay stays up, don't run any page JS
+  setTimeout(() => { const u = document.getElementById('login-user'); if (u) u.focus(); }, 50);
+  throw new Error('auth-required');
+}
+const USER_TEAM = USERS[CURRENT_USER].team;
+document.body.classList.remove('locked');
+document.getElementById('login-overlay').style.display = 'none';
+{
+  const _chip = document.getElementById('user-chip-name');
+  if (_chip) _chip.textContent = CURRENT_USER;
+}
+
 // ── DATA ──────────────────────────────────────────────
 const TEAMS = {
 "Cabbage Kidz": { pfBat:1535.0, paBat:1462.0, pfPit:562.0, paPit:593.0, batters: [
@@ -2479,7 +2586,16 @@ function ppgCell(v) {
 
 function ilTag(p) { return p.il != null ? ` <span class="il-badge">${p.il}</span>` : ''; }
 
-const FA_FLAG_KEY = 'faFlagged';
+// One-time migration: existing global flags belong to MPoretz (the site owner)
+(function migrateLegacyFlags() {
+  const legacy = localStorage.getItem('faFlagged');
+  const mpKey  = 'faFlagged_MPoretz';
+  if (legacy && !localStorage.getItem(mpKey)) {
+    localStorage.setItem(mpKey, legacy);
+  }
+  if (legacy) localStorage.removeItem('faFlagged');
+})();
+const FA_FLAG_KEY = 'faFlagged_' + CURRENT_USER;
 let flaggedFA = new Set(JSON.parse(localStorage.getItem(FA_FLAG_KEY) || '[]'));
 function saveFlaggedFA() { localStorage.setItem(FA_FLAG_KEY, JSON.stringify([...flaggedFA])); }
 function flagBtn(p) {
@@ -2694,7 +2810,7 @@ function setupSort(tableId, statKeys, stateKey, renderFn) {
   });
 }
 
-let currentTeam = DEFAULT_TEAM;
+let currentTeam = USER_TEAM;
 
 function updateHeading(name) {
   const parts = (name || currentTeam).split(' ');
@@ -2708,13 +2824,13 @@ setupSort('batter-table',  BATTER_KEYS,  'batter',  renderBatters);
 setupSort('pitcher-table', PITCHER_KEYS, 'pitcher', renderPitchers);
 
 // Populate and wire the FA team selector
-let faCurrentTeam = DEFAULT_TEAM;
+let faCurrentTeam = USER_TEAM;
 const faTeamSelect = document.getElementById('fa-team-select');
 Object.keys(TEAMS).sort().forEach(name => {
   const opt = document.createElement('option');
   opt.value = name;
   opt.textContent = name;
-  if (name === DEFAULT_TEAM) opt.selected = true;
+  if (name === USER_TEAM) opt.selected = true;
   faTeamSelect.appendChild(opt);
 });
 faTeamSelect.addEventListener('change', () => {
@@ -2727,13 +2843,13 @@ faTeamSelect.addEventListener('change', () => {
 });
 
 // ── WAIVER WIRE ───────────────────────────────────────
-let waiverCurrentTeam = DEFAULT_TEAM;
+let waiverCurrentTeam = USER_TEAM;
 const waiverTeamSelect = document.getElementById('waiver-team-select');
 Object.keys(TEAMS).sort().forEach(name => {
   const opt = document.createElement('option');
   opt.value = name;
   opt.textContent = name;
-  if (name === DEFAULT_TEAM) opt.selected = true;
+  if (name === USER_TEAM) opt.selected = true;
   waiverTeamSelect.appendChild(opt);
 });
 waiverTeamSelect.addEventListener('change', () => {
@@ -2828,7 +2944,7 @@ Object.keys(TEAMS).sort().forEach(name => {
   const opt = document.createElement('option');
   opt.value = name;
   opt.textContent = name;
-  if (name === DEFAULT_TEAM) opt.selected = true;
+  if (name === USER_TEAM) opt.selected = true;
   teamSelect.appendChild(opt);
 });
 
@@ -3503,7 +3619,7 @@ document.getElementById('updated').textContent = new Date().toLocaleDateString('
 })();
 
 // ── TRADE TAB ─────────────────────────────────────────
-let tradeCurrentTeam = DEFAULT_TEAM;
+let tradeCurrentTeam = USER_TEAM;
 
 function ppgPercentiles(players) {
   const withPPG = players.filter(p => p.ppg != null);
@@ -3613,7 +3729,7 @@ const tradeTeamSelect = document.getElementById('trade-team-select');
 Object.keys(TEAMS).sort().forEach(name => {
   const opt = document.createElement('option');
   opt.value = name; opt.textContent = name;
-  if (name === DEFAULT_TEAM) opt.selected = true;
+  if (name === USER_TEAM) opt.selected = true;
   tradeTeamSelect.appendChild(opt);
 });
 tradeTeamSelect.addEventListener('change', () => {
