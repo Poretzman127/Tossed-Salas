@@ -410,9 +410,11 @@
 
   /* ── FA COMPARE ───────────────────────────────── */
   #fa-batter-body tr:not(.avg-row):not(.below-min),
-  #fa-pitcher-body tr:not(.avg-row):not(.below-min) { cursor: pointer; }
+  #fa-sp-body tr:not(.avg-row):not(.below-min),
+  #fa-rp-body tr:not(.avg-row):not(.below-min) { cursor: pointer; }
   #fa-batter-body tr:not(.avg-row):not(.below-min):hover,
-  #fa-pitcher-body tr:not(.avg-row):not(.below-min):hover { background: rgba(200,168,75,0.04); }
+  #fa-sp-body tr:not(.avg-row):not(.below-min):hover,
+  #fa-rp-body tr:not(.avg-row):not(.below-min):hover { background: rgba(200,168,75,0.04); }
   .fa-row-selected { background: rgba(200,168,75,0.10) !important; outline: 1px solid var(--accent); }
   .fa-compare-wrap { padding: 24px 48px 8px; border-top: 1px solid var(--border2); }
   .fa-compare-vs-select {
@@ -595,7 +597,8 @@
 
   tbody tr:hover td:first-child { background: #13161e; }
   #fa-batter-body tr:hover td:first-child,
-  #fa-pitcher-body tr:hover td:first-child { background: #13161e; }
+  #fa-sp-body tr:hover td:first-child,
+  #fa-rp-body tr:hover td:first-child { background: #13161e; }
 
   td:nth-child(2) {
     font-family: 'Barlow Condensed', sans-serif;
@@ -1254,44 +1257,38 @@
 </div>
 <div id="fa-batter-compare" class="fa-compare-wrap" style="display:none"></div>
 
-<!-- ═══════════════════════════════════ FA PITCHERS ═══ -->
+<!-- ═══════════════════════════════ FA STARTING PITCHERS ═══ -->
 <div class="section">
   <div class="section-header">
-    <h2>Pitchers</h2>
-    <span class="section-count" id="fa-pitcher-count"></span>
+    <h2>Starting Pitchers</h2>
+    <span class="section-count" id="fa-sp-count"></span>
   </div>
   <div class="fa-pos-filter-bar">
-    <span class="team-selector-label">Type</span>
-    <select id="fa-pitcher-type-filter">
-      <option value="">All Pitchers</option>
-      <option value="SP">SP</option>
-      <option value="RP">RP</option>
-    </select>
-    <input type="text" id="fa-pitcher-search" class="fa-search" placeholder="Search player…">
+    <input type="text" id="fa-sp-search" class="fa-search" placeholder="Search player…">
     <div class="qual-tooltip-wrap">
       <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
-        <input type="checkbox" id="fa-pitcher-qualified-only" style="accent-color:var(--accent);cursor:pointer">
+        <input type="checkbox" id="fa-sp-qualified-only" style="accent-color:var(--accent);cursor:pointer">
         Qualified Only
       </label>
       <div class="qual-tooltip">Only show players who have qualified statcast data.</div>
     </div>
     <div class="qual-tooltip-wrap">
       <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
-        <input type="checkbox" id="fa-pitcher-flagged-only" style="accent-color:#f5c542;cursor:pointer">
+        <input type="checkbox" id="fa-sp-flagged-only" style="accent-color:#f5c542;cursor:pointer">
         Flagged Only
       </label>
       <div class="qual-tooltip">Only show players you've flagged with ★.</div>
     </div>
     <div class="qual-tooltip-wrap">
       <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
-        <input type="checkbox" id="fa-pitcher-il-only" style="accent-color:#e84040;cursor:pointer">
+        <input type="checkbox" id="fa-sp-il-only" style="accent-color:#e84040;cursor:pointer">
         IL Only
       </label>
       <div class="qual-tooltip">Only show players currently on the IL.</div>
     </div>
     <div class="qual-tooltip-wrap">
       <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
-        <input type="checkbox" id="fa-pitcher-probable-only" style="accent-color:#22dd88;cursor:pointer">
+        <input type="checkbox" id="fa-sp-probable-only" style="accent-color:#22dd88;cursor:pointer">
         Probable Only
       </label>
       <div class="qual-tooltip">Only show pitchers scheduled to start on the next un-started game day.</div>
@@ -1299,7 +1296,68 @@
   </div>
   <div class="scroll-hint">← scroll for more stats →</div>
   <div class="table-wrap">
-    <table id="fa-pitcher-table">
+    <table id="fa-sp-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Type</th>
+          <th data-tip="ESPN Fantasy Points Per Game in your league.">PPG</th>
+          <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
+          <th data-tip="Expected ERA based on quality of contact allowed, park neutral. Percentile inverted — higher score means lower (better) xERA.">xERA</th>
+          <th data-tip="Expected Weighted On-Base Average allowed. Higher percentile means less damage allowed to opposing hitters.">xwOBA</th>
+          <th data-tip="Expected Batting Average allowed based on contact quality. Higher percentile = fewer expected hits.">xBA</th>
+          <th data-tip="Expected Slugging Percentage allowed. Higher percentile = less power allowed to opposing hitters.">xSLG</th>
+          <th data-tip="Average Exit Velocity allowed. Inverted — higher percentile means softer contact allowed.">EV</th>
+          <th data-tip="Hard Hit Rate allowed (95+ mph). Inverted — higher percentile means fewer hard-hit balls against.">HH%</th>
+          <th data-tip="Strikeout Rate. % of batters faced who strike out. Higher = better for pitchers.">K%</th>
+          <th data-tip="Walk Rate allowed. Inverted — higher percentile means fewer walks issued.">BB%</th>
+          <th data-tip="Whiff Rate. % of swings against that miss. Higher = better for pitchers.">Whiff</th>
+          <th data-tip="Chase Rate. % of swings at pitches outside the zone. Higher = more chasing induced, better for pitchers.">Chase</th>
+          <th data-tip="Fastball average velocity in mph. Higher = better.">FB Velo</th>
+          <th data-tip="Fastball average spin rate in RPM. Higher spin typically generates more movement and rise.">FB Spin</th>
+        </tr>
+      </thead>
+      <tbody id="fa-sp-body"></tbody>
+    </table>
+  </div>
+  <div class="fa-expand-bar">
+    <button id="fa-sp-expand" class="fa-expand-btn">Show 50</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ FA RELIEF PITCHERS ═══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Relief Pitchers</h2>
+    <span class="section-count" id="fa-rp-count"></span>
+  </div>
+  <div class="fa-pos-filter-bar">
+    <input type="text" id="fa-rp-search" class="fa-search" placeholder="Search player…">
+    <div class="qual-tooltip-wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="fa-rp-qualified-only" style="accent-color:var(--accent);cursor:pointer">
+        Qualified Only
+      </label>
+      <div class="qual-tooltip">Only show players who have qualified statcast data.</div>
+    </div>
+    <div class="qual-tooltip-wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="fa-rp-flagged-only" style="accent-color:#f5c542;cursor:pointer">
+        Flagged Only
+      </label>
+      <div class="qual-tooltip">Only show players you've flagged with ★.</div>
+    </div>
+    <div class="qual-tooltip-wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="fa-rp-il-only" style="accent-color:#e84040;cursor:pointer">
+        IL Only
+      </label>
+      <div class="qual-tooltip">Only show players currently on the IL.</div>
+    </div>
+  </div>
+  <div class="scroll-hint">← scroll for more stats →</div>
+  <div class="table-wrap">
+    <table id="fa-rp-table">
       <thead>
         <tr>
           <th>Player</th>
@@ -1322,11 +1380,11 @@
           <th data-tip="Expected fantasy points per week (PPG × G/W). Relief pitchers only.">XPPW</th>
         </tr>
       </thead>
-      <tbody id="fa-pitcher-body"></tbody>
+      <tbody id="fa-rp-body"></tbody>
     </table>
   </div>
   <div class="fa-expand-bar">
-    <button id="fa-pitcher-expand" class="fa-expand-btn">Show 50</button>
+    <button id="fa-rp-expand" class="fa-expand-btn">Show 50</button>
   </div>
 </div>
 <div id="fa-pitcher-compare" class="fa-compare-wrap" style="display:none"></div>
@@ -2738,9 +2796,10 @@ function buildPitcherRow(p, isFA) {
   const flag = isFA ? flagBtn(p) : '';
   const nameAttr = isFA ? ` data-name="${p.name.replace(/"/g, '&quot;')}"` : '';
   const h = p._heat || {};
-  const appwkCell = isFA ? `<td><span class="pct">${p.appwk != null ? p.appwk.toFixed(1) : ''}</span></td>` : '';
-  const xpw = (isFA && p.ppg != null && p.appwk != null) ? p.ppg * p.appwk : null;
-  const xpwCell = isFA ? `<td><span class="pct">${xpw != null ? xpw.toFixed(1) : ''}</span></td>` : '';
+  const showRPCols = isFA && p._rpTable;
+  const appwkCell = showRPCols ? `<td><span class="pct">${p.appwk != null ? p.appwk.toFixed(1) : ''}</span></td>` : '';
+  const xpw = (showRPCols && p.ppg != null && p.appwk != null) ? p.ppg * p.appwk : null;
+  const xpwCell = showRPCols ? `<td><span class="pct">${xpw != null ? xpw.toFixed(1) : ''}</span></td>` : '';
   if (p.partial) {
     return `<tr class="below-min${lpClass}"${nameAttr}>
       <td>${flag}${p.name}${ilTag(p)}${probTag(p)}${newsBtn(p)}</td>
@@ -2792,7 +2851,8 @@ const sortState = {
   batter:   { key: null, dir: -1 },
   pitcher:  { key: null, dir: -1 },
   faBatter: { key: 'avg', dir: -1 },
-  faPitcher:{ key: 'avg', dir: -1 },
+  faSP:     { key: 'avg', dir: -1 },
+  faRP:     { key: 'avg', dir: -1 },
   ldrBatter:  { key: 'avg', dir: -1 },
   ldrPitcher: { key: 'avg', dir: -1 },
   tradeSell:  { key: 'diff', dir: -1 },
@@ -3071,7 +3131,11 @@ renderPitchers();
 
 // ── FREE AGENTS ───────────────────────────────────────
 const FA_COMBO_FILTERS = { '2B/SS': ['2B','SS'], '1B/3B': ['1B','3B'] };
-const faLimits = { batters: 20, pitchers: 20 };
+const faLimits = { batters: 20, sp: 20, rp: 20 };
+
+// Categorize FA pitchers: anything with "SP" in pos goes to the SP table; pure "RP" only goes to RP table.
+function isSPpitcher(p) { return typeof p.type === 'string' && p.type.includes('SP'); }
+function isRPpitcher(p) { return !isSPpitcher(p); }
 
 function renderFABatters() {
   const { key, dir } = sortState.faBatter;
@@ -3106,35 +3170,51 @@ function renderFABatters() {
   highlightSortedCol('fa-batter-table', sortColIdx(key, BATTER_KEYS));
 }
 
-function renderFAPitchers() {
-  const { key, dir } = sortState.faPitcher;
-  const typeFilter = document.getElementById('fa-pitcher-type-filter').value;
-  const search = document.getElementById('fa-pitcher-search').value.trim().toLowerCase();
-  const qualOnly = document.getElementById('fa-pitcher-qualified-only').checked;
-  const flagOnly = document.getElementById('fa-pitcher-flagged-only').checked;
-  const ilOnly   = document.getElementById('fa-pitcher-il-only').checked;
-  const probOnly = document.getElementById('fa-pitcher-probable-only').checked;
-  let pitchers = typeFilter
-    ? FREE_AGENTS.pitchers.filter(p => p.type === typeFilter)
-    : FREE_AGENTS.pitchers;
+function renderFAPitcherSection(opts) {
+  const { sortKey, prefix, basePool, limitKey, isRPTable } = opts;
+  const { key, dir } = sortState[sortKey];
+  const search = document.getElementById(`${prefix}-search`).value.trim().toLowerCase();
+  const qualOnly = document.getElementById(`${prefix}-qualified-only`).checked;
+  const flagOnly = document.getElementById(`${prefix}-flagged-only`).checked;
+  const ilOnly   = document.getElementById(`${prefix}-il-only`).checked;
+  const probEl   = document.getElementById(`${prefix}-probable-only`);
+  const probOnly = probEl ? probEl.checked : false;
+  let pitchers = basePool();
   if (qualOnly) pitchers = pitchers.filter(p => p.qualified === true);
   if (flagOnly) pitchers = pitchers.filter(p => flaggedFA.has(p.name));
   if (ilOnly)   pitchers = pitchers.filter(p => p.il);
   if (probOnly) pitchers = pitchers.filter(probableMatches);
   if (search) pitchers = pitchers.filter(p => p.name.toLowerCase().includes(search));
-  pitchers = pitchers.map(p => withSplitStats(p, true));
+  pitchers = pitchers.map(p => ({ ...withSplitStats(p, true), _rpTable: isRPTable }));
   const sorted = sortedPlayers(pitchers, key, dir, PITCHER_KEYS, false);
-  const displayed = sorted.slice(0, faLimits.pitchers);
-  document.getElementById('fa-pitcher-count').textContent =
-    `${pitchers.length} QUALIFIED`;
-  document.getElementById('fa-pitcher-body').innerHTML =
+  const displayed = sorted.slice(0, faLimits[limitKey]);
+  document.getElementById(`${prefix}-count`).textContent = `${pitchers.length} QUALIFIED`;
+  document.getElementById(`${prefix}-body`).innerHTML =
     displayed.map(p => buildPitcherRow(p, true)).join('') +
     buildAvgRow(pitchers, PITCHER_KEYS);
-  document.getElementById('fa-pitcher-expand').textContent =
-    faLimits.pitchers === 20 ? 'Show 50' : 'Show 20';
-  applyFASelection('fa-pitcher-body', selectedFAPitcher);
-  highlightSortedCol('fa-pitcher-table', sortColIdx(key, PITCHER_KEYS));
+  document.getElementById(`${prefix}-expand`).textContent =
+    faLimits[limitKey] === 20 ? 'Show 50' : 'Show 20';
+  applyFASelection(`${prefix}-body`, selectedFAPitcher);
+  highlightSortedCol(`${prefix}-table`, sortColIdx(key, PITCHER_KEYS));
 }
+
+function renderFASP() {
+  renderFAPitcherSection({
+    sortKey: 'faSP', prefix: 'fa-sp',
+    basePool: () => FREE_AGENTS.pitchers.filter(isSPpitcher),
+    limitKey: 'sp', isRPTable: false,
+  });
+}
+
+function renderFARP() {
+  renderFAPitcherSection({
+    sortKey: 'faRP', prefix: 'fa-rp',
+    basePool: () => FREE_AGENTS.pitchers.filter(isRPpitcher),
+    limitKey: 'rp', isRPTable: true,
+  });
+}
+
+function renderFAPitchers() { renderFASP(); renderFARP(); }
 
 // Populate FA position filter dropdown from actual data
 (function() {
@@ -3167,16 +3247,20 @@ function renderFAPitchers() {
   sel.addEventListener('change', renderFABatters);
 })();
 
-document.getElementById('fa-pitcher-type-filter').addEventListener('change', renderFAPitchers);
 document.getElementById('fa-batter-search').addEventListener('input', renderFABatters);
-document.getElementById('fa-pitcher-search').addEventListener('input', renderFAPitchers);
 document.getElementById('fa-batter-qualified-only').addEventListener('change', renderFABatters);
 document.getElementById('fa-batter-flagged-only').addEventListener('change', renderFABatters);
 document.getElementById('fa-batter-il-only').addEventListener('change', renderFABatters);
-document.getElementById('fa-pitcher-qualified-only').addEventListener('change', renderFAPitchers);
-document.getElementById('fa-pitcher-flagged-only').addEventListener('change', renderFAPitchers);
-document.getElementById('fa-pitcher-il-only').addEventListener('change', renderFAPitchers);
-document.getElementById('fa-pitcher-probable-only').addEventListener('change', renderFAPitchers);
+
+['fa-sp', 'fa-rp'].forEach(prefix => {
+  const fn = prefix === 'fa-sp' ? renderFASP : renderFARP;
+  document.getElementById(`${prefix}-search`).addEventListener('input', fn);
+  document.getElementById(`${prefix}-qualified-only`).addEventListener('change', fn);
+  document.getElementById(`${prefix}-flagged-only`).addEventListener('change', fn);
+  document.getElementById(`${prefix}-il-only`).addEventListener('change', fn);
+  const probEl = document.getElementById(`${prefix}-probable-only`);
+  if (probEl) probEl.addEventListener('change', fn);
+});
 
 // ── FA COMPARE ────────────────────────────────────────────
 let selectedFABatter  = null;
@@ -3352,7 +3436,7 @@ function closeFAPitcherCompare() {
   selectedFAPitcher = null;
   selectedFAPitcherVsPlayers = [];
   renderFAPitcherComparison();
-  document.querySelectorAll('#fa-pitcher-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+  document.querySelectorAll('#fa-sp-body .fa-row-selected, #fa-rp-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
 }
 
 function removeVsBatter(name) {
@@ -3422,35 +3506,44 @@ document.getElementById('fa-batter-body').addEventListener('click', e => {
   renderFABatterComparison();
 });
 
-document.getElementById('fa-pitcher-body').addEventListener('click', e => {
-  if (e.target.classList.contains('fa-flag')) return;
-  const tr = e.target.closest('tr');
-  if (!tr || tr.classList.contains('avg-row') || tr.classList.contains('below-min')) return;
-  const name = tr.dataset.name;
-  const player = FREE_AGENTS.pitchers.find(p => p.name === name);
-  if (!player) return;
-  if (selectedFAPitcher?.name === name) {
-    selectedFAPitcher = null;
-    tr.classList.remove('fa-row-selected');
-  } else {
-    document.querySelectorAll('#fa-pitcher-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
-    tr.classList.add('fa-row-selected');
-    selectedFAPitcher = player;
-  }
-  renderFAPitcherComparison();
-});
+function attachFAPitcherClick(bodyId) {
+  document.getElementById(bodyId).addEventListener('click', e => {
+    if (e.target.classList.contains('fa-flag')) return;
+    const tr = e.target.closest('tr');
+    if (!tr || tr.classList.contains('avg-row') || tr.classList.contains('below-min')) return;
+    const name = tr.dataset.name;
+    const player = FREE_AGENTS.pitchers.find(p => p.name === name);
+    if (!player) return;
+    if (selectedFAPitcher?.name === name) {
+      selectedFAPitcher = null;
+      tr.classList.remove('fa-row-selected');
+    } else {
+      document.querySelectorAll('#fa-sp-body .fa-row-selected, #fa-rp-body .fa-row-selected').forEach(r => r.classList.remove('fa-row-selected'));
+      tr.classList.add('fa-row-selected');
+      selectedFAPitcher = player;
+    }
+    renderFAPitcherComparison();
+  });
+}
+attachFAPitcherClick('fa-sp-body');
+attachFAPitcherClick('fa-rp-body');
 
 document.getElementById('fa-batter-expand').addEventListener('click', () => {
   faLimits.batters = faLimits.batters === 20 ? 50 : 20;
   renderFABatters();
 });
-document.getElementById('fa-pitcher-expand').addEventListener('click', () => {
-  faLimits.pitchers = faLimits.pitchers === 20 ? 50 : 20;
-  renderFAPitchers();
+document.getElementById('fa-sp-expand').addEventListener('click', () => {
+  faLimits.sp = faLimits.sp === 20 ? 50 : 20;
+  renderFASP();
+});
+document.getElementById('fa-rp-expand').addEventListener('click', () => {
+  faLimits.rp = faLimits.rp === 20 ? 50 : 20;
+  renderFARP();
 });
 
 setupSort('fa-batter-table',  BATTER_KEYS,  'faBatter',  renderFABatters);
-setupSort('fa-pitcher-table', PITCHER_KEYS, 'faPitcher', renderFAPitchers);
+setupSort('fa-sp-table', PITCHER_KEYS, 'faSP', renderFASP);
+setupSort('fa-rp-table', PITCHER_KEYS, 'faRP', renderFARP);
 renderFABatters();
 renderFAPitchers();
 
