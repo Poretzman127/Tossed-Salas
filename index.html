@@ -2446,11 +2446,20 @@ function tier(v) {
   return 'poor';
 }
 
-function cell(v, heatCls, displayOverride) {
+function cell(v, heatCls, displayOverride, tierOverride) {
   if (v === null || v === undefined) return `<span class="pct pct-null">—</span>`;
   const display = displayOverride != null ? displayOverride : v;
+  if (tierOverride) return `<span class="pct ${tierOverride}">${display}</span>`;
   if (heatMode && heatCls) return `<span class="pct ${heatCls}">${display}</span>`;
   return `<span class="pct pct-${tier(v)}">${display}</span>`;
+}
+
+// Spot column uses raw-value buckets, not the percentile rank: 1-4 elite (red), 5-7 avg (yellow), 8-9 poor (blue).
+function spotTierClass(spotRaw) {
+  if (spotRaw == null) return null;
+  if (spotRaw < 4.5) return 'pct-elite';
+  if (spotRaw < 7.5) return 'pct-avg';
+  return 'pct-poor';
 }
 function rawCell(v) {
   if (v === null || v === undefined) return `<span class="pct pct-null">—</span>`;
@@ -2695,13 +2704,14 @@ function buildBatterRow(p, isFA) {
   const nameAttr = isFA ? ` data-name="${p.name.replace(/"/g, '&quot;')}"` : '';
   const h = p._heat || {};
   const sd = spotDisplay(p);
+  const stc = spotTierClass(p.spot_raw);
   if (p.partial) {
     return `<tr class="below-min${lpClass}"${nameAttr}>
       <td>${flag}${p.name}${ilTag(p)}${newsBtn(p)}</td>
       <td>${p.pos}</td>
       ${ppgCell(p.ppg)}
       <td>${cell(avgVal, h._avg)}</td>
-      ${BATTER_KEYS.map(k => `<td>${p[k] !== undefined ? cell(p[k], h[k], k === 'spot' ? sd : null) : cell(null)}</td>`).join('')}
+      ${BATTER_KEYS.map(k => `<td>${p[k] !== undefined ? cell(p[k], h[k], k === 'spot' ? sd : null, k === 'spot' ? stc : null) : cell(null)}</td>`).join('')}
     </tr>`;
   }
   return `<tr class="${lpClass.trim()}"${nameAttr}>
@@ -2709,7 +2719,7 @@ function buildBatterRow(p, isFA) {
     <td>${p.pos}</td>
     ${ppgCell(p.ppg)}
     <td>${cell(avgVal, h._avg)}</td>
-    ${BATTER_KEYS.map(k => `<td>${cell(p[k], h[k], k === 'spot' ? sd : null)}</td>`).join('')}
+    ${BATTER_KEYS.map(k => `<td>${cell(p[k], h[k], k === 'spot' ? sd : null, k === 'spot' ? stc : null)}</td>`).join('')}
   </tr>`;
 }
 
