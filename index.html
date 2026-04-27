@@ -2474,6 +2474,14 @@ function avg(players, key) {
   return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
 }
 
+function avgFloat(players, key) {
+  const vals = players
+    .filter(p => p[key] !== null && p[key] !== undefined)
+    .map(p => p[key]);
+  if (!vals.length) return null;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
 const PLAYER_NEWS = {
 };
 
@@ -2757,12 +2765,20 @@ function buildAvgRow(players, keys) {
   const overallAvg = validAvgs.length
     ? Math.round(validAvgs.reduce((a, b) => a + b, 0) / validAvgs.length)
     : null;
+  const spotRawAvg = keys.includes('spot') ? avgFloat(qualified, 'spot_raw') : null;
   return `<tr class="avg-row">
     <td>Team Average</td>
     <td></td>
     <td></td>
     <td>${cell(overallAvg)}</td>
-    ${avgs.map(a => `<td>${cell(a)}</td>`).join('')}
+    ${avgs.map((a, i) => {
+      const k = keys[i];
+      if (k === 'spot') {
+        const display = spotRawAvg != null ? spotRawAvg.toFixed(1) : null;
+        return `<td>${cell(a, null, display, spotTierClass(spotRawAvg))}</td>`;
+      }
+      return `<td>${cell(a)}</td>`;
+    }).join('')}
   </tr>`;
 }
 
@@ -3609,11 +3625,13 @@ function buildLeaderboardData(keys) {
     keys.forEach(k => { stats[k] = avg(qualified, k); });
     const colAvgs = keys.map(k => stats[k]).filter(v => v !== null);
     stats.avg = colAvgs.length ? Math.round(colAvgs.reduce((a, b) => a + b, 0) / colAvgs.length) : null;
+    const spotRawAvg = isBat ? avgFloat(qualified, 'spot_raw') : null;
     return {
       name,
       pf: isBat ? (team.pfBat ?? null) : (team.pfPit ?? null),
       pa: isBat ? (team.paBat ?? null) : (team.paPit ?? null),
       _heat: computeTeamHeat(qualified, keys, !isBat),
+      spot_raw_avg: spotRawAvg,
       ...stats
     };
   });
@@ -3638,7 +3656,14 @@ function renderLeaderboardTable(tableId, bodyId, stateKey, keys, labels) {
       <td>${rawCell(row.pf)}</td>
       <td>${rawCell(row.pa)}</td>
       <td>${cell(row.avg, h._avg)}</td>
-      ${keys.map(k => `<td>${cell(row[k], h[k])}</td>`).join('')}
+      ${keys.map(k => {
+        if (k === 'spot') {
+          const r = row.spot_raw_avg;
+          const display = r != null ? r.toFixed(1) : null;
+          return `<td>${cell(row[k], h[k], display, spotTierClass(r))}</td>`;
+        }
+        return `<td>${cell(row[k], h[k])}</td>`;
+      }).join('')}
     </tr>`;
   }).join('');
 
