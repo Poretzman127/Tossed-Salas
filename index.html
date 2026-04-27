@@ -1319,6 +1319,7 @@
           <th data-tip="Fastball average velocity in mph. Higher = better.">FB Velo</th>
           <th data-tip="Fastball average spin rate in RPM. Higher spin typically generates more movement and rise.">FB Spin</th>
           <th data-tip="Appearances per week since season start. Relief pitchers only.">G/W</th>
+          <th data-tip="Expected fantasy points per week (PPG × G/W). Relief pitchers only.">xPW</th>
         </tr>
       </thead>
       <tbody id="fa-pitcher-body"></tbody>
@@ -2738,6 +2739,8 @@ function buildPitcherRow(p, isFA) {
   const nameAttr = isFA ? ` data-name="${p.name.replace(/"/g, '&quot;')}"` : '';
   const h = p._heat || {};
   const appwkCell = isFA ? `<td><span class="pct">${p.appwk != null ? p.appwk.toFixed(1) : ''}</span></td>` : '';
+  const xpw = (isFA && p.ppg != null && p.appwk != null) ? p.ppg * p.appwk : null;
+  const xpwCell = isFA ? `<td><span class="pct">${xpw != null ? xpw.toFixed(1) : ''}</span></td>` : '';
   if (p.partial) {
     return `<tr class="below-min${lpClass}"${nameAttr}>
       <td>${flag}${p.name}${ilTag(p)}${probTag(p)}${newsBtn(p)}</td>
@@ -2746,6 +2749,7 @@ function buildPitcherRow(p, isFA) {
       <td>${cell(null)}</td>
       ${PITCHER_KEYS.map(() => `<td>${cell(null)}</td>`).join('')}
       ${appwkCell}
+      ${xpwCell}
     </tr>`;
   }
   return `<tr class="${lpClass.trim()}"${nameAttr}>
@@ -2755,6 +2759,7 @@ function buildPitcherRow(p, isFA) {
     <td>${cell(avgVal, h._avg)}</td>
     ${PITCHER_KEYS.map(k => `<td>${cell(p[k], h[k])}</td>`).join('')}
     ${appwkCell}
+    ${xpwCell}
   </tr>`;
 }
 
