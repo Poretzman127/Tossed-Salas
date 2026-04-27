@@ -416,6 +416,8 @@
   #fa-sp-body tr:not(.avg-row):not(.below-min):hover,
   #fa-rp-body tr:not(.avg-row):not(.below-min):hover { background: rgba(200,168,75,0.04); }
   .fa-row-selected { background: rgba(200,168,75,0.10) !important; outline: 1px solid var(--accent); }
+  /* G/W column on the FA Relief Pitchers table is hidden but kept in the DOM so the data is available if we re-enable it. */
+  #fa-rp-table th.rp-gw-col, #fa-rp-table td.rp-gw-col { display: none; }
   .fa-compare-wrap { padding: 24px 48px 8px; border-top: 1px solid var(--border2); }
   .fa-compare-vs-select {
     background: var(--bg2); border: 1px solid var(--border2); border-radius: 4px;
@@ -1363,6 +1365,7 @@
           <th>Player</th>
           <th>Type</th>
           <th data-tip="ESPN Fantasy Points Per Game in your league.">PPG</th>
+          <th data-tip="Expected fantasy points per week (PPG × G/W). Relief pitchers only.">XPPW</th>
           <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
           <th data-tip="Expected ERA based on quality of contact allowed, park neutral. Percentile inverted — higher score means lower (better) xERA.">xERA</th>
           <th data-tip="Expected Weighted On-Base Average allowed. Higher percentile means less damage allowed to opposing hitters.">xwOBA</th>
@@ -1376,8 +1379,7 @@
           <th data-tip="Chase Rate. % of swings at pitches outside the zone. Higher = more chasing induced, better for pitchers.">Chase</th>
           <th data-tip="Fastball average velocity in mph. Higher = better.">FB Velo</th>
           <th data-tip="Fastball average spin rate in RPM. Higher spin typically generates more movement and rise.">FB Spin</th>
-          <th data-tip="Appearances per week since season start. Relief pitchers only.">G/W</th>
-          <th data-tip="Expected fantasy points per week (PPG × G/W). Relief pitchers only.">XPPW</th>
+          <th class="rp-gw-col" data-tip="Appearances per week since season start. Relief pitchers only.">G/W</th>
         </tr>
       </thead>
       <tbody id="fa-rp-body"></tbody>
@@ -2797,7 +2799,7 @@ function buildPitcherRow(p, isFA) {
   const nameAttr = isFA ? ` data-name="${p.name.replace(/"/g, '&quot;')}"` : '';
   const h = p._heat || {};
   const showRPCols = isFA && p._rpTable;
-  const appwkCell = showRPCols ? `<td><span class="pct">${p.appwk != null ? p.appwk.toFixed(1) : ''}</span></td>` : '';
+  const appwkCell = showRPCols ? `<td class="rp-gw-col"><span class="pct">${p.appwk != null ? p.appwk.toFixed(1) : ''}</span></td>` : '';
   const xpw = (showRPCols && p.ppg != null && p.appwk != null) ? p.ppg * p.appwk : null;
   const xpwCell = showRPCols ? `<td><span class="pct">${xpw != null ? xpw.toFixed(1) : ''}</span></td>` : '';
   if (p.partial) {
@@ -2805,16 +2807,17 @@ function buildPitcherRow(p, isFA) {
       <td>${flag}${p.name}${ilTag(p)}${probTag(p)}${newsBtn(p)}</td>
       <td>${p.type}</td>
       ${ppgCell(p.ppg)}
+      ${xpwCell}
       <td>${cell(null)}</td>
       ${PITCHER_KEYS.map(() => `<td>${cell(null)}</td>`).join('')}
       ${appwkCell}
-      ${xpwCell}
     </tr>`;
   }
   return `<tr class="${lpClass.trim()}"${nameAttr}>
     <td>${flag}${p.name}${ilTag(p)}${probTag(p)}</td>
     <td>${p.type}</td>
     ${ppgCell(p.ppg)}
+    ${xpwCell}
     <td>${cell(avgVal, h._avg)}</td>
     ${PITCHER_KEYS.map(k => `<td>${cell(p[k], h[k])}</td>`).join('')}
     ${appwkCell}
@@ -2851,8 +2854,8 @@ const sortState = {
   batter:   { key: null, dir: -1 },
   pitcher:  { key: null, dir: -1 },
   faBatter: { key: 'avg', dir: -1 },
-  faSP:     { key: 'avg', dir: -1 },
-  faRP:     { key: 'avg', dir: -1 },
+  faSP:     { key: 'avg',  dir: -1 },
+  faRP:     { key: 'xppw', dir: -1 },
   ldrBatter:  { key: 'avg', dir: -1 },
   ldrPitcher: { key: 'avg', dir: -1 },
   tradeSell:  { key: 'diff', dir: -1 },
@@ -2953,16 +2956,18 @@ function renderPitchers() {
 }
 
 // ── SORT HEADERS ──────────────────────────────────────
-function setupSort(tableId, statKeys, stateKey, renderFn) {
+function setupSort(tableId, statKeys, stateKey, renderFn, colMap) {
   const ths = document.querySelectorAll(`#${tableId} thead th`);
-  // col 0=Player, col 1=Pos/Type (not sortable), col 2=PPG, col 3=Avg, col 4…N=stats
+  const defaultMap = (i) => {
+    if (i === 0) return 'name';
+    if (i === 1) return null;
+    if (i === 2) return 'ppg';
+    if (i === 3) return 'avg';
+    return statKeys[i - 4];
+  };
+  const map = colMap || defaultMap;
   ths.forEach((th, i) => {
-    let key;
-    if (i === 0) key = 'name';
-    else if (i === 1) key = null;
-    else if (i === 2) key = 'ppg';
-    else if (i === 3) key = 'avg';
-    else key = statKeys[i - 4];
+    const key = map(i);
     if (!key) return;
     th.addEventListener('click', () => {
       const st = sortState[stateKey];
@@ -2973,6 +2978,27 @@ function setupSort(tableId, statKeys, stateKey, renderFn) {
       renderFn();
     });
   });
+}
+
+// FA Relief Pitcher table has XPPW inserted between PPG and Avg, plus a hidden G/W at the end.
+function rpColMap(i) {
+  if (i === 0) return 'name';
+  if (i === 1) return null;
+  if (i === 2) return 'ppg';
+  if (i === 3) return 'xppw';
+  if (i === 4) return 'avg';
+  if (i === 17) return null; // hidden G/W
+  return PITCHER_KEYS[i - 5];
+}
+function rpColIdx(key) {
+  if (!key) return null;
+  if (key === 'name') return 0;
+  if (key === 'ppg')  return 2;
+  if (key === 'xppw') return 3;
+  if (key === 'avg')  return 4;
+  if (key === 'appwk') return 17;
+  const si = PITCHER_KEYS.indexOf(key);
+  return si === -1 ? null : si + 5;
 }
 
 let currentTeam = USER_TEAM;
@@ -3185,7 +3211,13 @@ function renderFAPitcherSection(opts) {
   if (ilOnly)   pitchers = pitchers.filter(p => p.il);
   if (probOnly) pitchers = pitchers.filter(probableMatches);
   if (search) pitchers = pitchers.filter(p => p.name.toLowerCase().includes(search));
-  pitchers = pitchers.map(p => ({ ...withSplitStats(p, true), _rpTable: isRPTable }));
+  pitchers = pitchers.map(p => {
+    const enriched = { ...withSplitStats(p, true), _rpTable: isRPTable };
+    if (isRPTable && enriched.ppg != null && enriched.appwk != null) {
+      enriched.xppw = enriched.ppg * enriched.appwk;
+    }
+    return enriched;
+  });
   const sorted = sortedPlayers(pitchers, key, dir, PITCHER_KEYS, false);
   const displayed = sorted.slice(0, faLimits[limitKey]);
   document.getElementById(`${prefix}-count`).textContent = `${pitchers.length} QUALIFIED`;
@@ -3195,7 +3227,8 @@ function renderFAPitcherSection(opts) {
   document.getElementById(`${prefix}-expand`).textContent =
     faLimits[limitKey] === 20 ? 'Show 50' : 'Show 20';
   applyFASelection(`${prefix}-body`, selectedFAPitcher);
-  highlightSortedCol(`${prefix}-table`, sortColIdx(key, PITCHER_KEYS));
+  const colIdxFn = isRPTable ? rpColIdx : (k => sortColIdx(k, PITCHER_KEYS));
+  highlightSortedCol(`${prefix}-table`, colIdxFn(key));
 }
 
 function renderFASP() {
@@ -3543,7 +3576,7 @@ document.getElementById('fa-rp-expand').addEventListener('click', () => {
 
 setupSort('fa-batter-table',  BATTER_KEYS,  'faBatter',  renderFABatters);
 setupSort('fa-sp-table', PITCHER_KEYS, 'faSP', renderFASP);
-setupSort('fa-rp-table', PITCHER_KEYS, 'faRP', renderFARP);
+setupSort('fa-rp-table', PITCHER_KEYS, 'faRP', renderFARP, rpColMap);
 renderFABatters();
 renderFAPitchers();
 
