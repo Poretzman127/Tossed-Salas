@@ -1306,6 +1306,7 @@
         <tr>
           <th>Player</th>
           <th>Type</th>
+          <th data-tip="Opponent for the selected probable date. Blank if the pitcher is not probable that day.">Opp</th>
           <th data-tip="ESPN Fantasy Points Per Game in your league.">PPG</th>
           <th data-tip="Average of all Statcast percentile columns for this player.">Avg</th>
           <th data-tip="Expected ERA based on quality of contact allowed, park neutral. Percentile inverted — higher score means lower (better) xERA.">xERA</th>
@@ -2230,7 +2231,7 @@ const FREE_AGENTS = { batters: [
   { name:'Rhys Hoskins', pos:'1B', ppg:2.9, ppg7:1.4, ppg15:2.0, ppg30:2.6, qualified:true, xwoba:33, xba:5, xslg:12, xobp:57, xiso:29, brl:54, ev:60, hh:67, k:20, bb:96, whiff:19, chase:82, sprint:5, batspd:59, squp:20, ss:null, spot:59, spot_raw:5.0, spot_starts:19, savant_id:656555, espn_id:35291 },
 ], pitchers: [
   { name:'Kody Funderburk', type:'RP', ppg:2.5, ppg7:3.0, ppg15:3.2, ppg30:3.3, qualified:true, xera:13, xwoba:13, xba:35, xslg:50, ev:77, hh:82, k:24, bb:5, whiff:5, chase:2, fbvelo:18, fbspin:70, savant_id:681892, espn_id:4348166, appwk:2.6 },
-  { name:'Grant Holmes', type:'SP', ppg:10.3, ppg7:11.0, ppg15:8.0, ppg30:10.3, qualified:true, xera:50, xwoba:50, xba:57, xslg:44, ev:37, hh:35, k:28, bb:38, whiff:80, chase:66, fbvelo:53, fbspin:65, savant_id:656550, espn_id:33840, probable:['5/1'] },
+  { name:'Grant Holmes', type:'SP', ppg:10.3, ppg7:11.0, ppg15:8.0, ppg30:10.3, qualified:true, xera:50, xwoba:50, xba:57, xslg:44, ev:37, hh:35, k:28, bb:38, whiff:80, chase:66, fbvelo:53, fbspin:65, savant_id:656550, espn_id:33840, probable:['5/1'], prob_opp:{'5/1':'@COL'} },
   { name:'Kyle Nicolas', type:'RP', ppg:-0.1, ppg7:-5.5, ppg15:0.8, ppg30:-0.1, qualified:true, xera:1, xwoba:1, xba:21, xslg:31, ev:77, hh:83, k:20, bb:1, whiff:40, chase:1, fbvelo:84, fbspin:78, savant_id:693312, espn_id:4415762, appwk:1.3 },
   { name:'Will Vest', type:'RP', ppg:0.9, ppg7:0.7, ppg15:2.3, ppg30:0.6, qualified:true, xera:72, xwoba:72, xba:80, xslg:73, ev:42, hh:76, k:64, bb:30, whiff:78, chase:62, fbvelo:63, fbspin:37, savant_id:676684, espn_id:41606, appwk:2.6 },
   { name:'Riley Martin', type:'RP', ppg:3.0, ppg7:1.0, ppg15:2.6, ppg30:3.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:53, fbspin:82, il:'IL15', savant_id:702303, espn_id:5138178, appwk:1.5 },
@@ -2249,21 +2250,21 @@ const FREE_AGENTS = { batters: [
   { name:'Paul Blackburn', type:'RP', ppg:1.9, ppg7:7.0, ppg15:3.2, ppg30:1.9, qualified:true, xera:58, xwoba:58, xba:16, xslg:57, ev:52, hh:41, k:10, bb:83, whiff:8, chase:31, fbvelo:44, fbspin:15, savant_id:621112, espn_id:32776, appwk:1.5 },
   { name:'Caleb Kilian', type:'RP', ppg:3.8, ppg7:2.5, ppg15:4.6, ppg30:3.8, qualified:true, xera:87, xwoba:87, xba:94, xslg:95, ev:31, hh:30, k:88, bb:12, whiff:70, chase:46, fbvelo:84, fbspin:78, savant_id:668873, espn_id:4875969, appwk:2.4 },
   { name:'Anthony Banda', type:'RP', ppg:1.1, ppg7:1.8, ppg15:1.0, ppg30:0.5, qualified:true, xera:44, xwoba:44, xba:60, xslg:51, ev:26, hh:61, k:40, bb:88, whiff:44, chase:21, fbvelo:30, fbspin:13, savant_id:607455, espn_id:34542, appwk:2.6 },
-  { name:'Kyle Freeland', type:'SP', ppg:8.8, ppg7:null, ppg15:null, ppg30:12.0, qualified:true, xera:56, xwoba:56, xba:43, xslg:70, ev:52, hh:40, k:32, bb:85, whiff:58, chase:90, fbvelo:21, fbspin:74, il:'IL15', savant_id:607536, espn_id:33839, probable:['4/28','5/3'] },
-  { name:'Andre Pallante', type:'SP', ppg:7.2, ppg7:6.0, ppg15:11.5, ppg30:7.2, qualified:true, xera:24, xwoba:24, xba:45, xslg:28, ev:51, hh:32, k:25, bb:26, whiff:48, chase:12, fbvelo:58, fbspin:34, savant_id:669467, espn_id:4109034, probable:['4/29','5/4'] },
+  { name:'Kyle Freeland', type:'SP', ppg:8.8, ppg7:null, ppg15:null, ppg30:12.0, qualified:true, xera:56, xwoba:56, xba:43, xslg:70, ev:52, hh:40, k:32, bb:85, whiff:58, chase:90, fbvelo:21, fbspin:74, il:'IL15', savant_id:607536, espn_id:33839, probable:['4/28','5/3'], prob_opp:{'4/28':'@CIN','5/3':'ATL'} },
+  { name:'Andre Pallante', type:'SP', ppg:7.2, ppg7:6.0, ppg15:11.5, ppg30:7.2, qualified:true, xera:24, xwoba:24, xba:45, xslg:28, ev:51, hh:32, k:25, bb:26, whiff:48, chase:12, fbvelo:58, fbspin:34, savant_id:669467, espn_id:4109034, probable:['4/29','5/4'], prob_opp:{'4/29':'@PIT','5/4':'MIL'} },
   { name:'Shane Drohan', type:'SP', ppg:-0.5, ppg7:7.0, ppg15:7.0, ppg30:-0.5, qualified:true, xera:22, xwoba:22, xba:7, xslg:46, ev:26, hh:45, k:4, bb:13, whiff:15, chase:35, fbvelo:41, fbspin:74, savant_id:675660, espn_id:4315203 },
   { name:'Jordan Romano', type:'RP', ppg:0.8, ppg7:-3.5, ppg15:-6.2, ppg30:-0.4, qualified:true, xera:46, xwoba:46, xba:67, xslg:66, ev:54, hh:32, k:84, bb:15, whiff:88, chase:59, fbvelo:53, fbspin:69, savant_id:605447, espn_id:36380, appwk:2.0 },
-  { name:'Tyler Mahle', type:'SP', ppg:4.4, ppg7:26.0, ppg15:5.0, ppg30:5.0, qualified:true, xera:16, xwoba:16, xba:17, xslg:17, ev:29, hh:63, k:53, bb:26, whiff:33, chase:38, fbvelo:23, fbspin:65, savant_id:641816, espn_id:34973, probable:['4/28','5/3'] },
-  { name:'Aaron Civale', type:'SP', ppg:9.4, ppg7:8.0, ppg15:-0.5, ppg30:9.4, qualified:true, xera:49, xwoba:49, xba:29, xslg:39, ev:13, hh:9, k:29, bb:81, whiff:26, chase:24, fbvelo:10, fbspin:64, savant_id:650644, espn_id:40934, probable:['4/28','5/3'] },
+  { name:'Tyler Mahle', type:'SP', ppg:4.4, ppg7:26.0, ppg15:5.0, ppg30:5.0, qualified:true, xera:16, xwoba:16, xba:17, xslg:17, ev:29, hh:63, k:53, bb:26, whiff:33, chase:38, fbvelo:23, fbspin:65, savant_id:641816, espn_id:34973, probable:['4/28','5/3'], prob_opp:{'4/28':'@PHI','5/3':'@TB'} },
+  { name:'Aaron Civale', type:'SP', ppg:9.4, ppg7:8.0, ppg15:-0.5, ppg30:9.4, qualified:true, xera:49, xwoba:49, xba:29, xslg:39, ev:13, hh:9, k:29, bb:81, whiff:26, chase:24, fbvelo:10, fbspin:64, savant_id:650644, espn_id:40934, probable:['4/28','5/3'], prob_opp:{'4/28':'KC','5/3':'CLE'} },
   { name:'Blade Tidwell', type:'SP/RP', ppg:4.7, ppg7:6.0, ppg15:4.3, ppg30:4.7, qualified:true, xera:66, xwoba:66, xba:54, xslg:60, ev:77, hh:30, k:50, bb:89, whiff:91, chase:46, fbvelo:74, fbspin:37, savant_id:694918, espn_id:4719088, appwk:1.5 },
   { name:'Luinder Avila', type:'RP', ppg:-5.5, ppg7:null, ppg15:null, ppg30:-5.5, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:72, fbspin:83, savant_id:679883, espn_id:5201985, appwk:0.4 },
-  { name:'Jake Irvin', type:'SP', ppg:7.7, ppg7:22.0, ppg15:10.3, ppg30:7.7, qualified:true, xera:39, xwoba:39, xba:56, xslg:35, ev:21, hh:7, k:72, bb:55, whiff:60, chase:19, fbvelo:22, fbspin:63, savant_id:663623, espn_id:41290, probable:['5/1'] },
+  { name:'Jake Irvin', type:'SP', ppg:7.7, ppg7:22.0, ppg15:10.3, ppg30:7.7, qualified:true, xera:39, xwoba:39, xba:56, xslg:35, ev:21, hh:7, k:72, bb:55, whiff:60, chase:19, fbvelo:22, fbspin:63, savant_id:663623, espn_id:41290, probable:['5/1'], prob_opp:{'5/1':'MIL'} },
   { name:'Kolby Allard', type:'RP', ppg:-1.0, ppg7:null, ppg15:null, ppg30:-1.0, qualified:true, xera:10, xwoba:10, xba:4, xslg:7, ev:37, hh:31, k:35, bb:75, whiff:10, chase:82, fbvelo:3, fbspin:2, savant_id:663465, espn_id:34980, appwk:0.9 },
   { name:'Zach Agnos', type:'RP', ppg:3.1, ppg7:5.0, ppg15:5.8, ppg30:2.9, qualified:true, xera:42, xwoba:42, xba:17, xslg:35, ev:90, hh:75, k:37, bb:53, whiff:65, chase:96, fbvelo:56, fbspin:71, savant_id:688642, espn_id:5207459, appwk:2.0 },
   { name:'Hunter Barco', type:'SP', ppg:-0.8, ppg7:null, ppg15:null, ppg30:2.7, qualified:true, xera:5, xwoba:5, xba:15, xslg:18, ev:49, hh:39, k:8, bb:3, whiff:2, chase:1, fbvelo:51, fbspin:38, savant_id:682995, espn_id:4621029 },
-  { name:'Janson Junk', type:'SP', ppg:8.0, ppg7:20.0, ppg15:12.5, ppg30:8.0, qualified:true, xera:67, xwoba:67, xba:54, xslg:58, ev:24, hh:44, k:16, bb:80, whiff:23, chase:8, fbvelo:46, fbspin:57, savant_id:676083, espn_id:4881980, probable:['4/28','5/4'] },
+  { name:'Janson Junk', type:'SP', ppg:8.0, ppg7:20.0, ppg15:12.5, ppg30:8.0, qualified:true, xera:67, xwoba:67, xba:54, xslg:58, ev:24, hh:44, k:16, bb:80, whiff:23, chase:8, fbvelo:46, fbspin:57, savant_id:676083, espn_id:4881980, probable:['4/28','5/4'], prob_opp:{'4/28':'@LAD','5/4':'PHI'} },
   { name:'Jovani Morán', type:'SP/RP', ppg:4.6, ppg7:3.0, ppg15:3.8, ppg30:4.6, qualified:true, xera:88, xwoba:88, xba:97, xslg:83, ev:88, hh:89, k:63, bb:18, whiff:86, chase:35, fbvelo:15, fbspin:59, savant_id:663558, espn_id:4722926, appwk:1.8 },
-  { name:'Matt Waldron', type:'SP', ppg:-8.0, ppg7:-5.0, ppg15:-8.0, ppg30:-8.0, qualified:true, xera:33, xwoba:33, xba:27, xslg:38, ev:80, hh:73, k:13, bb:55, whiff:4, chase:41, fbvelo:15, fbspin:6, savant_id:663362, espn_id:4020158, probable:['4/29'] },
+  { name:'Matt Waldron', type:'SP', ppg:-8.0, ppg7:-5.0, ppg15:-8.0, ppg30:-8.0, qualified:true, xera:33, xwoba:33, xba:27, xslg:38, ev:80, hh:73, k:13, bb:55, whiff:4, chase:41, fbvelo:15, fbspin:6, savant_id:663362, espn_id:4020158, probable:['4/29'], prob_opp:{'4/29':'CHC'} },
   { name:'Tim Mayza', type:'RP', ppg:2.0, ppg7:-0.3, ppg15:-1.5, ppg30:1.7, qualified:true, xera:80, xwoba:80, xba:83, xslg:74, ev:32, hh:16, k:50, bb:45, whiff:29, chase:17, fbvelo:46, fbspin:12, savant_id:641835, espn_id:35773, appwk:2.6 },
   { name:'Anthony Bender', type:'RP', ppg:2.2, ppg7:2.3, ppg15:2.2, ppg30:2.1, qualified:true, xera:69, xwoba:69, xba:72, xslg:90, ev:49, hh:63, k:70, bb:13, whiff:14, chase:3, fbvelo:75, fbspin:61, savant_id:669622, espn_id:42171, appwk:2.6 },
   { name:'Isaac Mattson', type:'RP', ppg:3.0, ppg7:3.0, ppg15:3.6, ppg30:3.6, qualified:true, xera:23, xwoba:23, xba:12, xslg:26, ev:19, hh:15, k:28, bb:36, whiff:10, chase:15, fbvelo:36, fbspin:72, savant_id:676755, espn_id:42063, appwk:3.1 },
@@ -2275,7 +2276,7 @@ const FREE_AGENTS = { batters: [
   { name:'Ben Brown', type:'SP/RP', ppg:5.7, ppg7:6.5, ppg15:6.2, ppg30:5.8, qualified:true, xera:84, xwoba:84, xba:71, xslg:82, ev:46, hh:72, k:60, bb:61, whiff:44, chase:44, fbvelo:80, fbspin:27, savant_id:676962, espn_id:41516, appwk:1.8 },
   { name:'Dylan Lee', type:'RP', ppg:3.7, ppg7:4.7, ppg15:4.6, ppg30:3.8, qualified:true, xera:95, xwoba:95, xba:93, xslg:89, ev:73, hh:59, k:80, bb:94, whiff:92, chase:97, fbvelo:28, fbspin:81, il:'PTL', savant_id:669276, espn_id:41455, appwk:2.8 },
   { name:'Casey Legumina', type:'RP', ppg:1.1, ppg7:null, ppg15:-4.3, ppg30:0.5, qualified:true, xera:27, xwoba:27, xba:17, xslg:24, ev:2, hh:3, k:22, bb:88, whiff:17, chase:12, fbvelo:30, fbspin:80, savant_id:668984, espn_id:4346117, appwk:1.5 },
-  { name:'Brayan Bello', type:'SP', ppg:-4.6, ppg7:-23.0, ppg15:-14.0, ppg30:-4.6, qualified:true, xera:2, xwoba:2, xba:6, xslg:1, ev:31, hh:45, k:6, bb:33, whiff:84, chase:25, fbvelo:49, fbspin:7, savant_id:678394, espn_id:4720856, probable:['4/29'] },
+  { name:'Brayan Bello', type:'SP', ppg:-4.6, ppg7:-23.0, ppg15:-14.0, ppg30:-4.6, qualified:true, xera:2, xwoba:2, xba:6, xslg:1, ev:31, hh:45, k:6, bb:33, whiff:84, chase:25, fbvelo:49, fbspin:7, savant_id:678394, espn_id:4720856, probable:['4/29'], prob_opp:{'4/29':'@TOR'} },
   { name:'Gordon Graceffo', type:'RP', ppg:4.2, ppg7:2.3, ppg15:3.8, ppg30:4.2, qualified:true, xera:17, xwoba:17, xba:21, xslg:20, ev:2, hh:3, k:15, bb:33, whiff:5, chase:6, fbvelo:67, fbspin:8, savant_id:700669, espn_id:5123582, appwk:2.2 },
   { name:'Andrew Nardi', type:'RP', ppg:1.2, ppg7:-1.7, ppg15:-0.1, ppg30:0.8, qualified:true, xera:9, xwoba:9, xba:45, xslg:9, ev:54, hh:27, k:62, bb:7, whiff:78, chase:38, fbvelo:53, fbspin:79, savant_id:677053, espn_id:3975840, appwk:2.6 },
   { name:'Joel Payamps', type:'RP', ppg:0.6, ppg7:1.0, ppg15:1.8, ppg30:1.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:42, fbspin:83, savant_id:606303, espn_id:40021, appwk:2.2 },
@@ -2285,7 +2286,7 @@ const FREE_AGENTS = { batters: [
   { name:'Cody Laweryson', type:'RP', ppg:4.6, ppg7:null, ppg15:null, ppg30:4.6, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:18, fbspin:52, il:'IL15', savant_id:689520, espn_id:5012036, appwk:1.1 },
   { name:'Mason Englert', type:'RP', ppg:0.6, ppg7:null, ppg15:3.0, ppg30:0.6, qualified:true, xera:1, xwoba:1, xba:1, xslg:1, ev:1, hh:4, k:20, bb:75, whiff:24, chase:92, fbvelo:18, fbspin:50, il:'IL15', savant_id:669438, espn_id:41386, appwk:2.0 },
   { name:'Jeremiah Estrada', type:'RP', ppg:2.3, ppg7:null, ppg15:null, ppg30:5.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:61, fbspin:22, il:'IL15', savant_id:669093, espn_id:41014, appwk:1.5 },
-  { name:'Jose Quintana', type:'SP', ppg:2.8, ppg7:20.0, ppg15:2.7, ppg30:2.8, qualified:true, xera:21, xwoba:21, xba:19, xslg:19, ev:64, hh:75, k:2, bb:21, whiff:20, chase:33, fbvelo:3, fbspin:19, savant_id:500779, espn_id:32106, probable:['5/1'] },
+  { name:'Jose Quintana', type:'SP', ppg:2.8, ppg7:20.0, ppg15:2.7, ppg30:2.8, qualified:true, xera:21, xwoba:21, xba:19, xslg:19, ev:64, hh:75, k:2, bb:21, whiff:20, chase:33, fbvelo:3, fbspin:19, savant_id:500779, espn_id:32106, probable:['5/1'], prob_opp:{'5/1':'ATL'} },
   { name:'Lake Bachar', type:'RP', ppg:4.2, ppg7:0.0, ppg15:3.5, ppg30:4.2, qualified:true, xera:87, xwoba:87, xba:94, xslg:87, ev:37, hh:59, k:84, bb:25, whiff:96, chase:68, fbvelo:56, fbspin:100, savant_id:669199, espn_id:42592, appwk:1.8 },
   { name:'Peyton Pallette', type:'RP', ppg:3.0, ppg7:2.5, ppg15:5.0, ppg30:2.3, qualified:true, xera:21, xwoba:21, xba:20, xslg:45, ev:6, hh:38, k:56, bb:29, whiff:75, chase:9, fbvelo:64, fbspin:51, savant_id:688883, espn_id:4622229, appwk:1.3 },
   { name:'Matt Strahm', type:'RP', ppg:3.0, ppg7:0.0, ppg15:3.0, ppg30:2.8, qualified:true, xera:91, xwoba:91, xba:95, xslg:94, ev:47, hh:42, k:58, bb:45, whiff:30, chase:64, fbvelo:7, fbspin:98, savant_id:621381, espn_id:34862, appwk:2.0 },
@@ -2295,7 +2296,7 @@ const FREE_AGENTS = { batters: [
   { name:'Matt Svanson', type:'RP', ppg:-1.0, ppg7:1.7, ppg15:1.8, ppg30:0.2, qualified:true, xera:4, xwoba:4, xba:1, xslg:11, ev:10, hh:5, k:23, bb:8, whiff:9, chase:2, fbvelo:74, fbspin:50, savant_id:694335, espn_id:4649953, appwk:2.4 },
   { name:'Angel Zerpa', type:'RP', ppg:0.6, ppg7:-2.5, ppg15:1.0, ppg30:0.5, qualified:true, xera:5, xwoba:5, xba:1, xslg:7, ev:6, hh:7, k:12, bb:35, whiff:11, chase:2, fbvelo:69, fbspin:7, savant_id:672582, espn_id:4705673, appwk:2.4 },
   { name:'Jacob Latz', type:'SP/RP', ppg:4.1, ppg7:7.0, ppg15:3.8, ppg30:3.2, qualified:true, xera:99, xwoba:99, xba:99, xslg:92, ev:51, hh:29, k:64, bb:87, whiff:52, chase:44, fbvelo:32, fbspin:39, savant_id:656641, espn_id:3210625, appwk:2.2 },
-  { name:'Carmen Mlodzinski', type:'SP/RP', ppg:7.2, ppg7:-4.0, ppg15:5.3, ppg30:7.2, qualified:true, xera:52, xwoba:52, xba:25, xslg:62, ev:9, hh:3, k:58, bb:54, whiff:16, chase:41, fbvelo:56, fbspin:8, savant_id:669387, espn_id:4298378, appwk:1.1, probable:['5/2'] },
+  { name:'Carmen Mlodzinski', type:'SP/RP', ppg:7.2, ppg7:-4.0, ppg15:5.3, ppg30:7.2, qualified:true, xera:52, xwoba:52, xba:25, xslg:62, ev:9, hh:3, k:58, bb:54, whiff:16, chase:41, fbvelo:56, fbspin:8, savant_id:669387, espn_id:4298378, appwk:1.1, probable:['5/2'], prob_opp:{'5/2':'CIN'} },
   { name:'Jonathan Bowlan', type:'RP', ppg:2.7, ppg7:null, ppg15:null, ppg30:2.8, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:90, fbspin:74, il:'IL15', savant_id:680742, espn_id:41344, appwk:1.3 },
   { name:'Andrew Morris', type:'SP', ppg:1.0, ppg7:2.5, ppg15:-0.3, ppg30:1.0, qualified:true, xera:50, xwoba:50, xba:16, xslg:41, ev:84, hh:67, k:43, bb:80, whiff:41, chase:86, fbvelo:66, fbspin:11, savant_id:702193, espn_id:5266690 },
   { name:'George Klassen', type:'SP', ppg:-7.0, ppg7:null, ppg15:null, ppg30:-7.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:84, fbspin:73, savant_id:691946, espn_id:5134517 },
@@ -2314,12 +2315,12 @@ const FREE_AGENTS = { batters: [
   { name:'Tyler Holton', type:'SP/RP', ppg:0.8, ppg7:-2.0, ppg15:-1.8, ppg30:0.7, qualified:true, xera:9, xwoba:9, xba:3, xslg:34, ev:11, hh:18, k:12, bb:15, whiff:13, chase:8, fbvelo:7, fbspin:23, savant_id:663947, espn_id:3983833, appwk:2.2 },
   { name:'Taylor Rogers', type:'RP', ppg:0.4, ppg7:-4.7, ppg15:-1.6, ppg30:0.2, qualified:true, xera:8, xwoba:8, xba:4, xslg:15, ev:27, hh:66, k:17, bb:20, whiff:14, chase:17, fbvelo:6, fbspin:11, savant_id:573124, espn_id:33671, appwk:2.2 },
   { name:'Andrew Hoffmann', type:'RP', ppg:4.3, ppg7:-1.0, ppg15:2.0, ppg30:4.7, qualified:true, xera:30, xwoba:30, xba:58, xslg:41, ev:28, hh:21, k:64, bb:14, whiff:27, chase:1, fbvelo:53, fbspin:55, savant_id:694851, espn_id:5080514, appwk:1.1 },
-  { name:'Chris Bassitt', type:'SP', ppg:-1.4, ppg7:4.0, ppg15:6.5, ppg30:-1.4, qualified:true, xera:10, xwoba:10, xba:5, xslg:27, ev:73, hh:67, k:1, bb:28, whiff:17, chase:3, fbvelo:14, fbspin:12, savant_id:605135, espn_id:33148, probable:['4/29','5/4'] },
+  { name:'Chris Bassitt', type:'SP', ppg:-1.4, ppg7:4.0, ppg15:6.5, ppg30:-1.4, qualified:true, xera:10, xwoba:10, xba:5, xslg:27, ev:73, hh:67, k:1, bb:28, whiff:17, chase:3, fbvelo:14, fbspin:12, savant_id:605135, espn_id:33148, probable:['4/29','5/4'], prob_opp:{'4/29':'HOU','5/4':'@NYY'} },
   { name:'Daniel Palencia', type:'RP', ppg:5.0, ppg7:null, ppg15:null, ppg30:5.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:99, fbspin:61, il:'IL15', savant_id:694037, espn_id:4875225, appwk:1.1 },
   { name:'Richard Lovelady', type:'RP', ppg:2.5, ppg7:4.3, ppg15:3.6, ppg30:2.1, qualified:true, xera:74, xwoba:74, xba:56, xslg:77, ev:59, hh:73, k:37, bb:10, whiff:48, chase:49, fbvelo:12, fbspin:58, savant_id:663992, espn_id:39856, appwk:2.4 },
   { name:'Cade Horton', type:'SP', ppg:10.5, ppg7:null, ppg15:null, ppg30:2.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:67, fbspin:96, il:'IL60', savant_id:690990, espn_id:4692526 },
-  { name:'Keider Montero', type:'SP/RP', ppg:9.6, ppg7:5.0, ppg15:6.0, ppg30:9.6, qualified:true, xera:92, xwoba:92, xba:84, xslg:81, ev:19, hh:29, k:45, bb:92, whiff:18, chase:6, fbvelo:49, fbspin:44, savant_id:672456, espn_id:5182933, appwk:0.9, probable:['5/2'] },
-  { name:'Simeon Woods Richardson', type:'SP', ppg:-1.3, ppg7:-2.5, ppg15:-5.7, ppg30:-1.3, qualified:true, xera:31, xwoba:31, xba:24, xslg:30, ev:37, hh:42, k:2, bb:44, whiff:8, chase:5, fbvelo:22, fbspin:30, savant_id:680573, espn_id:41383, probable:['5/1'] },
+  { name:'Keider Montero', type:'SP/RP', ppg:9.6, ppg7:5.0, ppg15:6.0, ppg30:9.6, qualified:true, xera:92, xwoba:92, xba:84, xslg:81, ev:19, hh:29, k:45, bb:92, whiff:18, chase:6, fbvelo:49, fbspin:44, savant_id:672456, espn_id:5182933, appwk:0.9, probable:['5/2'], prob_opp:{'5/2':'TEX'} },
+  { name:'Simeon Woods Richardson', type:'SP', ppg:-1.3, ppg7:-2.5, ppg15:-5.7, ppg30:-1.3, qualified:true, xera:31, xwoba:31, xba:24, xslg:30, ev:37, hh:42, k:2, bb:44, whiff:8, chase:5, fbvelo:22, fbspin:30, savant_id:680573, espn_id:41383, probable:['5/1'], prob_opp:{'5/1':'TOR'} },
   { name:'Jack Dreyer', type:'SP/RP', ppg:2.8, ppg7:-0.7, ppg15:2.0, ppg30:2.5, qualified:true, xera:71, xwoba:71, xba:94, xslg:64, ev:19, hh:14, k:88, bb:37, whiff:72, chase:35, fbvelo:30, fbspin:90, savant_id:676263, espn_id:5136082, appwk:2.4 },
   { name:'JT Brubaker', type:'RP', ppg:2.4, ppg7:6.0, ppg15:4.7, ppg30:2.1, qualified:true, xera:9, xwoba:9, xba:6, xslg:26, ev:61, hh:74, k:26, bb:13, whiff:65, chase:74, fbvelo:38, fbspin:32, savant_id:664141, espn_id:41460, appwk:2.0 },
   { name:'Alex Vesia', type:'RP', ppg:4.0, ppg7:0.5, ppg15:3.4, ppg30:4.3, qualified:true, xera:86, xwoba:86, xba:89, xslg:91, ev:95, hh:91, k:96, bb:25, whiff:97, chase:83, fbvelo:7, fbspin:88, savant_id:681911, espn_id:42622, appwk:2.6 },
@@ -2328,29 +2329,29 @@ const FREE_AGENTS = { batters: [
   { name:'Juan Morillo', type:'RP', ppg:4.1, ppg7:5.3, ppg15:5.5, ppg30:5.4, qualified:true, xera:97, xwoba:97, xba:97, xslg:94, ev:83, hh:67, k:87, bb:68, whiff:85, chase:80, fbvelo:98, fbspin:36, savant_id:666661, espn_id:4722925, appwk:2.8 },
   { name:'Adrian Morejon', type:'RP', ppg:3.5, ppg7:6.0, ppg15:7.0, ppg30:3.4, qualified:true, xera:76, xwoba:76, xba:44, xslg:72, ev:97, hh:86, k:66, bb:85, whiff:91, chase:89, fbvelo:99, fbspin:87, savant_id:670970, espn_id:40917, appwk:2.4 },
   { name:'Luis Gil', type:'SP', ppg:2.5, ppg7:4.0, ppg15:4.3, ppg30:2.5, qualified:true, xera:10, xwoba:10, xba:32, xslg:12, ev:3, hh:19, k:1, bb:23, whiff:12, chase:8, fbvelo:60, fbspin:87, savant_id:661563, espn_id:40626 },
-  { name:'Brady Singer', type:'SP', ppg:5.3, ppg7:12.0, ppg15:11.0, ppg30:5.6, qualified:true, xera:21, xwoba:21, xba:10, xslg:16, ev:6, hh:23, k:9, bb:91, whiff:23, chase:30, fbvelo:7, fbspin:74, savant_id:663903, espn_id:41172, probable:['5/1'] },
-  { name:'Brandon Sproat', type:'SP', ppg:3.0, ppg7:8.0, ppg15:13.5, ppg30:3.0, qualified:true, xera:23, xwoba:23, xba:39, xslg:28, ev:29, hh:25, k:41, bb:19, whiff:34, chase:19, fbvelo:83, fbspin:6, savant_id:687075, espn_id:4621041, probable:['4/29','5/4'] },
+  { name:'Brady Singer', type:'SP', ppg:5.3, ppg7:12.0, ppg15:11.0, ppg30:5.6, qualified:true, xera:21, xwoba:21, xba:10, xslg:16, ev:6, hh:23, k:9, bb:91, whiff:23, chase:30, fbvelo:7, fbspin:74, savant_id:663903, espn_id:41172, probable:['5/1'], prob_opp:{'5/1':'@PIT'} },
+  { name:'Brandon Sproat', type:'SP', ppg:3.0, ppg7:8.0, ppg15:13.5, ppg30:3.0, qualified:true, xera:23, xwoba:23, xba:39, xslg:28, ev:29, hh:25, k:41, bb:19, whiff:34, chase:19, fbvelo:83, fbspin:6, savant_id:687075, espn_id:4621041, probable:['4/29','5/4'], prob_opp:{'4/29':'ARI','5/4':'@STL'} },
   { name:'Eduard Bazardo', type:'RP', ppg:2.7, ppg7:3.0, ppg15:3.0, ppg30:3.1, qualified:true, xera:90, xwoba:90, xba:92, xslg:84, ev:42, hh:48, k:40, bb:38, whiff:5, chase:2, fbvelo:51, fbspin:27, savant_id:660825, espn_id:41939, appwk:2.6 },
   { name:'Max Scherzer', type:'SP', ppg:-2.8, ppg7:-21.0, ppg15:-6.0, ppg30:-2.8, qualified:true, xera:8, xwoba:8, xba:12, xslg:6, ev:51, hh:54, k:5, bb:45, whiff:3, chase:55, fbvelo:27, fbspin:70, il:'IL15', savant_id:453286, espn_id:28976 },
   { name:'Didier Fuentes', type:'SP', ppg:5.5, ppg7:0.0, ppg15:0.0, ppg30:5.5, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:80, fbspin:13, savant_id:800311, espn_id:5291189 },
-  { name:'Jesse Scholtens', type:'SP', ppg:10.8, ppg7:9.0, ppg15:10.0, ppg30:10.8, qualified:true, xera:55, xwoba:55, xba:40, xslg:56, ev:84, hh:69, k:22, bb:70, whiff:15, chase:51, fbvelo:22, fbspin:39, savant_id:669947, espn_id:41452, probable:['5/2'] },
+  { name:'Jesse Scholtens', type:'SP', ppg:10.8, ppg7:9.0, ppg15:10.0, ppg30:10.8, qualified:true, xera:55, xwoba:55, xba:40, xslg:56, ev:84, hh:69, k:22, bb:70, whiff:15, chase:51, fbvelo:22, fbspin:39, savant_id:669947, espn_id:41452, probable:['5/2'], prob_opp:{'5/2':'SF'} },
   { name:'Mick Abel', type:'SP', ppg:7.2, ppg7:null, ppg15:32.0, ppg30:7.2, qualified:true, xera:27, xwoba:27, xba:20, xslg:43, ev:70, hh:44, k:63, bb:36, whiff:73, chase:74, fbvelo:58, fbspin:94, il:'IL15', savant_id:690953, espn_id:4718970 },
   { name:'Spencer Miles', type:'SP/RP', ppg:3.9, ppg7:4.0, ppg15:3.0, ppg30:3.3, qualified:true, xera:44, xwoba:44, xba:15, xslg:39, ev:81, hh:85, k:39, bb:73, whiff:24, chase:27, fbvelo:75, fbspin:42, savant_id:693686, espn_id:4833671, appwk:1.5 },
   { name:'Mason Fluharty', type:'RP', ppg:2.4, ppg7:5.7, ppg15:3.7, ppg30:3.0, qualified:true, xera:97, xwoba:97, xba:97, xslg:92, ev:97, hh:86, k:97, bb:45, whiff:93, chase:87, fbvelo:null, fbspin:null, savant_id:689254, espn_id:4622501, appwk:2.6 },
   { name:'DL Hall', type:'RP', ppg:2.6, ppg7:6.0, ppg15:1.2, ppg30:2.6, qualified:true, xera:35, xwoba:35, xba:80, xslg:69, ev:63, hh:54, k:79, bb:1, whiff:70, chase:15, fbvelo:42, fbspin:11, savant_id:669084, espn_id:41018, appwk:2.2 },
   { name:'Jakob Junis', type:'RP', ppg:4.3, ppg7:3.0, ppg15:1.4, ppg30:3.8, qualified:true, xera:50, xwoba:50, xba:28, xslg:59, ev:96, hh:89, k:3, bb:64, whiff:1, chase:71, fbvelo:15, fbspin:22, savant_id:596001, espn_id:36056, appwk:2.2 },
-  { name:'Chris Paddack', type:'SP', ppg:1.7, ppg7:0.5, ppg15:1.7, ppg30:1.7, qualified:true, xera:60, xwoba:60, xba:42, xslg:48, ev:41, hh:15, k:37, bb:89, whiff:45, chase:86, fbvelo:27, fbspin:26, savant_id:663978, espn_id:35999, probable:['5/3'] },
-  { name:'Noah Cameron', type:'SP', ppg:7.4, ppg7:13.0, ppg15:2.0, ppg30:7.4, qualified:true, xera:6, xwoba:6, xba:5, xslg:4, ev:29, hh:18, k:34, bb:64, whiff:36, chase:17, fbvelo:16, fbspin:63, savant_id:702070, espn_id:4417208, probable:['4/30'] },
+  { name:'Chris Paddack', type:'SP', ppg:1.7, ppg7:0.5, ppg15:1.7, ppg30:1.7, qualified:true, xera:60, xwoba:60, xba:42, xslg:48, ev:41, hh:15, k:37, bb:89, whiff:45, chase:86, fbvelo:27, fbspin:26, savant_id:663978, espn_id:35999, probable:['5/3'], prob_opp:{'5/3':'PHI'} },
+  { name:'Noah Cameron', type:'SP', ppg:7.4, ppg7:13.0, ppg15:2.0, ppg30:7.4, qualified:true, xera:6, xwoba:6, xba:5, xslg:4, ev:29, hh:18, k:34, bb:64, whiff:36, chase:17, fbvelo:16, fbspin:63, savant_id:702070, espn_id:4417208, probable:['4/30'], prob_opp:{'4/30':'@ATH'} },
   { name:'Edgardo Henriquez', type:'RP', ppg:2.3, ppg7:2.3, ppg15:2.6, ppg30:1.6, qualified:true, xera:67, xwoba:67, xba:85, xslg:79, ev:99, hh:98, k:69, bb:24, whiff:61, chase:78, fbvelo:100, fbspin:77, savant_id:683618, espn_id:5194684, appwk:2.2 },
   { name:'Braydon Fisher', type:'RP', ppg:3.6, ppg7:1.7, ppg15:2.2, ppg30:3.8, qualified:true, xera:60, xwoba:60, xba:54, xslg:62, ev:43, hh:51, k:70, bb:40, whiff:74, chase:56, fbvelo:null, fbspin:null, savant_id:680755, espn_id:41318, appwk:3.1 },
   { name:'Matt Festa', type:'RP', ppg:2.9, ppg7:4.0, ppg15:4.5, ppg30:2.6, qualified:true, xera:79, xwoba:79, xba:74, xslg:52, ev:75, hh:41, k:53, bb:98, whiff:68, chase:60, fbvelo:12, fbspin:87, savant_id:670036, espn_id:39871, appwk:2.4 },
   { name:'Calvin Faucher', type:'RP', ppg:1.5, ppg7:0.5, ppg15:1.3, ppg30:0.9, qualified:true, xera:18, xwoba:18, xba:43, xslg:40, ev:2, hh:1, k:77, bb:3, whiff:82, chase:22, fbvelo:null, fbspin:null, savant_id:676534, espn_id:3978173, appwk:2.6 },
-  { name:'Patrick Corbin', type:'SP', ppg:8.5, ppg7:9.0, ppg15:11.3, ppg30:8.5, qualified:true, xera:13, xwoba:13, xba:13, xslg:10, ev:43, hh:39, k:37, bb:66, whiff:36, chase:42, fbvelo:10, fbspin:9, savant_id:571578, espn_id:31313, probable:['5/1'] },
+  { name:'Patrick Corbin', type:'SP', ppg:8.5, ppg7:9.0, ppg15:11.3, ppg30:8.5, qualified:true, xera:13, xwoba:13, xba:13, xslg:10, ev:43, hh:39, k:37, bb:66, whiff:36, chase:42, fbvelo:10, fbspin:9, savant_id:571578, espn_id:31313, probable:['5/1'], prob_opp:{'5/1':'@MIN'} },
   { name:'Tyler Samaniego', type:'RP', ppg:4.0, ppg7:4.0, ppg15:4.5, ppg30:4.0, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:28, fbspin:28, savant_id:701719, espn_id:4630588, appwk:0.9 },
   { name:'Garrett Whitlock', type:'RP', ppg:3.8, ppg7:2.0, ppg15:5.5, ppg30:3.5, qualified:true, xera:25, xwoba:25, xba:38, xslg:27, ev:69, hh:76, k:90, bb:28, whiff:43, chase:15, fbvelo:47, fbspin:21, savant_id:676477, espn_id:39674, appwk:2.0 },
   { name:'Shane Smith', type:'SP', ppg:-5.0, ppg7:null, ppg15:null, ppg30:-3.0, qualified:true, xera:41, xwoba:41, xba:49, xslg:87, ev:99, hh:76, k:51, bb:4, whiff:53, chase:57, fbvelo:69, fbspin:33, savant_id:681343, espn_id:5201814 },
   { name:'Joey Lucchesi', type:'RP', ppg:null, ppg7:null, ppg15:null, ppg30:null, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:18, fbspin:43, savant_id:664192, appwk:0.9 },
-  { name:'Slade Cecconi', type:'SP', ppg:1.3, ppg7:2.0, ppg15:-1.3, ppg30:1.3, qualified:true, xera:17, xwoba:17, xba:16, xslg:15, ev:77, hh:58, k:26, bb:47, whiff:30, chase:35, fbvelo:26, fbspin:62, savant_id:677944, espn_id:41462, probable:['5/2'] },
+  { name:'Slade Cecconi', type:'SP', ppg:1.3, ppg7:2.0, ppg15:-1.3, ppg30:1.3, qualified:true, xera:17, xwoba:17, xba:16, xslg:15, ev:77, hh:58, k:26, bb:47, whiff:30, chase:35, fbvelo:26, fbspin:62, savant_id:677944, espn_id:41462, probable:['5/2'], prob_opp:{'5/2':'@ATH'} },
   { name:'Hunter Bigge', type:'RP', ppg:2.4, ppg7:-1.0, ppg15:1.5, ppg30:2.4, qualified:true, xera:32, xwoba:32, xba:69, xslg:48, ev:57, hh:70, k:10, bb:1, whiff:77, chase:5, fbvelo:84, fbspin:83, savant_id:685801, espn_id:4987389, appwk:1.3 },
   { name:'Ian Seymour', type:'SP/RP', ppg:2.4, ppg7:4.5, ppg15:2.4, ppg30:4.1, qualified:true, xera:37, xwoba:37, xba:46, xslg:18, ev:5, hh:30, k:86, bb:70, whiff:86, chase:83, fbvelo:6, fbspin:15, savant_id:693855, espn_id:4669425, appwk:2.0 },
   { name:'Nick Mears', type:'RP', ppg:2.1, ppg7:2.7, ppg15:-0.2, ppg30:2.1, qualified:true, xera:14, xwoba:14, xba:18, xslg:14, ev:54, hh:9, k:22, bb:14, whiff:22, chase:33, fbvelo:51, fbspin:41, savant_id:683232, espn_id:42620, appwk:2.2 },
@@ -2358,17 +2359,17 @@ const FREE_AGENTS = { batters: [
   { name:'Elvis Alvarado', type:'RP', ppg:1.8, ppg7:null, ppg15:-1.0, ppg30:2.0, qualified:true, xera:5, xwoba:5, xba:42, xslg:3, ev:16, hh:9, k:38, bb:8, whiff:93, chase:30, fbvelo:94, fbspin:87, savant_id:665660, espn_id:42211, appwk:2.2 },
   { name:'Kevin Ginkel', type:'RP', ppg:2.0, ppg7:3.3, ppg15:4.0, ppg30:2.7, qualified:true, xera:82, xwoba:82, xba:69, xslg:70, ev:34, hh:41, k:85, bb:87, whiff:82, chase:94, fbvelo:49, fbspin:75, savant_id:656464, espn_id:41432, appwk:2.4 },
   { name:'Tanner Banks', type:'RP', ppg:-0.7, ppg7:-8.0, ppg15:-4.3, ppg30:-1.0, qualified:true, xera:24, xwoba:24, xba:8, xslg:41, ev:91, hh:96, k:50, bb:23, whiff:22, chase:82, fbvelo:12, fbspin:10, savant_id:621383, espn_id:40437, appwk:2.0 },
-  { name:'Sean Burke', type:'SP', ppg:10.2, ppg7:19.5, ppg15:11.3, ppg30:12.6, qualified:true, xera:60, xwoba:60, xba:34, xslg:51, ev:56, hh:58, k:26, bb:90, whiff:11, chase:65, fbvelo:44, fbspin:92, savant_id:680732, espn_id:4867679, probable:['5/2'] },
+  { name:'Sean Burke', type:'SP', ppg:10.2, ppg7:19.5, ppg15:11.3, ppg30:12.6, qualified:true, xera:60, xwoba:60, xba:34, xslg:51, ev:56, hh:58, k:26, bb:90, whiff:11, chase:65, fbvelo:44, fbspin:92, savant_id:680732, espn_id:4867679, probable:['5/2'], prob_opp:{'5/2':'@SD'} },
   { name:'Wandy Peralta', type:'RP', ppg:2.1, ppg7:1.5, ppg15:2.8, ppg30:2.4, qualified:true, xera:67, xwoba:67, xba:44, xslg:62, ev:76, hh:81, k:42, bb:64, whiff:57, chase:94, fbvelo:69, fbspin:14, savant_id:593974, espn_id:36036, appwk:2.4 },
   { name:'Fernando Cruz', type:'RP', ppg:2.9, ppg7:3.5, ppg15:1.4, ppg30:2.9, qualified:true, xera:19, xwoba:19, xba:80, xslg:37, ev:70, hh:92, k:97, bb:2, whiff:99, chase:28, fbvelo:29, fbspin:46, savant_id:518585, espn_id:34068, appwk:2.4 },
   { name:'Cody Bolton', type:'RP', ppg:4.0, ppg7:null, ppg15:null, ppg30:4.0, qualified:true, xera:48, xwoba:48, xba:78, xslg:83, ev:19, hh:45, k:82, bb:4, whiff:35, chase:11, fbvelo:58, fbspin:57, il:'IL15', savant_id:675989, espn_id:41407, appwk:0.7 },
-  { name:'Luis Severino', type:'SP', ppg:6.0, ppg7:21.0, ppg15:8.0, ppg30:5.6, qualified:true, xera:21, xwoba:21, xba:48, xslg:37, ev:46, hh:26, k:55, bb:10, whiff:38, chase:32, fbvelo:82, fbspin:27, savant_id:622663, espn_id:33263, probable:['4/29'] },
+  { name:'Luis Severino', type:'SP', ppg:6.0, ppg7:21.0, ppg15:8.0, ppg30:5.6, qualified:true, xera:21, xwoba:21, xba:48, xslg:37, ev:46, hh:26, k:55, bb:10, whiff:38, chase:32, fbvelo:82, fbspin:27, savant_id:622663, espn_id:33263, probable:['4/29'], prob_opp:{'4/29':'KC'} },
   { name:'Jalen Beeks', type:'RP', ppg:3.1, ppg7:3.7, ppg15:2.3, ppg30:2.6, qualified:true, xera:81, xwoba:81, xba:79, xslg:66, ev:51, hh:43, k:67, bb:80, whiff:53, chase:22, fbvelo:30, fbspin:25, savant_id:656222, espn_id:36723, appwk:2.4 },
   { name:'Aaron Bummer', type:'RP', ppg:1.6, ppg7:3.7, ppg15:0.7, ppg30:1.5, qualified:true, xera:20, xwoba:20, xba:44, xslg:8, ev:11, hh:6, k:25, bb:67, whiff:27, chase:44, fbvelo:4, fbspin:4, savant_id:607481, espn_id:36131, appwk:2.4 },
   { name:'Luke Weaver', type:'RP', ppg:2.6, ppg7:6.0, ppg15:5.0, ppg30:2.7, qualified:true, xera:36, xwoba:36, xba:29, xslg:22, ev:70, hh:81, k:16, bb:53, whiff:57, chase:70, fbvelo:51, fbspin:84, savant_id:596133, espn_id:33770, appwk:2.4 },
   { name:'Cole Sulser', type:'RP', ppg:2.9, ppg7:5.5, ppg15:4.2, ppg30:2.9, qualified:true, xera:22, xwoba:22, xba:19, xslg:13, ev:37, hh:34, k:16, bb:42, whiff:26, chase:66, fbvelo:14, fbspin:82, savant_id:642121, espn_id:37825, appwk:2.4 },
   { name:'Jose A. Ferrer', type:'RP', ppg:2.1, ppg7:5.7, ppg15:2.3, ppg30:2.3, qualified:true, xera:87, xwoba:87, xba:60, xslg:90, ev:96, hh:96, k:15, bb:93, whiff:36, chase:86, fbvelo:85, fbspin:16, savant_id:678606, espn_id:5119607, appwk:2.8 },
-  { name:'Cade Cavalli', type:'SP', ppg:5.7, ppg7:14.0, ppg15:3.0, ppg30:5.6, qualified:true, xera:57, xwoba:57, xba:45, xslg:76, ev:66, hh:82, k:59, bb:40, whiff:39, chase:35, fbvelo:75, fbspin:51, savant_id:676917, espn_id:4308037, probable:['4/29'] },
+  { name:'Cade Cavalli', type:'SP', ppg:5.7, ppg7:14.0, ppg15:3.0, ppg30:5.6, qualified:true, xera:57, xwoba:57, xba:45, xslg:76, ev:66, hh:82, k:59, bb:40, whiff:39, chase:35, fbvelo:75, fbspin:51, savant_id:676917, espn_id:4308037, probable:['4/29'], prob_opp:{'4/29':'@NYM'} },
   { name:'Grant Taylor', type:'RP/SP', ppg:4.1, ppg7:7.0, ppg15:4.4, ppg30:4.5, qualified:true, xera:91, xwoba:91, xba:78, xslg:82, ev:43, hh:23, k:95, bb:83, whiff:70, chase:96, fbvelo:99, fbspin:83, savant_id:691799, espn_id:4927630, appwk:2.4 },
   { name:'Robert Garcia', type:'RP', ppg:1.1, ppg7:null, ppg15:4.0, ppg30:0.9, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:47, fbspin:47, il:'IL15', savant_id:676395, espn_id:5125167, appwk:2.0 },
   { name:'Tatsuya Imai', type:'SP', ppg:4.0, ppg7:null, ppg15:null, ppg30:4.0, qualified:true, xera:50, xwoba:50, xba:93, xslg:98, ev:90, hh:62, k:87, bb:1, whiff:94, chase:6, fbvelo:58, fbspin:4, il:'IL15', savant_id:837227, espn_id:5330833 },
@@ -2378,15 +2379,15 @@ const FREE_AGENTS = { batters: [
   { name:'Connor Brogdon', type:'RP', ppg:2.4, ppg7:2.5, ppg15:-0.6, ppg30:1.2, qualified:true, xera:31, xwoba:31, xba:35, xslg:9, ev:11, hh:43, k:60, bb:94, whiff:81, chase:43, fbvelo:47, fbspin:64, savant_id:641401, espn_id:41515, appwk:1.8 },
   { name:'Jordan Leasure', type:'RP', ppg:1.6, ppg7:-3.5, ppg15:-1.6, ppg30:1.5, qualified:true, xera:3, xwoba:3, xba:21, xslg:1, ev:17, hh:37, k:39, bb:18, whiff:59, chase:84, fbvelo:71, fbspin:58, savant_id:673929, espn_id:5132121, appwk:2.4 },
   { name:'Drew Anderson', type:'SP/RP', ppg:3.1, ppg7:8.0, ppg15:2.0, ppg30:3.8, qualified:true, xera:24, xwoba:24, xba:54, xslg:28, ev:28, hh:36, k:66, bb:21, whiff:65, chase:35, fbvelo:51, fbspin:51, savant_id:623454, espn_id:41125, appwk:1.5 },
-  { name:'Erick Fedde', type:'SP/RP', ppg:6.0, ppg7:9.0, ppg15:7.0, ppg30:6.0, qualified:true, xera:60, xwoba:60, xba:67, xslg:63, ev:41, hh:54, k:13, bb:41, whiff:11, chase:24, fbvelo:38, fbspin:10, savant_id:607200, espn_id:33793, appwk:1.1, probable:['4/29'] },
-  { name:'Jameson Taillon', type:'SP', ppg:8.8, ppg7:4.0, ppg15:10.5, ppg30:8.8, qualified:true, xera:37, xwoba:37, xba:61, xslg:22, ev:67, hh:82, k:45, bb:40, whiff:67, chase:49, fbvelo:12, fbspin:72, savant_id:592791, espn_id:31258, probable:['4/29'] },
+  { name:'Erick Fedde', type:'SP/RP', ppg:6.0, ppg7:9.0, ppg15:7.0, ppg30:6.0, qualified:true, xera:60, xwoba:60, xba:67, xslg:63, ev:41, hh:54, k:13, bb:41, whiff:11, chase:24, fbvelo:38, fbspin:10, savant_id:607200, espn_id:33793, appwk:1.1, probable:['4/29'], prob_opp:{'4/29':'LAA'} },
+  { name:'Jameson Taillon', type:'SP', ppg:8.8, ppg7:4.0, ppg15:10.5, ppg30:8.8, qualified:true, xera:37, xwoba:37, xba:61, xslg:22, ev:67, hh:82, k:45, bb:40, whiff:67, chase:49, fbvelo:12, fbspin:72, savant_id:592791, espn_id:31258, probable:['4/29'], prob_opp:{'4/29':'@SD'} },
   { name:'Victor Vodnik', type:'RP', ppg:1.1, ppg7:-3.5, ppg15:0.4, ppg30:1.1, qualified:true, xera:49, xwoba:49, xba:46, xslg:52, ev:17, hh:45, k:25, bb:38, whiff:53, chase:23, fbvelo:98, fbspin:48, savant_id:680767, espn_id:4722599, appwk:2.4 },
   { name:'Huascar Brazobán', type:'RP', ppg:3.2, ppg7:2.0, ppg15:1.8, ppg30:3.2, qualified:true, xera:74, xwoba:74, xba:38, xslg:71, ev:90, hh:91, k:42, bb:87, whiff:58, chase:60, fbvelo:72, fbspin:49, savant_id:623211, espn_id:4916509, appwk:2.4 },
   { name:'Paxton Schultz', type:'RP', ppg:3.7, ppg7:9.0, ppg15:4.2, ppg30:3.7, qualified:true, xera:15, xwoba:15, xba:27, xslg:5, ev:16, hh:42, k:54, bb:99, whiff:33, chase:35, fbvelo:null, fbspin:null, savant_id:687606, espn_id:4313208, appwk:1.3 },
   { name:'Bryan Abreu', type:'RP', ppg:-0.9, ppg7:4.0, ppg15:1.7, ppg30:-0.7, qualified:true, xera:4, xwoba:4, xba:68, xslg:17, ev:19, hh:1, k:83, bb:1, whiff:91, chase:1, fbvelo:63, fbspin:26, savant_id:650556, espn_id:41208, appwk:2.2 },
   { name:'Jacob Webb', type:'RP', ppg:0.2, ppg7:-0.3, ppg15:0.4, ppg30:-0.2, qualified:true, xera:2, xwoba:2, xba:1, xslg:3, ev:1, hh:2, k:54, bb:30, whiff:79, chase:65, fbvelo:32, fbspin:90, savant_id:657097, espn_id:40384, appwk:2.4 },
   { name:'Brad Keller', type:'RP', ppg:3.0, ppg7:4.0, ppg15:3.6, ppg30:3.0, qualified:true, xera:89, xwoba:89, xba:75, xslg:81, ev:71, hh:48, k:45, bb:78, whiff:39, chase:67, fbvelo:84, fbspin:67, savant_id:641745, espn_id:35292, appwk:2.2 },
-  { name:'Kai-Wei Teng', type:'SP/RP', ppg:4.3, ppg7:1.5, ppg15:3.8, ppg30:3.5, qualified:true, xera:87, xwoba:87, xba:80, xslg:84, ev:46, hh:65, k:64, bb:47, whiff:30, chase:51, fbvelo:56, fbspin:90, savant_id:678906, espn_id:42242, appwk:2.0, probable:['4/28'] },
+  { name:'Kai-Wei Teng', type:'SP/RP', ppg:4.3, ppg7:1.5, ppg15:3.8, ppg30:3.5, qualified:true, xera:87, xwoba:87, xba:80, xslg:84, ev:46, hh:65, k:64, bb:47, whiff:30, chase:51, fbvelo:56, fbspin:90, savant_id:678906, espn_id:42242, appwk:2.0, probable:['4/28'], prob_opp:{'4/28':'@BAL'} },
   { name:'Mitchell Parker', type:'SP', ppg:5.0, ppg7:3.0, ppg15:5.0, ppg30:5.0, qualified:true, xera:72, xwoba:72, xba:66, xslg:78, ev:49, hh:32, k:76, bb:61, whiff:98, chase:96, fbvelo:null, fbspin:null, savant_id:680730, espn_id:4683356 },
   { name:'David Morgan', type:'RP', ppg:2.0, ppg7:-6.5, ppg15:-6.3, ppg30:2.1, qualified:true, xera:67, xwoba:67, xba:79, xslg:88, ev:93, hh:95, k:48, bb:9, whiff:70, chase:89, fbvelo:85, fbspin:59, savant_id:688158, espn_id:5270578, appwk:2.0 },
   { name:'Jaden Hill', type:'RP', ppg:1.9, ppg7:1.0, ppg15:1.7, ppg30:2.3, qualified:true, xera:46, xwoba:46, xba:39, xslg:63, ev:57, hh:67, k:47, bb:15, whiff:67, chase:33, fbvelo:90, fbspin:78, savant_id:677955, espn_id:4414362, appwk:2.8 },
@@ -2395,24 +2396,24 @@ const FREE_AGENTS = { batters: [
   { name:'Carter Baumler', type:'RP', ppg:2.2, ppg7:null, ppg15:null, ppg30:2.3, partial:true, qualified:false, il:'IL15', savant_id:691945, espn_id:4686505, appwk:0.7 },
   { name:'Javier Assad', type:'SP', ppg:2.6, ppg7:-2.0, ppg15:-2.2, ppg30:2.6, qualified:true, xera:20, xwoba:20, xba:7, xslg:24, ev:21, hh:6, k:7, bb:70, whiff:3, chase:9, fbvelo:27, fbspin:7, savant_id:665871, espn_id:5002950 },
   { name:'Tim Herrin', type:'RP', ppg:0.9, ppg7:2.5, ppg15:0.5, ppg30:1.0, partial:true, qualified:false, savant_id:682120, espn_id:4228579, appwk:2.0 },
-  { name:'Andrew Painter', type:'SP', ppg:4.8, ppg7:-8.0, ppg15:-4.5, ppg30:4.8, qualified:true, xera:55, xwoba:55, xba:32, xslg:43, ev:67, hh:80, k:32, bb:89, whiff:18, chase:93, fbvelo:75, fbspin:31, savant_id:691725, espn_id:4872683, probable:['4/30'] },
+  { name:'Andrew Painter', type:'SP', ppg:4.8, ppg7:-8.0, ppg15:-4.5, ppg30:4.8, qualified:true, xera:55, xwoba:55, xba:32, xslg:43, ev:67, hh:80, k:32, bb:89, whiff:18, chase:93, fbvelo:75, fbspin:31, savant_id:691725, espn_id:4872683, probable:['4/30'], prob_opp:{'4/30':'SF'} },
   { name:'Brad Lord', type:'SP/RP', ppg:4.4, ppg7:2.0, ppg15:2.5, ppg30:4.1, qualified:true, xera:40, xwoba:40, xba:25, xslg:23, ev:37, hh:5, k:17, bb:92, whiff:27, chase:85, fbvelo:53, fbspin:70, savant_id:695418, espn_id:4866810, appwk:1.5 },
   { name:'Hoby Milner', type:'RP', ppg:1.8, ppg7:1.3, ppg15:1.6, ppg30:1.8, qualified:true, xera:12, xwoba:12, xba:13, xslg:10, ev:78, hh:91, k:1, bb:67, whiff:1, chase:60, fbvelo:1, fbspin:1, savant_id:571948, espn_id:36088, appwk:2.6 },
   { name:'Greg Weissert', type:'RP', ppg:1.8, ppg7:0.7, ppg15:2.0, ppg30:2.0, qualified:true, xera:60, xwoba:60, xba:60, xslg:37, ev:76, hh:66, k:89, bb:64, whiff:52, chase:92, fbvelo:38, fbspin:34, savant_id:669711, espn_id:41485, appwk:2.6 },
   { name:'Erik Miller', type:'RP', ppg:3.6, ppg7:6.7, ppg15:7.4, ppg30:4.0, qualified:true, xera:93, xwoba:93, xba:95, xslg:98, ev:83, hh:86, k:96, bb:22, whiff:94, chase:15, fbvelo:87, fbspin:72, savant_id:669062, espn_id:4152950, appwk:2.0 },
   { name:'Justin Topa', type:'RP', ppg:1.3, ppg7:2.0, ppg15:2.0, ppg30:1.1, qualified:true, xera:46, xwoba:46, xba:17, xslg:47, ev:49, hh:65, k:12, bb:50, whiff:1, chase:24, fbvelo:35, fbspin:29, savant_id:623437, espn_id:38796, appwk:3.1 },
   { name:'Sam Moll', type:'RP', ppg:2.3, ppg7:-0.7, ppg15:0.0, ppg30:2.1, qualified:true, xera:49, xwoba:49, xba:88, xslg:86, ev:86, hh:94, k:40, bb:11, whiff:36, chase:2, fbvelo:9, fbspin:89, savant_id:594580, espn_id:34928, appwk:2.2 },
-  { name:'Ryne Nelson', type:'SP/RP', ppg:2.2, ppg7:-2.0, ppg15:-4.7, ppg30:1.6, qualified:true, xera:24, xwoba:24, xba:23, xslg:15, ev:21, hh:16, k:35, bb:49, whiff:41, chase:51, fbvelo:75, fbspin:61, savant_id:669194, espn_id:4916269, appwk:1.3, probable:['5/2'] },
+  { name:'Ryne Nelson', type:'SP/RP', ppg:2.2, ppg7:-2.0, ppg15:-4.7, ppg30:1.6, qualified:true, xera:24, xwoba:24, xba:23, xslg:15, ev:21, hh:16, k:35, bb:49, whiff:41, chase:51, fbvelo:75, fbspin:61, savant_id:669194, espn_id:4916269, appwk:1.3, probable:['5/2'], prob_opp:{'5/2':'@CHC'} },
   { name:'Ken Waldichuk', type:'RP', ppg:null, ppg7:null, ppg15:null, ppg30:null, qualified:true, xera:7, xwoba:7, xba:52, xslg:4, ev:47, hh:54, k:35, bb:25, whiff:62, chase:15, fbvelo:null, fbspin:null, savant_id:686610, appwk:1.1 },
-  { name:'Kyle Leahy', type:'RP/SP', ppg:2.4, ppg7:-7.0, ppg15:4.0, ppg30:2.4, qualified:true, xera:15, xwoba:15, xba:11, xslg:22, ev:24, hh:9, k:8, bb:42, whiff:16, chase:13, fbvelo:35, fbspin:31, savant_id:681517, espn_id:5006093, appwk:1.1, probable:['4/28','5/3'] },
+  { name:'Kyle Leahy', type:'RP/SP', ppg:2.4, ppg7:-7.0, ppg15:4.0, ppg30:2.4, qualified:true, xera:15, xwoba:15, xba:11, xslg:22, ev:24, hh:9, k:8, bb:42, whiff:16, chase:13, fbvelo:35, fbspin:31, savant_id:681517, espn_id:5006093, appwk:1.1, probable:['4/28','5/3'], prob_opp:{'4/28':'@PIT','5/3':'LAD'} },
   { name:'Shaun Anderson', type:'SP/RP', ppg:2.2, ppg7:-0.5, ppg15:0.7, ppg30:2.2, qualified:true, xera:16, xwoba:16, xba:13, xslg:23, ev:79, hh:63, k:20, bb:35, whiff:47, chase:26, fbvelo:32, fbspin:95, savant_id:641312, espn_id:39681, appwk:1.8 },
   { name:'Mark Leiter Jr.', type:'RP', ppg:1.0, ppg7:2.0, ppg15:2.2, ppg30:1.2, qualified:true, xera:18, xwoba:18, xba:5, xslg:20, ev:73, hh:45, k:41, bb:72, whiff:65, chase:91, fbvelo:19, fbspin:4, savant_id:643410, espn_id:36202, appwk:2.6 },
   { name:'Kyle Hart', type:'SP/RP', ppg:3.0, ppg7:3.0, ppg15:2.3, ppg30:2.0, qualified:true, xera:55, xwoba:55, xba:52, xslg:65, ev:92, hh:95, k:4, bb:58, whiff:4, chase:32, fbvelo:25, fbspin:23, savant_id:606996, espn_id:39936, appwk:2.0 },
   { name:'Danny Coulombe', type:'RP', ppg:0.5, ppg7:-2.5, ppg15:-0.8, ppg30:0.4, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:3, fbspin:43, savant_id:543056, espn_id:33638, appwk:2.2 },
-  { name:'Mike Burrows', type:'SP', ppg:3.5, ppg7:11.0, ppg15:3.7, ppg30:4.8, qualified:true, xera:59, xwoba:59, xba:54, xslg:52, ev:67, hh:61, k:54, bb:58, whiff:67, chase:73, fbvelo:60, fbspin:48, savant_id:681347, espn_id:4918155, probable:['5/1'] },
+  { name:'Mike Burrows', type:'SP', ppg:3.5, ppg7:11.0, ppg15:3.7, ppg30:4.8, qualified:true, xera:59, xwoba:59, xba:54, xslg:52, ev:67, hh:61, k:54, bb:58, whiff:67, chase:73, fbvelo:60, fbspin:48, savant_id:681347, espn_id:4918155, probable:['5/1'], prob_opp:{'5/1':'@BOS'} },
   { name:'Seranthony Domínguez', type:'RP', ppg:3.1, ppg7:4.7, ppg15:1.8, ppg30:3.2, qualified:true, xera:8, xwoba:8, xba:40, xslg:8, ev:7, hh:34, k:75, bb:10, whiff:70, chase:7, fbvelo:89, fbspin:50, savant_id:622554, espn_id:37793, appwk:2.6 },
   { name:'Brent Suter', type:'RP', ppg:3.7, ppg7:4.0, ppg15:2.8, ppg30:3.3, qualified:true, xera:70, xwoba:70, xba:88, xslg:61, ev:91, hh:86, k:57, bb:25, whiff:60, chase:78, fbvelo:1, fbspin:19, savant_id:608718, espn_id:36023, appwk:2.2 },
-  { name:'Kumar Rocker', type:'SP', ppg:8.4, ppg7:12.5, ppg15:11.0, ppg30:8.4, qualified:true, xera:44, xwoba:44, xba:35, xslg:43, ev:31, hh:16, k:30, bb:54, whiff:41, chase:57, fbvelo:56, fbspin:16, savant_id:677958, espn_id:4414525, probable:['5/2'] },
+  { name:'Kumar Rocker', type:'SP', ppg:8.4, ppg7:12.5, ppg15:11.0, ppg30:8.4, qualified:true, xera:44, xwoba:44, xba:35, xslg:43, ev:31, hh:16, k:30, bb:54, whiff:41, chase:57, fbvelo:56, fbspin:16, savant_id:677958, espn_id:4414525, probable:['5/2'], prob_opp:{'5/2':'@DET'} },
   { name:'Ryan Weiss', type:'RP', ppg:0.1, ppg7:1.0, ppg15:2.0, ppg30:0.2, qualified:true, xera:15, xwoba:15, xba:25, xslg:24, ev:21, hh:9, k:59, bb:10, whiff:38, chase:31, fbvelo:60, fbspin:84, savant_id:680802, espn_id:3964917, appwk:1.3 },
   { name:'Ryan Feltner', type:'SP', ppg:3.8, ppg7:2.0, ppg15:7.0, ppg30:3.8, qualified:true, xera:9, xwoba:9, xba:16, xslg:5, ev:45, hh:13, k:32, bb:50, whiff:51, chase:14, fbvelo:58, fbspin:85, il:'IL15', savant_id:663372, espn_id:4019484 },
   { name:'Cal Quantrill', type:'SP', ppg:4.7, ppg7:4.0, ppg15:4.7, ppg30:4.7, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:42, fbspin:25, savant_id:615698, espn_id:39875 },
@@ -2420,10 +2421,10 @@ const FREE_AGENTS = { batters: [
   { name:'Brent Headrick', type:'RP', ppg:2.4, ppg7:1.5, ppg15:2.4, ppg30:2.5, qualified:true, xera:57, xwoba:57, xba:21, xslg:56, ev:19, hh:59, k:57, bb:55, whiff:80, chase:73, fbvelo:38, fbspin:76, savant_id:687396, espn_id:5116839, appwk:2.8 },
   { name:'Juan Mejia', type:'RP', ppg:1.2, ppg7:5.3, ppg15:3.0, ppg30:0.7, qualified:true, xera:52, xwoba:52, xba:29, xslg:50, ev:34, hh:56, k:43, bb:59, whiff:61, chase:81, fbvelo:92, fbspin:85, savant_id:675848, espn_id:5185107, appwk:2.2 },
   { name:'Justin Bruihl', type:'RP', ppg:1.5, ppg7:3.7, ppg15:2.1, ppg30:2.0, qualified:true, xera:9, xwoba:9, xba:14, xslg:34, ev:88, hh:45, k:1, bb:9, whiff:11, chase:16, fbvelo:5, fbspin:33, savant_id:677865, espn_id:42735, appwk:2.6 },
-  { name:'Jacob Lopez', type:'SP', ppg:3.2, ppg7:5.0, ppg15:6.3, ppg30:3.2, qualified:true, xera:63, xwoba:63, xba:85, xslg:77, ev:93, hh:94, k:13, bb:5, whiff:22, chase:4, fbvelo:5, fbspin:16, savant_id:682052, espn_id:42239, probable:['5/2'] },
-  { name:'Miles Mikolas', type:'SP', ppg:-2.7, ppg7:4.0, ppg15:4.7, ppg30:-2.6, qualified:true, xera:18, xwoba:18, xba:24, xslg:9, ev:60, hh:28, k:11, bb:52, whiff:15, chase:28, fbvelo:21, fbspin:29, savant_id:571945, espn_id:32116, probable:['4/30'] },
+  { name:'Jacob Lopez', type:'SP', ppg:3.2, ppg7:5.0, ppg15:6.3, ppg30:3.2, qualified:true, xera:63, xwoba:63, xba:85, xslg:77, ev:93, hh:94, k:13, bb:5, whiff:22, chase:4, fbvelo:5, fbspin:16, savant_id:682052, espn_id:42239, probable:['5/2'], prob_opp:{'5/2':'CLE'} },
+  { name:'Miles Mikolas', type:'SP', ppg:-2.7, ppg7:4.0, ppg15:4.7, ppg30:-2.6, qualified:true, xera:18, xwoba:18, xba:24, xslg:9, ev:60, hh:28, k:11, bb:52, whiff:15, chase:28, fbvelo:21, fbspin:29, savant_id:571945, espn_id:32116, probable:['4/30'], prob_opp:{'4/30':'@NYM'} },
   { name:'Scott Barlow', type:'RP', ppg:2.7, ppg7:4.5, ppg15:3.2, ppg30:2.7, qualified:true, xera:63, xwoba:63, xba:86, xslg:73, ev:73, hh:84, k:45, bb:19, whiff:98, chase:82, fbvelo:2, fbspin:31, savant_id:605130, espn_id:32156, appwk:2.2 },
-  { name:'Walbert Urena', type:'SP', ppg:-0.8, ppg7:-10.0, ppg15:0.5, ppg30:0.5, qualified:true, xera:69, xwoba:69, xba:77, xslg:83, ev:88, hh:93, k:45, bb:6, whiff:52, chase:80, fbvelo:96, fbspin:40, savant_id:700712, espn_id:5197476, probable:['5/1'] },
+  { name:'Walbert Urena', type:'SP', ppg:-0.8, ppg7:-10.0, ppg15:0.5, ppg30:0.5, qualified:true, xera:69, xwoba:69, xba:77, xslg:83, ev:88, hh:93, k:45, bb:6, whiff:52, chase:80, fbvelo:96, fbspin:40, savant_id:700712, espn_id:5197476, probable:['5/1'], prob_opp:{'5/1':'NYM'} },
   { name:'Jordan Hicks', type:'SP/RP', ppg:0.6, ppg7:0.7, ppg15:1.0, ppg30:1.5, qualified:true, xera:59, xwoba:59, xba:40, xslg:85, ev:11, hh:69, k:2, bb:1, whiff:1, chase:3, fbvelo:95, fbspin:1, savant_id:663855, espn_id:37909, appwk:2.6 },
   { name:'Keaton Winn', type:'RP', ppg:3.2, ppg7:4.5, ppg15:5.0, ppg30:3.0, qualified:true, xera:100, xwoba:100, xba:100, xslg:100, ev:85, hh:95, k:94, bb:90, whiff:89, chase:85, fbvelo:78, fbspin:58, savant_id:676775, espn_id:5116843, appwk:2.0 },
   { name:'Tobias Myers', type:'SP/RP', ppg:5.1, ppg7:8.0, ppg15:5.7, ppg30:4.6, qualified:true, xera:84, xwoba:84, xba:40, xslg:70, ev:47, hh:47, k:48, bb:98, whiff:19, chase:10, fbvelo:19, fbspin:38, savant_id:668964, espn_id:39716, appwk:1.5 },
@@ -2432,11 +2433,11 @@ const FREE_AGENTS = { batters: [
   { name:'Grant Wolfram', type:'RP', ppg:2.7, ppg7:-3.0, ppg15:0.5, ppg30:2.7, qualified:true, xera:84, xwoba:84, xba:63, xslg:80, ev:64, hh:49, k:92, bb:99, whiff:72, chase:56, fbvelo:64, fbspin:39, savant_id:664991, espn_id:3961066, appwk:2.4 },
   { name:'Tyler Rogers', type:'RP', ppg:3.4, ppg7:5.7, ppg15:2.6, ppg30:3.2, qualified:true, xera:99, xwoba:99, xba:79, xslg:96, ev:99, hh:99, k:5, bb:70, whiff:2, chase:38, fbvelo:1, fbspin:3, savant_id:643511, espn_id:34026, appwk:2.6 },
   { name:'Tyler Kinley', type:'RP', ppg:3.7, ppg7:-0.5, ppg15:3.7, ppg30:3.7, qualified:true, xera:91, xwoba:91, xba:88, xslg:98, ev:99, hh:100, k:55, bb:24, whiff:75, chase:35, fbvelo:null, fbspin:null, savant_id:641755, espn_id:34166, appwk:2.6 },
-  { name:'Lance McCullers Jr.', type:'SP', ppg:3.8, ppg7:-7.0, ppg15:-4.5, ppg30:3.8, qualified:true, xera:28, xwoba:28, xba:35, xslg:39, ev:11, hh:13, k:49, bb:28, whiff:44, chase:40, fbvelo:14, fbspin:12, savant_id:621121, espn_id:32764, probable:['4/30'] },
+  { name:'Lance McCullers Jr.', type:'SP', ppg:3.8, ppg7:-7.0, ppg15:-4.5, ppg30:3.8, qualified:true, xera:28, xwoba:28, xba:35, xslg:39, ev:11, hh:13, k:49, bb:28, whiff:44, chase:40, fbvelo:14, fbspin:12, savant_id:621121, espn_id:32764, probable:['4/30'], prob_opp:{'4/30':'@BAL'} },
   { name:'Christian Roa', type:'RP', ppg:0.7, ppg7:-0.5, ppg15:-0.5, ppg30:0.7, qualified:true, xera:4, xwoba:4, xba:10, xslg:13, ev:10, hh:1, k:9, bb:7, whiff:46, chase:2, fbvelo:73, fbspin:13, savant_id:685005, espn_id:4109031, appwk:1.3 },
   { name:'Tommy Nance', type:'RP', ppg:0.7, ppg7:1.0, ppg15:-0.4, ppg30:0.3, qualified:true, xera:60, xwoba:60, xba:63, xslg:64, ev:90, hh:76, k:72, bb:33, whiff:27, chase:90, fbvelo:58, fbspin:38, savant_id:667297, espn_id:36385, appwk:2.6 },
   { name:'Shawn Armstrong', type:'RP', ppg:2.6, ppg7:3.0, ppg15:0.5, ppg30:2.2, qualified:true, xera:31, xwoba:31, xba:87, xslg:30, ev:21, hh:9, k:80, bb:12, whiff:57, chase:1, fbvelo:32, fbspin:21, il:'IL15', savant_id:542888, espn_id:33499, appwk:2.2 },
-  { name:'Roki Sasaki', type:'SP', ppg:2.4, ppg7:9.0, ppg15:5.0, ppg30:2.4, qualified:true, xera:12, xwoba:12, xba:19, xslg:14, ev:37, hh:26, k:38, bb:28, whiff:79, chase:46, fbvelo:88, fbspin:19, savant_id:808963, espn_id:5134638, probable:['5/2'] },
+  { name:'Roki Sasaki', type:'SP', ppg:2.4, ppg7:9.0, ppg15:5.0, ppg30:2.4, qualified:true, xera:12, xwoba:12, xba:19, xslg:14, ev:37, hh:26, k:38, bb:28, whiff:79, chase:46, fbvelo:88, fbspin:19, savant_id:808963, espn_id:5134638, probable:['5/2'], prob_opp:{'5/2':'@STL'} },
   { name:'Yennier Cano', type:'RP', ppg:2.3, ppg7:1.3, ppg15:2.1, ppg30:2.4, qualified:true, xera:54, xwoba:54, xba:42, xslg:21, ev:21, hh:6, k:69, bb:99, whiff:77, chase:91, fbvelo:49, fbspin:2, savant_id:666974, espn_id:35536, appwk:3.1 },
   { name:'Cameron Foster', type:'RP', ppg:0.5, ppg7:3.0, ppg15:0.5, ppg30:0.5, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:80, fbspin:93, savant_id:671382, espn_id:5270117, appwk:0.9 },
   { name:'AJ Blubaugh', type:'RP', ppg:1.6, ppg7:2.5, ppg15:3.8, ppg30:1.6, qualified:true, xera:33, xwoba:33, xba:72, xslg:44, ev:7, hh:51, k:26, bb:17, whiff:69, chase:30, fbvelo:72, fbspin:47, savant_id:805123, espn_id:42556, appwk:2.2 },
@@ -2445,8 +2446,8 @@ const FREE_AGENTS = { batters: [
   { name:'Cole Winn', type:'RP', ppg:3.2, ppg7:0.7, ppg15:0.6, ppg30:3.2, qualified:true, xera:76, xwoba:76, xba:82, xslg:76, ev:76, hh:48, k:75, bb:44, whiff:86, chase:88, fbvelo:56, fbspin:75, savant_id:668390, espn_id:41177, appwk:2.4 },
   { name:'Brandon Pfaadt', type:'SP', ppg:5.2, ppg7:1.0, ppg15:7.5, ppg30:5.2, qualified:true, xera:36, xwoba:36, xba:52, xslg:34, ev:59, hh:57, k:23, bb:42, whiff:39, chase:78, fbvelo:30, fbspin:73, savant_id:694297, espn_id:4721302 },
   { name:'Jake Woodford', type:'RP', ppg:1.6, ppg7:-2.0, ppg15:-2.5, ppg30:1.3, qualified:true, xera:7, xwoba:7, xba:1, xslg:7, ev:21, hh:5, k:9, bb:97, whiff:26, chase:17, fbvelo:36, fbspin:9, savant_id:663765, espn_id:35284, appwk:1.1 },
-  { name:'Anthony Kay', type:'SP', ppg:2.3, ppg7:-11.5, ppg15:-7.0, ppg30:2.3, qualified:true, xera:3, xwoba:3, xba:4, xslg:6, ev:24, hh:16, k:5, bb:30, whiff:16, chase:44, fbvelo:69, fbspin:61, savant_id:641743, espn_id:40947, probable:['5/3'] },
-  { name:'Walker Buehler', type:'SP', ppg:3.4, ppg7:-14.0, ppg15:1.5, ppg30:3.4, qualified:true, xera:27, xwoba:27, xba:14, xslg:38, ev:17, hh:52, k:45, bb:43, whiff:41, chase:60, fbvelo:38, fbspin:16, savant_id:621111, espn_id:39251, probable:['4/28','5/4'] },
+  { name:'Anthony Kay', type:'SP', ppg:2.3, ppg7:-11.5, ppg15:-7.0, ppg30:2.3, qualified:true, xera:3, xwoba:3, xba:4, xslg:6, ev:24, hh:16, k:5, bb:30, whiff:16, chase:44, fbvelo:69, fbspin:61, savant_id:641743, espn_id:40947, probable:['5/3'], prob_opp:{'5/3':'@SD'} },
+  { name:'Walker Buehler', type:'SP', ppg:3.4, ppg7:-14.0, ppg15:1.5, ppg30:3.4, qualified:true, xera:27, xwoba:27, xba:14, xslg:38, ev:17, hh:52, k:45, bb:43, whiff:41, chase:60, fbvelo:38, fbspin:16, savant_id:621111, espn_id:39251, probable:['4/28','5/4'], prob_opp:{'4/28':'CHC','5/4':'@SF'} },
   { name:'Gus Varland', type:'RP', ppg:3.1, ppg7:2.2, ppg15:3.3, ppg30:3.1, qualified:true, xera:33, xwoba:33, xba:21, xslg:27, ev:5, hh:2, k:71, bb:85, whiff:64, chase:78, fbvelo:66, fbspin:60, savant_id:681402, espn_id:41552, appwk:2.2 },
   { name:'Graham Ashcraft', type:'RP', ppg:4.1, ppg7:4.5, ppg15:4.7, ppg30:4.3, qualified:true, xera:74, xwoba:74, xba:88, xslg:87, ev:37, hh:43, k:78, bb:15, whiff:80, chase:72, fbvelo:null, fbspin:null, savant_id:668933, espn_id:4084179, appwk:2.6 },
   { name:'Luis Medina', type:'SP/RP', ppg:3.1, ppg7:3.0, ppg15:2.0, ppg30:3.1, qualified:true, xera:33, xwoba:33, xba:63, xslg:16, ev:13, hh:36, k:60, bb:27, whiff:83, chase:7, fbvelo:92, fbspin:85, savant_id:665622, espn_id:40949, appwk:1.8 },
@@ -2460,20 +2461,20 @@ const FREE_AGENTS = { batters: [
   { name:'Connor Phillips', type:'RP', ppg:3.3, ppg7:3.0, ppg15:2.8, ppg30:3.0, qualified:true, xera:25, xwoba:25, xba:70, xslg:64, ev:57, hh:74, k:48, bb:2, whiff:76, chase:27, fbvelo:94, fbspin:94, savant_id:683175, espn_id:4918160, appwk:2.8 },
   { name:'Albert Suárez', type:'RP', ppg:6.0, ppg7:9.0, ppg15:4.3, ppg30:6.0, qualified:true, xera:18, xwoba:18, xba:32, xslg:12, ev:27, hh:34, k:2, bb:47, whiff:18, chase:16, fbvelo:35, fbspin:57, savant_id:544150, espn_id:31109, appwk:0.9 },
   { name:'Enyel De Los Santos', type:'RP', ppg:2.2, ppg7:-3.3, ppg15:1.7, ppg30:2.2, qualified:true, xera:83, xwoba:83, xba:71, xslg:74, ev:70, hh:73, k:24, bb:78, whiff:49, chase:21, fbvelo:56, fbspin:39, savant_id:660853, espn_id:35026, appwk:2.0 },
-  { name:'Jack Kochanowicz', type:'SP', ppg:12.2, ppg7:11.0, ppg15:11.3, ppg30:12.2, qualified:true, xera:36, xwoba:36, xba:31, xslg:51, ev:32, hh:44, k:18, bb:27, whiff:34, chase:26, fbvelo:73, fbspin:35, savant_id:686799, espn_id:4917819, probable:['5/3'] },
-  { name:'Martín Pérez', type:'SP', ppg:9.6, ppg7:6.0, ppg15:13.5, ppg30:9.6, qualified:true, xera:39, xwoba:39, xba:25, xslg:36, ev:32, hh:43, k:15, bb:77, whiff:12, chase:67, fbvelo:4, fbspin:3, savant_id:527048, espn_id:31098, probable:['4/28','5/3'] },
-  { name:'Zack Littell', type:'SP', ppg:-1.8, ppg7:-7.0, ppg15:-12.0, ppg30:-1.8, qualified:true, xera:3, xwoba:3, xba:3, xslg:2, ev:2, hh:19, k:6, bb:74, whiff:3, chase:33, fbvelo:9, fbspin:2, savant_id:641793, espn_id:36052, probable:['4/28','5/3'] },
+  { name:'Jack Kochanowicz', type:'SP', ppg:12.2, ppg7:11.0, ppg15:11.3, ppg30:12.2, qualified:true, xera:36, xwoba:36, xba:31, xslg:51, ev:32, hh:44, k:18, bb:27, whiff:34, chase:26, fbvelo:73, fbspin:35, savant_id:686799, espn_id:4917819, probable:['5/3'], prob_opp:{'5/3':'NYM'} },
+  { name:'Martín Pérez', type:'SP', ppg:9.6, ppg7:6.0, ppg15:13.5, ppg30:9.6, qualified:true, xera:39, xwoba:39, xba:25, xslg:36, ev:32, hh:43, k:15, bb:77, whiff:12, chase:67, fbvelo:4, fbspin:3, savant_id:527048, espn_id:31098, probable:['4/28','5/3'], prob_opp:{'4/28':'DET','5/3':'@COL'} },
+  { name:'Zack Littell', type:'SP', ppg:-1.8, ppg7:-7.0, ppg15:-12.0, ppg30:-1.8, qualified:true, xera:3, xwoba:3, xba:3, xslg:2, ev:2, hh:19, k:6, bb:74, whiff:3, chase:33, fbvelo:9, fbspin:2, savant_id:641793, espn_id:36052, probable:['4/28','5/3'], prob_opp:{'4/28':'@NYM','5/3':'MIL'} },
   { name:'Grant Anderson', type:'RP', ppg:2.8, ppg7:4.3, ppg15:1.7, ppg30:2.7, qualified:true, xera:86, xwoba:86, xba:75, xslg:87, ev:69, hh:13, k:42, bb:30, whiff:49, chase:38, fbvelo:23, fbspin:58, savant_id:681982, espn_id:42161, appwk:2.4 },
-  { name:'Matthew Liberatore', type:'SP', ppg:4.3, ppg7:-6.0, ppg15:1.3, ppg30:4.0, qualified:true, xera:14, xwoba:14, xba:10, xslg:8, ev:13, hh:34, k:9, bb:61, whiff:12, chase:31, fbvelo:49, fbspin:10, savant_id:669461, espn_id:41173, probable:['4/30'] },
+  { name:'Matthew Liberatore', type:'SP', ppg:4.3, ppg7:-6.0, ppg15:1.3, ppg30:4.0, qualified:true, xera:14, xwoba:14, xba:10, xslg:8, ev:13, hh:34, k:9, bb:61, whiff:12, chase:31, fbvelo:49, fbspin:10, savant_id:669461, espn_id:41173, probable:['4/30'], prob_opp:{'4/30':'@PIT'} },
   { name:'Cooper Criswell', type:'SP/RP', ppg:4.0, ppg7:4.0, ppg15:3.0, ppg30:4.5, qualified:true, xera:30, xwoba:30, xba:31, xslg:13, ev:4, hh:3, k:62, bb:83, whiff:40, chase:90, fbvelo:6, fbspin:14, savant_id:681867, espn_id:4326801, appwk:1.5 },
-  { name:'J.T. Ginn', type:'SP', ppg:6.9, ppg7:8.0, ppg15:8.7, ppg30:6.9, qualified:true, xera:71, xwoba:71, xba:73, xslg:67, ev:84, hh:81, k:30, bb:52, whiff:52, chase:55, fbvelo:51, fbspin:3, savant_id:669372, espn_id:4414002, probable:['5/1'] },
+  { name:'J.T. Ginn', type:'SP', ppg:6.9, ppg7:8.0, ppg15:8.7, ppg30:6.9, qualified:true, xera:71, xwoba:71, xba:73, xslg:67, ev:84, hh:81, k:30, bb:52, whiff:52, chase:55, fbvelo:51, fbspin:3, savant_id:669372, espn_id:4414002, probable:['5/1'], prob_opp:{'5/1':'CLE'} },
   { name:'David Peterson', type:'SP', ppg:2.8, ppg7:7.0, ppg15:5.3, ppg30:1.2, qualified:true, xera:31, xwoba:31, xba:16, xslg:59, ev:37, hh:16, k:31, bb:53, whiff:41, chase:62, fbvelo:12, fbspin:18, savant_id:656849, espn_id:40921 },
   { name:'Matt Gage', type:'RP', ppg:3.3, ppg7:4.5, ppg15:3.8, ppg30:3.4, qualified:true, xera:49, xwoba:49, xba:66, xslg:55, ev:90, hh:97, k:18, bb:16, whiff:58, chase:60, fbvelo:19, fbspin:18, savant_id:657424, espn_id:40337, appwk:2.2 },
   { name:'Abner Uribe', type:'RP', ppg:3.2, ppg7:1.0, ppg15:4.0, ppg30:3.1, qualified:true, xera:70, xwoba:70, xba:46, xslg:63, ev:49, hh:40, k:85, bb:75, whiff:43, chase:9, fbvelo:93, fbspin:55, savant_id:682842, espn_id:4917865, appwk:2.6 },
   { name:'Lucas Erceg', type:'RP', ppg:4.0, ppg7:8.3, ppg15:1.6, ppg30:4.1, qualified:true, xera:30, xwoba:30, xba:40, xslg:71, ev:19, hh:27, k:30, bb:2, whiff:10, chase:6, fbvelo:88, fbspin:6, savant_id:668674, espn_id:36618, appwk:2.4 },
   { name:'José Alvarado', type:'RP', ppg:0.4, ppg7:0.7, ppg15:1.8, ppg30:0.1, qualified:true, xera:63, xwoba:63, xba:46, xslg:80, ev:88, hh:91, k:51, bb:41, whiff:82, chase:97, fbvelo:94, fbspin:5, savant_id:621237, espn_id:36063, appwk:2.4 },
   { name:'Brennan Bernardino', type:'RP', ppg:3.1, ppg7:2.5, ppg15:4.8, ppg30:3.5, qualified:true, xera:82, xwoba:82, xba:51, xslg:84, ev:99, hh:98, k:52, bb:74, whiff:49, chase:91, fbvelo:3, fbspin:23, savant_id:657514, espn_id:35876, appwk:2.6 },
-  { name:'Kodai Senga', type:'SP', ppg:-3.2, ppg7:-8.0, ppg15:-10.5, ppg30:-3.2, qualified:true, xera:35, xwoba:35, xba:48, xslg:49, ev:51, hh:45, k:57, bb:21, whiff:73, chase:24, fbvelo:64, fbspin:60, savant_id:673540, espn_id:4142421, probable:['5/1'] },
+  { name:'Kodai Senga', type:'SP', ppg:-3.2, ppg7:-8.0, ppg15:-10.5, ppg30:-3.2, qualified:true, xera:35, xwoba:35, xba:48, xslg:49, ev:51, hh:45, k:57, bb:21, whiff:73, chase:24, fbvelo:64, fbspin:60, savant_id:673540, espn_id:4142421, probable:['5/1'], prob_opp:{'5/1':'@LAA'} },
   { name:'Daniel Lynch IV', type:'RP', ppg:4.3, ppg7:3.5, ppg15:4.2, ppg30:4.3, qualified:true, xera:97, xwoba:97, xba:99, xslg:96, ev:98, hh:76, k:94, bb:63, whiff:99, chase:83, fbvelo:36, fbspin:53, savant_id:663738, espn_id:41227, appwk:2.0 },
   { name:'Dean Kremer', type:'SP', ppg:12.0, ppg7:null, ppg15:12.0, ppg30:12.0, qualified:true, xera:50, xwoba:50, xba:66, xslg:12, ev:71, hh:64, k:98, bb:92, whiff:94, chase:84, fbvelo:32, fbspin:46, il:'IL15', savant_id:665152, espn_id:38295 },
   { name:'Eric Lauer', type:'SP/RP', ppg:1.6, ppg7:3.0, ppg15:2.5, ppg30:1.6, qualified:true, xera:39, xwoba:39, xba:54, xslg:33, ev:63, hh:81, k:28, bb:30, whiff:19, chase:41, fbvelo:4, fbspin:16, savant_id:641778, espn_id:39915, appwk:1.1 },
@@ -2485,10 +2486,10 @@ const FREE_AGENTS = { batters: [
   { name:'Yohan Ramírez', type:'RP', ppg:4.6, ppg7:6.5, ppg15:3.6, ppg30:4.3, qualified:true, xera:83, xwoba:83, xba:73, xslg:81, ev:88, hh:69, k:72, bb:25, whiff:75, chase:68, fbvelo:74, fbspin:53, savant_id:670990, espn_id:41893, appwk:2.2 },
   { name:'Cade Povich', type:'SP', ppg:15.5, ppg7:null, ppg15:null, ppg30:15.5, qualified:true, xera:65, xwoba:65, xba:40, xslg:54, ev:37, hh:47, k:13, bb:81, whiff:70, chase:87, fbvelo:14, fbspin:88, savant_id:700249, espn_id:5085743 },
   { name:'Valente Bellozo', type:'SP/RP', ppg:0.0, ppg7:null, ppg15:null, ppg30:0.0, qualified:true, xera:1, xwoba:1, xba:4, xslg:1, ev:16, hh:9, k:20, bb:14, whiff:76, chase:5, fbvelo:3, fbspin:9, savant_id:678368, espn_id:5216700, appwk:0.7 },
-  { name:'Michael Lorenzen', type:'SP', ppg:2.1, ppg7:20.0, ppg15:6.3, ppg30:1.8, qualified:true, xera:17, xwoba:17, xba:3, xslg:17, ev:29, hh:9, k:8, bb:94, whiff:21, chase:22, fbvelo:36, fbspin:57, savant_id:547179, espn_id:33252, probable:['4/30'] },
+  { name:'Michael Lorenzen', type:'SP', ppg:2.1, ppg7:20.0, ppg15:6.3, ppg30:1.8, qualified:true, xera:17, xwoba:17, xba:3, xslg:17, ev:29, hh:9, k:8, bb:94, whiff:21, chase:22, fbvelo:36, fbspin:57, savant_id:547179, espn_id:33252, probable:['4/30'], prob_opp:{'4/30':'@CIN'} },
   { name:'PJ Poulin', type:'RP/SP', ppg:2.1, ppg7:5.0, ppg15:0.7, ppg30:2.2, qualified:true, xera:11, xwoba:11, xba:19, xslg:11, ev:4, hh:4, k:10, bb:24, whiff:5, chase:21, fbvelo:3, fbspin:22, savant_id:676571, espn_id:4019760, appwk:3.1 },
   { name:'Edwin Díaz', type:'RP', ppg:3.4, ppg7:null, ppg15:-10.0, ppg30:1.4, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:71, fbspin:67, il:'IL15', savant_id:621242, espn_id:35394, appwk:1.5 },
-  { name:'Dustin May', type:'SP', ppg:6.0, ppg7:12.0, ppg15:14.0, ppg30:6.0, qualified:true, xera:52, xwoba:52, xba:17, xslg:50, ev:52, hh:21, k:22, bb:90, whiff:3, chase:42, fbvelo:84, fbspin:65, savant_id:669160, espn_id:40937, probable:['5/2'] },
+  { name:'Dustin May', type:'SP', ppg:6.0, ppg7:12.0, ppg15:14.0, ppg30:6.0, qualified:true, xera:52, xwoba:52, xba:17, xslg:50, ev:52, hh:21, k:22, bb:90, whiff:3, chase:42, fbvelo:84, fbspin:65, savant_id:669160, espn_id:40937, probable:['5/2'], prob_opp:{'5/2':'LAD'} },
   { name:'Sean Newcomb', type:'SP/RP', ppg:1.8, ppg7:0.7, ppg15:1.4, ppg30:1.9, qualified:true, xera:66, xwoba:66, xba:29, xslg:68, ev:95, hh:75, k:29, bb:45, whiff:21, chase:60, fbvelo:29, fbspin:49, savant_id:656794, espn_id:33856, appwk:2.6 },
   { name:'Ryan Borucki', type:'RP', ppg:0.6, ppg7:3.0, ppg15:3.0, ppg30:0.5, qualified:true, xera:50, xwoba:50, xba:40, xslg:42, ev:83, hh:21, k:38, bb:64, whiff:91, chase:97, fbvelo:null, fbspin:null, savant_id:621366, espn_id:36192, appwk:2.0 },
   { name:'Ryan Zeferjahn', type:'RP', ppg:2.8, ppg7:4.3, ppg15:1.2, ppg30:1.7, qualified:true, xera:95, xwoba:95, xba:98, xslg:97, ev:67, hh:86, k:81, bb:30, whiff:82, chase:27, fbvelo:82, fbspin:28, savant_id:666171, espn_id:4722057, appwk:2.2 },
@@ -2499,7 +2500,7 @@ const FREE_AGENTS = { batters: [
   { name:'Cionel Pérez', type:'RP', ppg:0.3, ppg7:-2.3, ppg15:0.3, ppg30:-0.1, qualified:true, xera:1, xwoba:1, xba:2, xslg:2, ev:1, hh:1, k:12, bb:5, whiff:30, chase:1, fbvelo:72, fbspin:17, savant_id:672335, espn_id:36089, appwk:2.4 },
   { name:'Chris Roycroft', type:'RP', ppg:null, ppg7:null, ppg15:null, ppg30:null, qualified:true, xera:null, xwoba:null, xba:null, xslg:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, fbvelo:53, fbspin:20, savant_id:688297, appwk:0.9 },
   { name:'Caleb Thielbar', type:'RP', ppg:2.8, ppg7:1.0, ppg15:4.8, ppg30:2.8, qualified:true, xera:91, xwoba:91, xba:96, xslg:77, ev:69, hh:83, k:88, bb:36, whiff:55, chase:96, fbvelo:36, fbspin:66, il:'IL15', savant_id:573204, espn_id:32440, appwk:2.2 },
-  { name:'Adrian Houser', type:'SP', ppg:-2.4, ppg7:-18.0, ppg15:-8.5, ppg30:-2.4, qualified:true, xera:13, xwoba:13, xba:7, xslg:9, ev:21, hh:17, k:2, bb:78, whiff:14, chase:51, fbvelo:61, fbspin:35, savant_id:605288, espn_id:32157, probable:['4/30'] },
+  { name:'Adrian Houser', type:'SP', ppg:-2.4, ppg7:-18.0, ppg15:-8.5, ppg30:-2.4, qualified:true, xera:13, xwoba:13, xba:7, xslg:9, ev:21, hh:17, k:2, bb:78, whiff:14, chase:51, fbvelo:61, fbspin:35, savant_id:605288, espn_id:32157, probable:['4/30'], prob_opp:{'4/30':'@PHI'} },
   { name:'Ryne Stanek', type:'RP', ppg:1.8, ppg7:1.0, ppg15:0.0, ppg30:1.2, qualified:true, xera:40, xwoba:40, xba:58, xslg:60, ev:4, hh:9, k:83, bb:6, whiff:94, chase:58, fbvelo:95, fbspin:63, savant_id:592773, espn_id:33301, appwk:2.2 },
   { name:'Connor Seabold', type:'SP/RP', ppg:2.8, ppg7:-2.5, ppg15:1.0, ppg30:1.9, qualified:true, xera:87, xwoba:87, xba:82, xslg:83, ev:71, hh:87, k:51, bb:59, whiff:48, chase:86, fbvelo:36, fbspin:21, il:'IL15', savant_id:657756, espn_id:41367, appwk:1.3 },
   { name:'Osvaldo Bido', type:'SP/RP', ppg:3.1, ppg7:2.7, ppg15:-0.2, ppg30:2.1, qualified:true, xera:14, xwoba:14, xba:37, xslg:26, ev:32, hh:24, k:15, bb:18, whiff:24, chase:55, fbvelo:53, fbspin:75, savant_id:674370, espn_id:5132624, appwk:1.5 },
@@ -2761,6 +2762,7 @@ function probTag(p) {
   const sel = document.getElementById('fa-sp-probable-date');
   if (!sel) return;
   const today = new Date();
+  let todayLabel = '';
   for (let i = 0; i < 7; i++) {
     const d = new Date(today.getTime() + i * 86400000);
     const label = `${d.getMonth()+1}/${d.getDate()}`;
@@ -2769,11 +2771,23 @@ function probTag(p) {
     const dayName = d.toLocaleDateString(undefined, { weekday: 'short' });
     opt.textContent = i === 0 ? `Today (${label})` : i === 1 ? `Tomorrow (${label})` : `${dayName} ${label}`;
     sel.appendChild(opt);
+    if (i === 0) todayLabel = label;
   }
+  sel.value = todayLabel;
+  selectedProbableDate = todayLabel;
   sel.addEventListener('change', () => {
     selectedProbableDate = sel.value || null;
     if (typeof renderFASP === 'function') renderFASP();
   });
+  const probEl = document.getElementById('fa-sp-probable-only');
+  function syncDateDisabled() {
+    const enabled = !!(probEl && probEl.checked);
+    sel.disabled = !enabled;
+    sel.style.opacity = enabled ? '' : '0.4';
+    sel.style.cursor = enabled ? 'pointer' : 'not-allowed';
+  }
+  syncDateDisabled();
+  if (probEl) probEl.addEventListener('change', syncDateDisabled);
 })();
 
 // One-time migration: existing global flags belong to MPoretz (the site owner)
@@ -2831,6 +2845,11 @@ function buildBatterRow(p, isFA) {
   </tr>`;
 }
 
+function pitcherOppCell(p) {
+  const opp = (p && p.prob_opp) ? p.prob_opp[effectiveProbableDate()] : null;
+  return `<td>${opp ? `<span class="pct">${opp}</span>` : ''}</td>`;
+}
+
 function buildPitcherRow(p, isFA) {
   const avgVal = playerStatAvg(p, PITCHER_KEYS);
   const lpClass = p.lowPa ? ' low-pa' : '';
@@ -2838,6 +2857,8 @@ function buildPitcherRow(p, isFA) {
   const nameAttr = isFA ? ` data-name="${p.name.replace(/"/g, '&quot;')}"` : '';
   const h = p._heat || {};
   const showRPCols = isFA && p._rpTable;
+  const showSPCols = isFA && p._spTable;
+  const oppCell = showSPCols ? pitcherOppCell(p) : '';
   const appwkCell = showRPCols ? `<td class="rp-gw-col"><span class="pct">${p.appwk != null ? p.appwk.toFixed(1) : ''}</span></td>` : '';
   const xpw = (showRPCols && p.ppg != null && p.appwk != null) ? p.ppg * p.appwk : null;
   const xpwCell = showRPCols ? `<td><span class="pct">${xpw != null ? xpw.toFixed(1) : ''}</span></td>` : '';
@@ -2845,6 +2866,7 @@ function buildPitcherRow(p, isFA) {
     return `<tr class="below-min${lpClass}"${nameAttr}>
       <td>${flag}${p.name}${ilTag(p)}${probTag(p)}${newsBtn(p)}</td>
       <td>${p.type}</td>
+      ${oppCell}
       ${ppgCell(p.ppg)}
       ${xpwCell}
       <td>${cell(null)}</td>
@@ -2855,6 +2877,7 @@ function buildPitcherRow(p, isFA) {
   return `<tr class="${lpClass.trim()}"${nameAttr}>
     <td>${flag}${p.name}${ilTag(p)}${probTag(p)}</td>
     <td>${p.type}</td>
+    ${oppCell}
     ${ppgCell(p.ppg)}
     ${xpwCell}
     <td>${cell(avgVal, h._avg)}</td>
@@ -2863,7 +2886,7 @@ function buildPitcherRow(p, isFA) {
   </tr>`;
 }
 
-function buildAvgRow(players, keys) {
+function buildAvgRow(players, keys, opts) {
   const qualified = players.filter(p => !p.partial);
   const avgs = keys.map(k => avg(qualified, k));
   const validAvgs = avgs.filter(v => v !== null);
@@ -2871,9 +2894,11 @@ function buildAvgRow(players, keys) {
     ? Math.round(validAvgs.reduce((a, b) => a + b, 0) / validAvgs.length)
     : null;
   const spotRawAvg = keys.includes('spot') ? avgFloat(qualified, 'spot_raw') : null;
+  const extraEmpty = (opts && opts.extraAfterType) ? '<td></td>' : '';
   return `<tr class="avg-row">
     <td>Team Average</td>
     <td></td>
+    ${extraEmpty}
     <td></td>
     <td>${cell(overallAvg)}</td>
     ${avgs.map((a, i) => {
@@ -3035,6 +3060,23 @@ function rpColIdx(key) {
   if (key === 'xppw') return 3;
   if (key === 'avg')  return 4;
   if (key === 'appwk') return 17;
+  const si = PITCHER_KEYS.indexOf(key);
+  return si === -1 ? null : si + 5;
+}
+// SP table layout: Player(0) | Type(1) | Opp(2) | PPG(3) | Avg(4) | PITCHER_KEYS[i] at i+5
+function spColMap(i) {
+  if (i === 0) return 'name';
+  if (i === 1) return null;  // Type
+  if (i === 2) return null;  // Opp (not sortable)
+  if (i === 3) return 'ppg';
+  if (i === 4) return 'avg';
+  return PITCHER_KEYS[i - 5];
+}
+function spColIdx(key) {
+  if (!key) return null;
+  if (key === 'name') return 0;
+  if (key === 'ppg')  return 3;
+  if (key === 'avg')  return 4;
   const si = PITCHER_KEYS.indexOf(key);
   return si === -1 ? null : si + 5;
 }
@@ -3250,7 +3292,7 @@ function renderFAPitcherSection(opts) {
   if (probOnly) pitchers = pitchers.filter(probableMatches);
   if (search) pitchers = pitchers.filter(p => p.name.toLowerCase().includes(search));
   pitchers = pitchers.map(p => {
-    const enriched = { ...withSplitStats(p, true), _rpTable: isRPTable };
+    const enriched = { ...withSplitStats(p, true), _rpTable: isRPTable, _spTable: !isRPTable };
     if (isRPTable && enriched.ppg != null && enriched.appwk != null) {
       enriched.xppw = enriched.ppg * enriched.appwk;
     }
@@ -3261,11 +3303,11 @@ function renderFAPitcherSection(opts) {
   document.getElementById(`${prefix}-count`).textContent = `${pitchers.length} QUALIFIED`;
   document.getElementById(`${prefix}-body`).innerHTML =
     displayed.map(p => buildPitcherRow(p, true)).join('') +
-    buildAvgRow(pitchers, PITCHER_KEYS);
+    buildAvgRow(pitchers, PITCHER_KEYS, { extraAfterType: !isRPTable });
   document.getElementById(`${prefix}-expand`).textContent =
     faLimits[limitKey] === 20 ? 'Show 50' : 'Show 20';
   applyFASelection(`${prefix}-body`, selectedFAPitcher);
-  const colIdxFn = isRPTable ? rpColIdx : (k => sortColIdx(k, PITCHER_KEYS));
+  const colIdxFn = isRPTable ? rpColIdx : spColIdx;
   highlightSortedCol(`${prefix}-table`, colIdxFn(key));
 }
 
@@ -3613,7 +3655,7 @@ document.getElementById('fa-rp-expand').addEventListener('click', () => {
 });
 
 setupSort('fa-batter-table',  BATTER_KEYS,  'faBatter',  renderFABatters);
-setupSort('fa-sp-table', PITCHER_KEYS, 'faSP', renderFASP);
+setupSort('fa-sp-table', PITCHER_KEYS, 'faSP', renderFASP, spColMap);
 setupSort('fa-rp-table', PITCHER_KEYS, 'faRP', renderFARP, rpColMap);
 renderFABatters();
 renderFAPitchers();
