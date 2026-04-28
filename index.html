@@ -469,6 +469,11 @@
     border-radius: 3px; vertical-align: middle; line-height: 1.1;
   }
 
+  /* FA SP table — opponent matchup difficulty by team OPS rank */
+  .pct.opp-tough { background: rgba(232, 64, 64, 0.18); color: #e84040; }
+  .pct.opp-mid   { background: rgba(245, 197, 66, 0.20); color: #f5c542; }
+  .pct.opp-easy  { background: rgba(34, 221, 136, 0.18); color: #22dd88; }
+
   .news-btn {
     display: inline-block; margin-left: 5px;
     font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
@@ -2003,6 +2008,7 @@ const TEAMS = {
 ] }
 };
 const DEFAULT_TEAM = "Hell or High Wether";
+const TEAM_OPS_RANK = {};
 const FREE_AGENTS = { batters: [
   { name:'Ty France', pos:'1B', ppg:5.7, ppg7:14.0, ppg15:7.1, ppg30:6.3, qualified:true, xwoba:null, xba:null, xslg:null, xobp:null, xiso:null, brl:null, ev:null, hh:null, k:null, bb:null, whiff:null, chase:null, sprint:6, batspd:null, squp:null, ss:null, spot:31, spot_raw:7.18, spot_starts:11, savant_id:664034, espn_id:35591 },
   { name:'Nasim Nuñez', pos:'2B/SS', ppg:3.4, ppg7:5.6, ppg15:3.2, ppg30:3.4, qualified:true, xwoba:9, xba:14, xslg:4, xobp:33, xiso:3, brl:1, ev:4, hh:1, k:53, bb:68, whiff:62, chase:55, sprint:99, batspd:6, squp:28, ss:38, spot:30, spot_raw:7.3, spot_starts:23, savant_id:683083, espn_id:4728688 },
@@ -2845,9 +2851,21 @@ function buildBatterRow(p, isFA) {
   </tr>`;
 }
 
+function oppMatchupClass(rank) {
+  if (rank == null) return '';
+  if (rank <= 10) return 'opp-tough';
+  if (rank <= 20) return 'opp-mid';
+  return 'opp-easy';
+}
 function pitcherOppCell(p) {
   const opp = (p && p.prob_opp) ? p.prob_opp[effectiveProbableDate()] : null;
-  return `<td>${opp ? `<span class="pct">${opp}</span>` : ''}</td>`;
+  if (!opp) return '<td></td>';
+  const abbr = opp.replace(/^@/, '');
+  const rank = TEAM_OPS_RANK[abbr];
+  const cls = oppMatchupClass(rank);
+  const display = rank != null ? `${opp} (${rank})` : opp;
+  const title = rank != null ? `${abbr} is ranked #${rank} in MLB team OPS` : '';
+  return `<td><span class="pct ${cls}"${title ? ` title="${title}"` : ''}>${display}</span></td>`;
 }
 
 function buildPitcherRow(p, isFA) {
