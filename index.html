@@ -2766,6 +2766,7 @@ async function determineProbableDate() {
   } catch (e) { /* fetch failed — fall through to heuristic */ }
   // Roll forward if EITHER signal says so. Never roll backward from heuristic.
   currentProbableDate = (heuristicSaysRoll || fetchSaysRoll) ? tomorrowLabel : todayLabel;
+  if (typeof window.__syncProbableDropdown === 'function') window.__syncProbableDropdown();
   if (typeof renderFAPitchers === 'function') renderFAPitchers();
 }
 determineProbableDate();
@@ -2804,12 +2805,24 @@ function probTag(p) {
     sel.appendChild(opt);
     if (i === 0) todayLabel = label;
   }
-  sel.value = todayLabel;
-  selectedProbableDate = todayLabel;
+  // Default to currentProbableDate (which already accounts for the time heuristic
+  // and ESPN scoreboard rollover), not blindly to today.
+  const defaultLabel = currentProbableDate || todayLabel;
+  sel.value = defaultLabel;
+  selectedProbableDate = defaultLabel;
   sel.addEventListener('change', () => {
     selectedProbableDate = sel.value || null;
     if (typeof renderFASP === 'function') renderFASP();
   });
+  // When the async ESPN check completes after init and changes currentProbableDate,
+  // bump the dropdown forward only if the user hasn't manually picked a different date.
+  window.__syncProbableDropdown = () => {
+    if (sel.value === defaultLabel && currentProbableDate && currentProbableDate !== sel.value) {
+      sel.value = currentProbableDate;
+      selectedProbableDate = currentProbableDate;
+      if (typeof renderFASP === 'function') renderFASP();
+    }
+  };
   const probEl = document.getElementById('fa-sp-probable-only');
   function syncDateDisabled() {
     const enabled = !!(probEl && probEl.checked);
