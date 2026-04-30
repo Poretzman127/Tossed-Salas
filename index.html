@@ -2823,7 +2823,7 @@ let flaggedFA = new Set(JSON.parse(localStorage.getItem(FA_FLAG_KEY) || '[]'));
 // Setup: create a bin at https://jsonbin.io with initial body `{}`, then paste
 // the bin id + access key (X-Access-Key) below. Key is public — only controls this one bin.
 const JSONBIN_BIN_ID = '69f2b5eeaaba88219753aed0';
-const JSONBIN_KEY    = '$2a$10$yLsRzOTV3H0yBgZt.rcwOOISQQse4WuQTO57Tfjrwh6UYtrotgpdK';
+const JSONBIN_KEY    = '$2a$10$Suhd6ugh.yjzb8tt/KynCuzQNrHQtw0xZSCQRjrpx9893YzyKheoa';
 const JSONBIN_URL    = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 const jsonbinConfigured = () =>
   JSONBIN_BIN_ID && !JSONBIN_BIN_ID.startsWith('REPLACE_') &&
@@ -2838,7 +2838,7 @@ async function fetchFlagsFromBin() {
   if (!jsonbinConfigured()) return;
   try {
     const r = await fetch(`${JSONBIN_URL}/latest`, {
-      headers: { 'X-Access-Key': JSONBIN_KEY }
+      headers: { 'X-Master-Key': JSONBIN_KEY }
     });
     if (!r.ok) return;
     const j = await r.json();
@@ -2871,7 +2871,7 @@ function pushFlagsToBin() {
       };
       const r = await fetch(JSONBIN_URL, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_KEY },
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
         body: JSON.stringify(body)
       });
       if (r.ok) _binCache = body;
