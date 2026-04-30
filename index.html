@@ -775,6 +775,12 @@
     letter-spacing: 0.05em;
     margin-left: 8px;
   }
+  .name-short { display: none; }
+  .name-full  { display: inline; }
+  @media (max-width: 768px) {
+    .name-short { display: inline; }
+    .name-full  { display: none; }
+  }
   @media (max-width: 768px) { .table-wrap { max-height: none; border-radius: 0; border-left: none; border-right: none; } }
   @media (max-width: 768px) { .section { padding-left: 0; padding-right: 0; padding-top: 16px; } }
   @media (max-width: 768px) { .section-header { margin-bottom: 8px; } }
@@ -2812,7 +2818,76 @@ function probTag(p) {
 })();
 const FA_FLAG_KEY = 'faFlagged_' + CURRENT_USER;
 let flaggedFA = new Set(JSON.parse(localStorage.getItem(FA_FLAG_KEY) || '[]'));
-function saveFlaggedFA() { localStorage.setItem(FA_FLAG_KEY, JSON.stringify([...flaggedFA])); }
+
+// ── Cross-device flag sync via JSONBin.io (last-writer-wins) ──────────────
+// Setup: create a bin at https://jsonbin.io with initial body `{}`, then paste
+// the bin id + access key (X-Access-Key) below. Key is public — only controls this one bin.
+const JSONBIN_BIN_ID = '69f2b5eeaaba88219753aed0';
+const JSONBIN_KEY    = '$2a$10$yLsRzOTV3H0yBgZt.rcwOOISQQse4WuQTO57Tfjrwh6UYtrotgpdK';
+const JSONBIN_URL    = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+const jsonbinConfigured = () =>
+  JSONBIN_BIN_ID && !JSONBIN_BIN_ID.startsWith('REPLACE_') &&
+  JSONBIN_KEY    && !JSONBIN_KEY.startsWith('REPLACE_');
+
+const FA_FLAG_TS_KEY = 'faFlaggedTs_' + CURRENT_USER;
+let flagsLocalTs = parseInt(localStorage.getItem(FA_FLAG_TS_KEY) || '0', 10);
+let _binCache = null;          // last full bin object we know about
+let _pushTimer = null;         // debounce push
+
+async function fetchFlagsFromBin() {
+  if (!jsonbinConfigured()) return;
+  try {
+    const r = await fetch(`${JSONBIN_URL}/latest`, {
+      headers: { 'X-Access-Key': JSONBIN_KEY }
+    });
+    if (!r.ok) return;
+    const j = await r.json();
+    const record = (j && j.record) || {};
+    _binCache = record;
+    const entry = record[CURRENT_USER] || {};
+    const remoteFlags = Array.isArray(entry.flags) ? entry.flags : [];
+    const remoteTs = entry.updated || 0;
+    if (remoteTs > flagsLocalTs) {
+      flaggedFA = new Set(remoteFlags);
+      flagsLocalTs = remoteTs;
+      localStorage.setItem(FA_FLAG_KEY, JSON.stringify([...flaggedFA]));
+      localStorage.setItem(FA_FLAG_TS_KEY, String(flagsLocalTs));
+      if (typeof renderFABatters === 'function') renderFABatters();
+      if (typeof renderFAPitchers === 'function') renderFAPitchers();
+    } else if (flagsLocalTs > remoteTs) {
+      pushFlagsToBin();   // local wins — push our newer copy up
+    }
+  } catch (e) { /* offline / blocked — keep local copy */ }
+}
+
+function pushFlagsToBin() {
+  if (!jsonbinConfigured()) return;
+  clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(async () => {
+    try {
+      const body = {
+        ...(_binCache || {}),
+        [CURRENT_USER]: { flags: [...flaggedFA], updated: flagsLocalTs }
+      };
+      const r = await fetch(JSONBIN_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Access-Key': JSONBIN_KEY },
+        body: JSON.stringify(body)
+      });
+      if (r.ok) _binCache = body;
+    } catch (e) { /* offline — local copy still saved */ }
+  }, 400);
+}
+
+function saveFlaggedFA() {
+  flagsLocalTs = Date.now();
+  localStorage.setItem(FA_FLAG_KEY, JSON.stringify([...flaggedFA]));
+  localStorage.setItem(FA_FLAG_TS_KEY, String(flagsLocalTs));
+  pushFlagsToBin();
+}
+
+// Fire-and-forget initial fetch (re-renders FA tabs if remote is newer)
+fetchFlagsFromBin();
 function flagBtn(p) {
   const on = flaggedFA.has(p.name);
   const safe = p.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
@@ -2830,6 +2905,14 @@ function toggleFAFlag(e, name) {
 function newsBtn(p) { return ''; }
 // [NEWS_DISABLED] function newsBtn(p) { return p.espn_id != null ? ` <button class="news-btn" onclick="event.stopPropagation();showNews(${p.espn_id},${JSON.stringify(p.name)})" title="ESPN news">N</button>` : ''; }
 
+function nameDisplay(name) {
+  if (!name) return '';
+  const safe = String(name);
+  if (safe.length <= 15) return safe;
+  const short = safe.slice(0, 15) + '...';
+  const esc = safe.replace(/"/g, '&quot;');
+  return `<span class="name-full">${safe}</span><span class="name-short" title="${esc}">${short}</span>`;
+}
 function buildBatterRow(p, isFA) {
   const avgVal = playerStatAvg(p, BATTER_KEYS);
   const lpClass = p.lowPa ? ' low-pa' : '';
@@ -2840,7 +2923,7 @@ function buildBatterRow(p, isFA) {
   const stc = spotTierClass(p.spot_raw);
   if (p.partial) {
     return `<tr class="below-min${lpClass}"${nameAttr}>
-      <td>${flag}${p.name}${ilTag(p)}${newsBtn(p)}</td>
+      <td>${flag}${nameDisplay(p.name)}${ilTag(p)}${newsBtn(p)}</td>
       <td>${p.pos}</td>
       ${ppgCell(p.ppg)}
       <td>${cell(avgVal, h._avg)}</td>
@@ -2848,7 +2931,7 @@ function buildBatterRow(p, isFA) {
     </tr>`;
   }
   return `<tr class="${lpClass.trim()}"${nameAttr}>
-    <td>${flag}${p.name}${ilTag(p)}${newsBtn(p)}</td>
+    <td>${flag}${nameDisplay(p.name)}${ilTag(p)}${newsBtn(p)}</td>
     <td>${p.pos}</td>
     ${ppgCell(p.ppg)}
     <td>${cell(avgVal, h._avg)}</td>
@@ -2887,7 +2970,7 @@ function buildPitcherRow(p, isFA) {
   const xpwCell = showRPCols ? `<td><span class="pct">${xpw != null ? xpw.toFixed(1) : ''}</span></td>` : '';
   if (p.partial) {
     return `<tr class="below-min${lpClass}"${nameAttr}>
-      <td>${flag}${p.name}${ilTag(p)}${probTag(p)}${newsBtn(p)}</td>
+      <td>${flag}${nameDisplay(p.name)}${ilTag(p)}${probTag(p)}${newsBtn(p)}</td>
       <td>${p.type}</td>
       ${oppCell}
       ${ppgCell(p.ppg)}
@@ -2898,7 +2981,7 @@ function buildPitcherRow(p, isFA) {
     </tr>`;
   }
   return `<tr class="${lpClass.trim()}"${nameAttr}>
-    <td>${flag}${p.name}${ilTag(p)}${probTag(p)}</td>
+    <td>${flag}${nameDisplay(p.name)}${ilTag(p)}${probTag(p)}</td>
     <td>${p.type}</td>
     ${oppCell}
     ${ppgCell(p.ppg)}
@@ -2987,6 +3070,11 @@ function playerStatAvg(p, keys) {
 function sortedPlayers(players, key, dir, statKeys, pinPartial = true) {
   const getVal = (p) => {
     if (key === 'avg' && statKeys) return playerStatAvg(p, statKeys);
+    if (key === 'opp') {
+      const opp = (p && p.prob_opp) ? p.prob_opp[effectiveProbableDate()] : null;
+      if (!opp) return null;
+      return TEAM_OPS_RANK[opp.replace(/^@/, '')] ?? null;
+    }
     return p[key];
   };
   if (pinPartial) {
@@ -3090,7 +3178,7 @@ function rpColIdx(key) {
 function spColMap(i) {
   if (i === 0) return 'name';
   if (i === 1) return null;  // Type
-  if (i === 2) return null;  // Opp (not sortable)
+  if (i === 2) return 'opp';
   if (i === 3) return 'ppg';
   if (i === 4) return 'avg';
   return PITCHER_KEYS[i - 5];
@@ -3098,6 +3186,7 @@ function spColMap(i) {
 function spColIdx(key) {
   if (!key) return null;
   if (key === 'name') return 0;
+  if (key === 'opp')  return 2;
   if (key === 'ppg')  return 3;
   if (key === 'avg')  return 4;
   const si = PITCHER_KEYS.indexOf(key);
