@@ -2736,10 +2736,17 @@ function ilTag(p) { return p.il != null ? ` <span class="il-badge">${p.il}</span
 // currentProbableDate is the M/D string (e.g. "4/26") whose probables we display.
 // Defaults to today; rolls to tomorrow once any of today's MLB games has started.
 // Computed at page load from ESPN's public scoreboard (CORS-enabled).
-let currentProbableDate = (() => {
-  const t = new Date();
-  return `${t.getMonth()+1}/${t.getDate()}`;
-})();
+// Time-based heuristic: after ~1pm ET, MLB afternoon slate has typically started.
+// Used as the initial value AND as the offline fallback when the ESPN fetch fails.
+function probableDateHeuristic() {
+  const now = new Date();
+  // ET hour via UTC offset (handles DST roughly: ET = UTC-4 in season).
+  const etHour = (now.getUTCHours() - 4 + 24) % 24;
+  const rollover = etHour >= 13;
+  const base = rollover ? new Date(now.getTime() + 86400000) : now;
+  return `${base.getMonth()+1}/${base.getDate()}`;
+}
+let currentProbableDate = probableDateHeuristic();
 async function determineProbableDate() {
   const today = new Date();
   const todayLabel = `${today.getMonth()+1}/${today.getDate()}`;
@@ -2756,7 +2763,7 @@ async function determineProbableDate() {
     });
     currentProbableDate = anyStarted ? tomorrowLabel : todayLabel;
   } catch (e) {
-    currentProbableDate = todayLabel;
+    currentProbableDate = probableDateHeuristic();
   }
   if (typeof renderFAPitchers === 'function') renderFAPitchers();
 }
