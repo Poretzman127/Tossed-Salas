@@ -2749,9 +2749,11 @@ async function determineProbableDate() {
   try {
     const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=${dateStr}`);
     const data = await r.json();
-    const anyStarted = (data.events || []).some(ev =>
-      (ev.competitions || []).some(c => ((c.status && c.status.type && c.status.type.state) || 'pre') !== 'pre')
-    );
+    const stateOf = (obj) => (obj && obj.status && obj.status.type && obj.status.type.state) || null;
+    const anyStarted = (data.events || []).some(ev => {
+      const states = [stateOf(ev), ...((ev.competitions || []).map(stateOf))].filter(Boolean);
+      return states.some(s => s !== 'pre');
+    });
     currentProbableDate = anyStarted ? tomorrowLabel : todayLabel;
   } catch (e) {
     currentProbableDate = todayLabel;
