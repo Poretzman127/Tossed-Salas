@@ -2752,19 +2752,20 @@ async function determineProbableDate() {
   const todayLabel = `${today.getMonth()+1}/${today.getDate()}`;
   const tomorrow = new Date(today.getTime() + 86400000);
   const tomorrowLabel = `${tomorrow.getMonth()+1}/${tomorrow.getDate()}`;
+  const heuristicSaysRoll = probableDateHeuristic() !== todayLabel;
   const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+  let fetchSaysRoll = false;
   try {
     const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=${dateStr}`);
     const data = await r.json();
     const stateOf = (obj) => (obj && obj.status && obj.status.type && obj.status.type.state) || null;
-    const anyStarted = (data.events || []).some(ev => {
+    fetchSaysRoll = (data.events || []).some(ev => {
       const states = [stateOf(ev), ...((ev.competitions || []).map(stateOf))].filter(Boolean);
       return states.some(s => s !== 'pre');
     });
-    currentProbableDate = anyStarted ? tomorrowLabel : todayLabel;
-  } catch (e) {
-    currentProbableDate = probableDateHeuristic();
-  }
+  } catch (e) { /* fetch failed — fall through to heuristic */ }
+  // Roll forward if EITHER signal says so. Never roll backward from heuristic.
+  currentProbableDate = (heuristicSaysRoll || fetchSaysRoll) ? tomorrowLabel : todayLabel;
   if (typeof renderFAPitchers === 'function') renderFAPitchers();
 }
 determineProbableDate();
