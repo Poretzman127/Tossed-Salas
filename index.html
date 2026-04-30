@@ -4330,13 +4330,18 @@ function showNews(espnId, playerName) {
   document.getElementById('news-overlay').classList.add('open');
 }
 
-document.getElementById('news-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('news-overlay'))
-    document.getElementById('news-overlay').classList.remove('open');
-});
-document.getElementById('news-modal-close').addEventListener('click', () => {
-  document.getElementById('news-overlay').classList.remove('open');
-});
+{
+  const _newsOverlay = document.getElementById('news-overlay');
+  const _newsClose   = document.getElementById('news-modal-close');
+  if (_newsOverlay) {
+    _newsOverlay.addEventListener('click', e => {
+      if (e.target === _newsOverlay) _newsOverlay.classList.remove('open');
+    });
+  }
+  if (_newsClose && _newsOverlay) {
+    _newsClose.addEventListener('click', () => _newsOverlay.classList.remove('open'));
+  }
+}
 </script>
 
 <div id="news-overlay">
