@@ -1223,10 +1223,10 @@
     <input type="text" id="fa-batter-search" class="fa-search" placeholder="Search player…">
     <div class="qual-tooltip-wrap">
       <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
-        <input type="checkbox" id="fa-batter-qualified-only" style="accent-color:var(--accent);cursor:pointer">
+        <input type="checkbox" id="fa-batter-qualified-only" checked style="accent-color:var(--accent);cursor:pointer">
         Qualified Only
       </label>
-      <div class="qual-tooltip">Only show players who have qualified statcast data.</div>
+      <div class="qual-tooltip">Only show batters who have more than 3 non-null Statcast stats.</div>
     </div>
     <div class="qual-tooltip-wrap">
       <label style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--muted);cursor:pointer">
@@ -3519,7 +3519,9 @@ function renderFABatters() {
         return targets.some(t => playerPos.includes(t));
       })
     : FREE_AGENTS.batters;
-  if (qualOnly) batters = batters.filter(p => p.qualified === true);
+  // Qualified Only requires the Python-tagged qualified flag AND more than 3 non-null Statcast stats
+  // (BATTER_KEYS covers the full Statcast column set; PPG/Spot live outside it).
+  if (qualOnly) batters = batters.filter(p => p.qualified === true && BATTER_KEYS.reduce((n,k)=>n+(p[k]!=null?1:0),0) > 3);
   if (flagOnly) batters = batters.filter(p => flaggedFA.has(p.name));
   if (ilOnly)   batters = batters.filter(p => p.il);
   if (search) batters = batters.filter(p => p.name.toLowerCase().includes(search));
